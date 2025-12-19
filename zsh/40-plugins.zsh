@@ -13,10 +13,3 @@ zinit from'gh-r' as'program' for \
 
 zinit ice depth=1
 zinit light jeffreytse/zsh-vi-mode
-
-# Autojump - OS-specific sourcing
-if is_macos; then
-    [ -f /opt/homebrew/etc/profile.d/autojump.sh ] && . /opt/homebrew/etc/profile.d/autojump.sh
-elif is_linux; then
-    [[ -s /etc/profile.d/autojump.zsh ]] && source /etc/profile.d/autojump.zsh
-fi
