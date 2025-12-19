@@ -1,0 +1,79 @@
+# Base development tools
+base-devel
+curl
+wget
+git
+gcc
+make
+cmake
+boost
+eigen
+libusb
+postgresql-libs
+
+# Essential CLI tools
+htop
+jq
+neovim
+vim
+tmux
+zsh
+
+# Modern CLI replacements
+exa
+bat
+fzf
+ripgrep
+fd
+lsd
+zoxide
+duf
+bpytop
+glances
+atuin
+
+# Networking tools
+aria2
+dos2unix
+iputils
+net-tools
+traceroute
+inetutils
+sshuttle
+s3cmd
+
+# Kubernetes and containers
+docker
+docker-compose
+kubectl
+kubectx
+
+# Programming languages
+go
+nodejs
+npm
+yarn
+python
+python-pip
+jdk-openjdk
+maven
+gradle
+rustup
+
+# Multimedia
+ffmpeg
+imagemagick
+sqlite
+
+# Fonts
+ttf-hack
+ttf-jetbrains-mono
+noto-fonts-emoji
+
+# Version control
+git-lfs
+git-filter-repo
+
+# Window manager and tools
+i3-wm
+rofi

@@ -1,0 +1,100 @@
+format = """
+($hostname)\
+($git_branch)\
+($git_status)\
+$c\
+$golang\
+$java\
+$nodejs\
+$rust 
+$env_var@$directory \
+($cmd_duration) $status 
+"""
+
+right_format = """
+$kubernetes\
+"""
+
+[directory]
+style = "fg:#FFFFFF"
+format = "[$path]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+# Here is how you can shorten some long paths by text replacement
+# similar to mapped_locations in Oh My Posh:
+[directory.substitutions]
+"Documents" = " "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+"work" = "󰃖"
+"code" = "󰈮"
+
+[c]
+symbol = " "
+style = "bg:#86BBD8"
+format = '[$symbol ($version)]($style)'
+
+[env_var.VIMSHELL]
+format = "[$env_value]($style)"
+style = 'green italic'
+
+[env_var.ZVM_MODE]
+format = "[$env_value]($style)"
+style = 'green italic'
+
+[env_var.USER]
+format = "[$env_value]($style)"
+style = '#FF13F0 italic'
+
+[git_branch]
+symbol = ""
+format = '[$symbol $branch]($style)'
+
+[git_status]
+format = '[($all_status$ahead_behind )]($style)'
+
+[golang]
+symbol = " "
+
+[java]
+symbol = " "
+format = '[$symbol ($version)]($style)'
+
+[nodejs]
+symbol = ""
+format = '[$symbol ($version)]($style)'
+
+[rust]
+symbol = ""
+format = '[$symbol ($version)]($style)'
+
+[time]
+disabled = false
+time_format = "%R" # Hour:Minute Format
+style = "bg:#33658A"
+format = '[[ ♥ $time ](bg:#33658A) ]($style)'
+
+[kubernetes]
+format = '[ ⛵ $context\($namespace\)]($style)'
+disabled = false
+style="#2E6DE7"
+[kubernetes.context_aliases]
+"dev-mips-ql" = "mips"
+"minikube" = "mk"
+"dev-meps" = "meps"
+
+[kotlin]
+disabled = false
+
+[status]
+map_symbol = true
+style = "fg:#7CFC00"
+success_symbol = " "
+format = '[\[$symbol$common_meaning$signal_name$maybe_int\]]($style) '
+disabled = false
+
+[cmd_duration]
+min_time = 500
+format = '[$duration](bold yellow)'
