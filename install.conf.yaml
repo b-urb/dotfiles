@@ -1,0 +1,154 @@
+- shell:
+    - command: [cd kube/clusters && ./merge_clusters.sh]
+      stdout: true
+      stderr: true
+
+    - command: |
+        case "$(uname -s)" in
+          Darwin)
+            cat zsh/general.zsh \
+                zsh/macos.zsh \
+                zsh/alias.zsh \
+                zsh/functions.zsh \
+                zsh/generated.zsh > zshrc
+            ;;
+          Linux)
+            cat zsh/general.zsh \
+                zsh/linux.zsh \
+                zsh/alias.zsh \
+                zsh/functions.zsh \
+                zsh/generated.zsh > zshrc
+            ;;
+        esac
+      description: "Merge Zsh configuration into zshrc"
+
+# ------------------------------------------------------------------------------
+
+- link:
+    ~/.profile: profile
+    ~/.bashrc: bashrc
+    ~/.bash_logout: bash_logout
+    ~/.gitconfig: gitconfig
+
+    ~/.zshrc:
+      path: zshrc
+      create: true
+      relink: true
+
+    ~/.ssh/config:
+      if: '[ "$(uname)" = Darwin ]'
+      path: ssh/config
+      create: true
+
+    ~/kubectl_aliases: kubectl_aliases
+
+    ~/.config/i3:
+      if: '[ "$(uname)" = Linux ]'
+      path: config/i3/
+      create: true
+
+    ~/.config/sway:
+      if: '[ "$(uname)" = Linux ]'
+      path: config/sway/
+      create: true
+
+    ~/.kube/config:
+      path: kube/config
+      create: true
+
+    ~/.newsboat/urls:
+      path: newsboat/urls
+      create: true
+
+    ~/.config/wezterm:
+      path: wezterm
+      create: true
+      relink: true
+
+    ~/.config/atuin:
+      path: config/atuin
+      create: true
+
+    ~/.config/.gitignore:
+      path: gitignore
+      create: true
+
+    ~/.config/nvim:
+        path: config/nvim
+        create: true
+        relink: true
+        force: true
+    ~/.config/k9s:
+        path: config/k9s
+        create: true
+        relink: true
+        force: true
+    ~/.config/atuin:
+        path: config/atuin
+        create: true
+    ~/.config/lazygit:
+        path: config/lazygit
+        create: true
+    ~/.config/.gitignore:
+        path: gitignore
+        create: true
+    ~/.codex/config.toml:
+        path: config/codex/config.toml
+        create: true
+        force: true
+    ~/.ideavimrc: ideavimrc
+
+    ~/.config/starship.toml: starship.toml
+
+    ~/.aerospace.toml:
+      if: '[ "$(uname)" = Darwin ]'
+      path: config/aerospace.toml
+      create: true
+      relink: true
+
+    ~/.gradle/gradle.properties: gradle.properties
+
+    ~/.config/yabai:
+      if: '[ "$(uname)" = Darwin ]'
+      path: config/yabai/
+      create: true
+
+    ~/.config/skhd:
+      if: '[ "$(uname)" = Darwin ]'
+      path: config/skhd/
+      create: true
+
+    ~/.config/spacebar:
+      if: '[ "$(uname)" = Darwin ]'
+      path: config/spacebar/
+      create: true
+
+    ~/.config/sketchybar:
+      if: '[ "$(uname)" = Darwin ]'
+      path: config/sketchybar/
+      create: true
+
+    ~/Library/Application\ Support/idasen-controller:
+      if: '[ "$(uname)" = Darwin ]'
+      path: idasen-controller
+      create: true
+
+    ~/.config/idasen-controller:
+      if: '[ "$(uname)" = Linux ]'
+      path: idasen-controller
+      create: true
+
+# ------------------------------------------------------------------------------
+
+- clean:
+    ~/.config:
+      recursive: true
+      force: true
+
+    ~/.kube:
+      recursive: true
+      force: true
+
+    ~/.ssh:
+      force: true
+

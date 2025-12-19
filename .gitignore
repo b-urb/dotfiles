@@ -1,0 +1,21 @@
+# Generated files with secrets (DO NOT COMMIT)
+config/codex/config.toml
+gitconfig
+bashrc
+
+# Kubernetes configs (backed up to Bitwarden)
+kube/*
+!kube/*/
+kube/clusters/*
+!kube/clusters/.gitkeep
+!kube/clusters/*.sh
+config/k9s/clusters/
+
+# Keep templates tracked
+!templates/*.tmpl
+
+# Other
+sync.yaml
+zshrc
+gradle.properties
+ubuntu/keyring.deb

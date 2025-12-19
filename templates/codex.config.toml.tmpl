@@ -1,0 +1,46 @@
+experimental_use_rmcp_client = true
+sandbox_mode = "workspace-write"
+network_access = "enabled"
+approval_policy = "on-failure"
+allow_shell = true
+model_reasoning_effort = "high"
+
+[features]
+rmcp_client = true
+web_search_request = true
+
+[projects."/Users/bjornurban/code/work/freelance/bahrenberg/website-v2"]
+trust_level = "trusted"
+
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp", "--headless"]
+
+[mcp_servers.next-devtools]
+command = "npx"
+args = ["-y", "next-devtools-mcp@latest"]
+
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+http_headers.Authorization = "Bearer {{GITHUB_PAT}}"
+http_headers.X-MCP-Toolsets = "all"
+
+[mcp_servers.pulumi]
+url = "https://mcp.ai.pulumi.com/mcp"
+
+[mcp_servers.storybook]
+transport = "http"
+url = "http://localhost:6006/mcp"
+
+[mcp_servers.directus]
+url = "https://cms.burbn.de/mcp/"
+http_headers.Authorization = "Bearer {{DIRECTUS_TOKEN}}"
+http_headers.X-MCP-Toolsets = "all"
+
+[mcp_servers.kubernetes-readonly]
+command = "npx"
+args = ["mcp-server-kubernetes"]
+
+[mcp_servers.kubernetes-readonly.env]
+ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS = "true"

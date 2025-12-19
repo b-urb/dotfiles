@@ -1,0 +1,18 @@
+let mapleader = " "
+set commentary
+set surround
+set NERDTree
+
+" Toggle NERDTree with <Leader>e (like Neotree)
+nnoremap <Leader>e :NERDTreeToggle<CR>
+
+" Open NERDTree and find the current file with <Leader>o
+nnoremap <Leader>o :NERDTreeFind<CR>
+
+" Refresh NERDTree (similar to Neotree refresh)
+nnoremap <Leader>r :NERDTreeRefreshRoot<CR>
+
+" Close NERDTree with <Leader>q
+nnoremap <Leader>q :NERDTreeClose<CR>
+nnoremap <leader>n :NERDTreeFocus<CR>
+
