@@ -14,6 +14,8 @@ config/k9s/clusters/
 # Keep templates tracked
 !templates/*.tmpl
 
+install
+
 # Other
 sync.yaml
 zshrc
