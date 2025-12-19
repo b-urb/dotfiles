@@ -2,6 +2,9 @@
 config/codex/config.toml
 gitconfig
 bashrc
+.env
+.env.darwin
+.env.linux
 
 # Kubernetes configs (backed up to Bitwarden)
 kube/*
