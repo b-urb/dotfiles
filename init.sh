@@ -162,16 +162,59 @@ setup_bw_session() {
 # Fetch and setup SSH key from Bitwarden
 setup_ssh_key() {
     echo "Fetching SSH key from Bitwarden..."
-    SSH_KEY=$(bw get item ssh-key --session "$BW_SESSION" | jq -r '.notes')
 
-    if [ -z "$SSH_KEY" ]; then
-        echo "Error: SSH key not found in Bitwarden."
+    SSH_KEYS_FOLDER_ID=$(bw list folders --session "$BW_SESSION" 2>/dev/null | \
+        jq -r '.[] | select(.name=="dotfiles/ssh-keys") | .id')
+    if [ -z "$SSH_KEYS_FOLDER_ID" ] || [ "$SSH_KEYS_FOLDER_ID" = "null" ]; then
+        echo "Error: Bitwarden folder 'dotfiles/ssh-keys' not found."
         exit 1
     fi
 
-    SSH_KEY_FILE="$HOME/.ssh/id_rsa"
-    echo "$SSH_KEY" > "$SSH_KEY_FILE"
+    SSH_ITEMS_JSON=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null)
+    if [ -z "$SSH_ITEMS_JSON" ]; then
+        echo "Error: No SSH key items found in Bitwarden."
+        exit 1
+    fi
+
+    SSH_ITEM_ID=""
+    for item_name in "ssh:id_ed25519" "ssh:id_rsa"; do
+        SSH_ITEM_ID=$(echo "$SSH_ITEMS_JSON" | jq -r --arg name "$item_name" '.[] | select(.name==$name) | .id' | head -n 1)
+        if [ -n "$SSH_ITEM_ID" ] && [ "$SSH_ITEM_ID" != "null" ]; then
+            break
+        fi
+    done
+
+    if [ -z "$SSH_ITEM_ID" ] || [ "$SSH_ITEM_ID" = "null" ]; then
+        SSH_ITEM_ID=$(echo "$SSH_ITEMS_JSON" | jq -r '.[] | select(.type==5) | .id' | head -n 1)
+    fi
+
+    if [ -z "$SSH_ITEM_ID" ] || [ "$SSH_ITEM_ID" = "null" ]; then
+        echo "Error: No SSH key items found in Bitwarden."
+        exit 1
+    fi
+
+    SSH_ITEM_JSON=$(bw get item "$SSH_ITEM_ID" --session "$BW_SESSION")
+    SSH_ITEM_NAME=$(echo "$SSH_ITEM_JSON" | jq -r '.name')
+    SSH_KEY_NAME="${SSH_ITEM_NAME#ssh:}"
+    SSH_PRIVATE_KEY=$(echo "$SSH_ITEM_JSON" | jq -r '.sshKey.privateKey')
+    SSH_PUBLIC_KEY=$(echo "$SSH_ITEM_JSON" | jq -r '.sshKey.publicKey')
+
+    if [ -z "$SSH_PRIVATE_KEY" ] || [ "$SSH_PRIVATE_KEY" = "null" ]; then
+        echo "Error: SSH private key not found in Bitwarden item."
+        exit 1
+    fi
+
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+
+    SSH_KEY_FILE="$HOME/.ssh/$SSH_KEY_NAME"
+    echo "$SSH_PRIVATE_KEY" > "$SSH_KEY_FILE"
     chmod 600 "$SSH_KEY_FILE"
+
+    if [ -n "$SSH_PUBLIC_KEY" ] && [ "$SSH_PUBLIC_KEY" != "null" ]; then
+        echo "$SSH_PUBLIC_KEY" > "$SSH_KEY_FILE.pub"
+        chmod 644 "$SSH_KEY_FILE.pub"
+    fi
 
     eval "$(ssh-agent -s)"
     ssh-add -D

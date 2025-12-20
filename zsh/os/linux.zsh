@@ -20,8 +20,25 @@ fi
 # Autojump
 [[ -s /etc/profile.d/autojump.zsh ]] && source /etc/profile.d/autojump.zsh
 
-# SSH agent (standard Linux approach)
-if [ -z "$SSH_AUTH_SOCK" ]; then
+# Bitwarden SSH agent (default on, opt-out with DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1)
+__dotfiles_bw_ssh_sock=""
+if [ -z "$DOTFILES_DISABLE_BITWARDEN_SSH_AGENT" ]; then
+    if [ -z "$SSH_AUTH_SOCK" ] || [ ! -S "$SSH_AUTH_SOCK" ]; then
+        for sock in \
+            "$HOME/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock" \
+            "$HOME/.bitwarden-ssh-agent.sock" \
+            "$HOME/snap/bitwarden/current/.bitwarden-ssh-agent.sock"; do
+            if [ -S "$sock" ]; then
+                export SSH_AUTH_SOCK="$sock"
+                __dotfiles_bw_ssh_sock="$sock"
+                break
+            fi
+        done
+    fi
+fi
+
+# SSH agent fallback (standard Linux approach)
+if [ -z "$SSH_AUTH_SOCK" ] || [ ! -S "$SSH_AUTH_SOCK" ]; then
     eval "$(ssh-agent -s)" > /dev/null
     if [ -f ~/.ssh/id_rsa ]; then
         ssh-add ~/.ssh/id_rsa 2>/dev/null

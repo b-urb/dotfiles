@@ -42,10 +42,12 @@ get_folder_id() {
 # Get folders
 ENV_VARS_FOLDER_ID=$(get_folder_id "dotfiles/env-vars")
 KUBECONFIG_FOLDER_ID=$(get_folder_id "dotfiles/kubeconfig")
+SSH_KEYS_FOLDER_ID=$(get_folder_id "dotfiles/ssh-keys")
 
 echo -e "${GREEN}Using Bitwarden folder IDs:${NC}"
 echo -e "${GREEN}  dotfiles/env-vars: $ENV_VARS_FOLDER_ID${NC}"
 echo -e "${GREEN}  dotfiles/kubeconfig: $KUBECONFIG_FOLDER_ID${NC}"
+echo -e "${GREEN}  dotfiles/ssh-keys: $SSH_KEYS_FOLDER_ID${NC}"
 
 # Get secret from Bitwarden folder
 get_secret() {
@@ -188,33 +190,60 @@ if [ "$RESTORE_SSH_KEYS" = "true" ]; then
     SSH_DIR="$DOTFILES_DIR/ssh"
     mkdir -p "$SSH_DIR"
 
-# Get folder ID
-SSH_KEYS_FOLDER_ID=$(get_folder_id "dotfiles/ssh-keys")
+    SSH_ITEMS_JSON=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null)
 
-# Get the ssh-keys item from dotfiles/ssh-keys folder
-SSH_ITEM_ID=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null | \
-  jq -r '.[] | select(.name=="ssh-keys") | .id')
+    if [ -z "$SSH_ITEMS_JSON" ] || [ "$SSH_ITEMS_JSON" = "null" ]; then
+      echo -e "${YELLOW}No SSH keys found in Bitwarden (this is OK on first setup)${NC}"
+    else
+      SSH_KEY_ROWS=$(echo "$SSH_ITEMS_JSON" | jq -r '.[] | select(.type==5) | "\(.id)\t\(.name)"')
 
-if [ -z "$SSH_ITEM_ID" ] || [ "$SSH_ITEM_ID" = "null" ]; then
-  echo -e "${YELLOW}No SSH keys found in Bitwarden (this is OK on first setup)${NC}"
-else
-  # List and download all attachments
-  bw get item "$SSH_ITEM_ID" --session "$BW_SESSION" | jq -r '.attachments[]? | .id + " " + .fileName' | while read -r attachment_id filename; do
-    if [ -n "$attachment_id" ] && [ -n "$filename" ]; then
-      echo -e "${GREEN}  Restoring SSH key: $filename${NC}"
-      bw get attachment "$attachment_id" --itemid "$SSH_ITEM_ID" --output "$SSH_DIR/$filename" --session "$BW_SESSION" 2>/dev/null
+      if [ -z "$SSH_KEY_ROWS" ]; then
+        echo -e "${YELLOW}No SSH Key items found, checking legacy attachments...${NC}"
+        LEGACY_ITEM_ID=$(echo "$SSH_ITEMS_JSON" | jq -r '.[] | select(.name=="ssh-keys") | .id' | head -n 1)
 
-      # Set proper permissions based on file type
-      if [[ "$filename" == *.pub ]]; then
-        chmod 644 "$SSH_DIR/$filename"  # Public keys
+        if [ -z "$LEGACY_ITEM_ID" ] || [ "$LEGACY_ITEM_ID" = "null" ]; then
+          echo -e "${YELLOW}No legacy SSH attachments found${NC}"
+        else
+          bw get item "$LEGACY_ITEM_ID" --session "$BW_SESSION" | jq -r '.attachments[]? | .id + " " + .fileName' | while read -r attachment_id filename; do
+            if [ -n "$attachment_id" ] && [ -n "$filename" ]; then
+              echo -e "${GREEN}  Restoring SSH key: $filename${NC}"
+              bw get attachment "$attachment_id" --itemid "$LEGACY_ITEM_ID" --output "$SSH_DIR/$filename" --session "$BW_SESSION" 2>/dev/null
+
+              if [[ "$filename" == *.pub ]]; then
+                chmod 644 "$SSH_DIR/$filename"
+              else
+                chmod 600 "$SSH_DIR/$filename"
+              fi
+            fi
+          done
+        fi
       else
-        chmod 600 "$SSH_DIR/$filename"  # Private keys
-      fi
-    fi
-  done
+        echo "$SSH_KEY_ROWS" | while IFS=$'\t' read -r item_id item_name; do
+        [ -z "$item_id" ] && continue
 
-  echo -e "${GREEN}✓ SSH keys restored to $SSH_DIR${NC}"
-fi
+        item_json=$(bw get item "$item_id" --session "$BW_SESSION")
+        key_name="${item_name#ssh:}"
+        private_key=$(echo "$item_json" | jq -r '.sshKey.privateKey')
+        public_key=$(echo "$item_json" | jq -r '.sshKey.publicKey')
+
+        if [ -z "$private_key" ] || [ "$private_key" = "null" ]; then
+          echo -e "${YELLOW}  Skipping $item_name (missing private key)${NC}"
+          continue
+        fi
+
+        echo -e "${GREEN}  Restoring SSH key: $key_name${NC}"
+        echo "$private_key" > "$SSH_DIR/$key_name"
+        chmod 600 "$SSH_DIR/$key_name"
+
+        if [ -n "$public_key" ] && [ "$public_key" != "null" ]; then
+          echo "$public_key" > "$SSH_DIR/$key_name.pub"
+          chmod 644 "$SSH_DIR/$key_name.pub"
+        fi
+        done
+      fi
+
+      echo -e "${GREEN}✓ SSH keys restored to $SSH_DIR${NC}"
+    fi
 fi
 
 echo -e "${GREEN}=== All secrets populated successfully ===${NC}"

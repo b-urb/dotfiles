@@ -12,33 +12,6 @@
       stdout: true
       stderr: true
 
-    - command: |
-        # Copy SSH keys to user's .ssh directory
-        if [ -d "$HOME/.dotfiles/ssh" ]; then
-          mkdir -p "$HOME/.ssh"
-          chmod 700 "$HOME/.ssh"
-
-          # Copy all keys (except .gitkeep)
-          for key_file in "$HOME/.dotfiles/ssh"/*; do
-            [ ! -f "$key_file" ] && continue
-            [[ "$(basename "$key_file")" == ".gitkeep" ]] && continue
-
-            filename=$(basename "$key_file")
-            cp "$key_file" "$HOME/.ssh/$filename"
-
-            # Set permissions based on file type
-            if [[ "$filename" == *.pub ]]; then
-              chmod 644 "$HOME/.ssh/$filename"
-            else
-              chmod 600 "$HOME/.ssh/$filename"
-            fi
-
-            echo "Copied SSH key: $filename"
-          done
-        fi
-      description: "Copy SSH keys to ~/.ssh with proper permissions"
-      stdout: true
-
     - command: [cd kube/clusters && ./merge_clusters.sh]
       stdout: true
       stderr: true
@@ -133,6 +106,13 @@
       if: '[ "$(uname)" = Darwin ]'
       path: macos/ssh/config
       create: true
+    ~/.ssh/:
+      glob: true
+      path: ssh/*
+      exclude:
+        - ssh/.gitkeep
+      create: true
+      relink: true
 
     ~/kubectl_aliases: kubectl_aliases
 
@@ -226,15 +206,15 @@
       create: true
       relink: true
 
-    ~/Library/Application\ Support/idasen-controller:
-      if: '[ "$(uname)" = Darwin ]'
-      path: idasen-controller
-      create: true
-
-    ~/.config/idasen-controller:
-      if: '[ "$(uname)" = Linux ]'
-      path: idasen-controller
-      create: true
+    # ~/Library/Application\ Support/idasen-controller:
+    #   if: '[ "$(uname)" = Darwin ]'
+    #   path: idasen-controller
+    #   create: true
+    #
+    # ~/.config/idasen-controller:
+    #   if: '[ "$(uname)" = Linux ]'
+    #   path: idasen-controller
+    #   create: true
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PHASE 3: CLEANUP
@@ -254,4 +234,3 @@
 
     ~/.ssh:
       force: true
-
