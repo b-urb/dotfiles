@@ -70,6 +70,7 @@ create_folder_if_missing() {
 create_folder_if_missing "dotfiles"
 create_folder_if_missing "dotfiles/env-vars"
 create_folder_if_missing "dotfiles/kubeconfig"
+create_folder_if_missing "dotfiles/ssh-keys"
 
 # Sync Bitwarden
 echo

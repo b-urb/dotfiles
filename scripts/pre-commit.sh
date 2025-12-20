@@ -12,6 +12,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
+# Source checksum utilities
+source "$DOTFILES_DIR/scripts/checksum-utils.sh"
+
 echo -e "${GREEN}=== Pre-commit hook: Syncing secrets ===${NC}"
 
 # STRICT: Require BW_SESSION or FAIL
@@ -40,6 +43,15 @@ get_folder_id() {
 # Get folders
 ENV_VARS_FOLDER_ID=$(get_folder_id "dotfiles/env-vars")
 KUBECONFIG_FOLDER_ID=$(get_folder_id "dotfiles/kubeconfig")
+
+echo -e "${GREEN}=== Checking env files for changes ===${NC}"
+
+# Calculate current checksum
+CURRENT_ENV_CHECKSUM=$(calculate_env_checksum)
+
+# Check if changed
+if has_changed "env_files" "$CURRENT_ENV_CHECKSUM"; then
+    echo -e "${YELLOW}Env files changed, syncing to Bitwarden...${NC}"
 
 # Function to sync env file to template and Bitwarden
 sync_env_file() {
@@ -132,12 +144,23 @@ sync_env_file "$DOTFILES_DIR/.env" "$DOTFILES_DIR/templates/.env.tmpl"
 sync_env_file "$DOTFILES_DIR/.env.darwin" "$DOTFILES_DIR/templates/.env.darwin.tmpl"
 sync_env_file "$DOTFILES_DIR/.env.linux" "$DOTFILES_DIR/templates/.env.linux.tmpl"
 
-echo -e "${GREEN}=== Backing up kubeconfigs to Bitwarden ===${NC}"
+    # Update checksum after successful sync
+    update_checksum "env_files" "$CURRENT_ENV_CHECKSUM"
+    echo -e "${GREEN}✓ Env files synced and checksum updated${NC}"
+else
+    echo -e "${GREEN}✓ Env files unchanged, skipping sync${NC}"
+fi
+
+echo -e "${GREEN}=== Checking kubeconfigs for changes ===${NC}"
+
+# Calculate current checksum
+CURRENT_KUBE_CHECKSUM=$(calculate_kube_checksum)
 
 # Skip if no kubeconfigs directory
 if [ ! -d "$KUBE_CLUSTERS_DIR" ]; then
     echo -e "${YELLOW}Skipping kubeconfig backup (directory not found)${NC}"
-else
+elif has_changed "kubeconfigs" "$CURRENT_KUBE_CHECKSUM"; then
+    echo -e "${YELLOW}Kubeconfigs changed, syncing to Bitwarden...${NC}"
     # Get or create the kubeconfigs item in dotfiles/kubeconfig folder
     KUBE_ITEM_ID=$(bw list items --folderid "$KUBECONFIG_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null | \
         jq -r '.[] | select(.name=="kubeconfigs") | .id')
@@ -172,7 +195,69 @@ else
         bw create attachment --file "$config_file" --itemid "$KUBE_ITEM_ID" --session "$BW_SESSION" > /dev/null 2>&1
     done
 
-    echo -e "${GREEN}✓ Kubeconfigs backed up${NC}"
+    # Update checksum after successful sync
+    update_checksum "kubeconfigs" "$CURRENT_KUBE_CHECKSUM"
+    echo -e "${GREEN}✓ Kubeconfigs synced and checksum updated${NC}"
+else
+    echo -e "${GREEN}✓ Kubeconfigs unchanged, skipping sync${NC}"
+fi
+
+echo -e "${GREEN}=== Checking SSH keys for changes ===${NC}"
+
+# Calculate current checksum
+CURRENT_SSH_CHECKSUM=$(calculate_ssh_checksum)
+
+# SSH keys directory in dotfiles
+SSH_DIR="$DOTFILES_DIR/ssh"
+
+# Skip if no ssh directory
+if [ ! -d "$SSH_DIR" ]; then
+    echo -e "${YELLOW}Skipping SSH key backup (directory not found)${NC}"
+elif has_changed "ssh_keys" "$CURRENT_SSH_CHECKSUM"; then
+    echo -e "${YELLOW}SSH keys changed, syncing to Bitwarden...${NC}"
+    # Get or create the ssh-keys item in dotfiles/ssh-keys folder
+    SSH_KEYS_FOLDER_ID=$(get_folder_id "dotfiles/ssh-keys")
+    SSH_ITEM_ID=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null | \
+        jq -r '.[] | select(.name=="ssh-keys") | .id')
+
+    if [ -z "$SSH_ITEM_ID" ] || [ "$SSH_ITEM_ID" = "null" ]; then
+        echo -e "${YELLOW}Creating ssh-keys item in Bitwarden...${NC}"
+        SSH_ITEM_ID=$(bw get template item | \
+            jq ".type = 2 | .secureNote.type = 0 | .name = \"ssh-keys\" | .notes = \"SSH key pairs\" | .folderId = \"$SSH_KEYS_FOLDER_ID\"" | \
+            bw encode | bw create item | jq -r '.id')
+    fi
+
+    # Upload each SSH key file as an attachment
+    for key_file in "$SSH_DIR"/*; do
+        # Skip if not a file or if it's .gitkeep
+        [ ! -f "$key_file" ] && continue
+        [[ "$(basename "$key_file")" == ".gitkeep" ]] && continue
+
+        filename=$(basename "$key_file")
+
+        # Check if attachment already exists
+        ATTACHMENT_ID=$(bw get item "$SSH_ITEM_ID" --session "$BW_SESSION" | jq -r ".attachments[]? | select(.fileName == \"$filename\") | .id")
+
+        if [ -n "$ATTACHMENT_ID" ] && [ "$ATTACHMENT_ID" != "null" ]; then
+            echo -e "${YELLOW}  Updating: $filename${NC}"
+            bw delete attachment "$ATTACHMENT_ID" --session "$BW_SESSION" > /dev/null 2>&1
+        else
+            echo -e "${GREEN}  Adding: $filename${NC}"
+        fi
+
+        bw create attachment --file "$key_file" --itemid "$SSH_ITEM_ID" --session "$BW_SESSION" > /dev/null 2>&1
+    done
+
+    # Update checksum after successful sync
+    update_checksum "ssh_keys" "$CURRENT_SSH_CHECKSUM"
+    echo -e "${GREEN}✓ SSH keys synced and checksum updated${NC}"
+else
+    echo -e "${GREEN}✓ SSH keys unchanged, skipping sync${NC}"
+fi
+
+# Stage .checksums file for commit
+if [ -f "$DOTFILES_DIR/.checksums" ]; then
+    git add "$DOTFILES_DIR/.checksums"
 fi
 
 # Sync with Bitwarden server
