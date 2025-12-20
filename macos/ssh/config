@@ -1,4 +1,47 @@
+# GitHub (personal)
+Host github.com
+    HostName github.com
+    User git
+    IdentitiesOnly yes
+    IdentityFile ~/.ssh/github
+
+# GitHub (work)
+Host github-work
+    HostName github.com
+    User git
+    IdentitiesOnly yes
+    IdentityFile ~/.ssh/github-work
+
+# GitLab (personal)
+Host gitlab.com
+    HostName gitlab.com
+    User git
+    IdentitiesOnly yes
+    IdentityFile ~/.ssh/gitlab
+
+# GitLab (work)
+Host gitlab-work
+    HostName gitlab.com
+    User git
+    IdentitiesOnly yes
+    IdentityFile ~/.ssh/gitlab-work
+
+# Remote machines
+Host my-prod
+    HostName 203.0.113.10
+    User ubuntu
+    IdentitiesOnly yes
+    IdentityFile ~/.ssh/prod
+
+Host my-dev
+    HostName dev.mycompany.internal
+    User bjorn
+    IdentitiesOnly yes
+    IdentityFile ~/.ssh/dev
+
+# Catch-all
 Host *
     UseKeychain yes
     AddKeysToAgent yes
+    IdentitiesOnly yes
     IdentityFile ~/.ssh/id_rsa
