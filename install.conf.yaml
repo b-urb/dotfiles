@@ -110,6 +110,7 @@
       glob: true
       path: ssh/*
       exclude:
+        - ssh/config
         - ssh/.gitkeep
       create: true
       relink: true
