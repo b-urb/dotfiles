@@ -1,8 +1,43 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# PHASE 1: SECRET POPULATION & CONFIGURATION GENERATION
+# ═══════════════════════════════════════════════════════════════════════════
+# This section handles:
+# - Populating secrets from Bitwarden into template files
+# - Merging Kubernetes cluster configurations
+# - Generating unified zshrc from modular components
+
 - shell:
     - command: [scripts/populate-secrets.sh]
       description: "Populate secrets from Bitwarden"
       stdout: true
       stderr: true
+
+    - command: |
+        # Copy SSH keys to user's .ssh directory
+        if [ -d "$HOME/.dotfiles/ssh" ]; then
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+
+          # Copy all keys (except .gitkeep)
+          for key_file in "$HOME/.dotfiles/ssh"/*; do
+            [ ! -f "$key_file" ] && continue
+            [[ "$(basename "$key_file")" == ".gitkeep" ]] && continue
+
+            filename=$(basename "$key_file")
+            cp "$key_file" "$HOME/.ssh/$filename"
+
+            # Set permissions based on file type
+            if [[ "$filename" == *.pub ]]; then
+              chmod 644 "$HOME/.ssh/$filename"
+            else
+              chmod 600 "$HOME/.ssh/$filename"
+            fi
+
+            echo "Copied SSH key: $filename"
+          done
+        fi
+      description: "Copy SSH keys to ~/.ssh with proper permissions"
+      stdout: true
 
     - command: [cd kube/clusters && ./merge_clusters.sh]
       stdout: true
@@ -76,7 +111,12 @@
         esac
       description: "Generate unified zshrc from modular components"
 
-# ------------------------------------------------------------------------------
+# ═══════════════════════════════════════════════════════════════════════════
+# PHASE 2: SYMLINK CREATION
+# ═══════════════════════════════════════════════════════════════════════════
+# This section creates symbolic links from the home directory to configuration
+# files in the dotfiles repository. Platform-specific links use conditional
+# statements to only create symlinks on the appropriate operating system.
 
 - link:
     ~/.profile: profile
@@ -91,7 +131,7 @@
 
     ~/.ssh/config:
       if: '[ "$(uname)" = Darwin ]'
-      path: ssh/config
+      path: macos/ssh/config
       create: true
 
     ~/kubectl_aliases: kubectl_aliases
@@ -164,23 +204,27 @@
 
     ~/.config/yabai:
       if: '[ "$(uname)" = Darwin ]'
-      path: config/yabai/
+      path: config/yabai
       create: true
+      relink: true
 
     ~/.config/skhd:
       if: '[ "$(uname)" = Darwin ]'
-      path: config/skhd/
+      path: config/skhd
       create: true
+      relink: true
 
     ~/.config/spacebar:
       if: '[ "$(uname)" = Darwin ]'
-      path: config/spacebar/
+      path: config/spacebar
       create: true
+      relink: true
 
     ~/.config/sketchybar:
       if: '[ "$(uname)" = Darwin ]'
-      path: config/sketchybar/
+      path: config/sketchybar
       create: true
+      relink: true
 
     ~/Library/Application\ Support/idasen-controller:
       if: '[ "$(uname)" = Darwin ]'
@@ -192,7 +236,12 @@
       path: idasen-controller
       create: true
 
-# ------------------------------------------------------------------------------
+# ═══════════════════════════════════════════════════════════════════════════
+# PHASE 3: CLEANUP
+# ═══════════════════════════════════════════════════════════════════════════
+# This section removes dead symbolic links from specified directories to keep
+# the configuration clean. Dead links are symlinks that point to non-existent
+# files.
 
 - clean:
     ~/.config:

@@ -3,7 +3,7 @@
 set -e  # Exit on any error
 
 REPO="B-urb/dotfiles"  # Replace with actual repo
-BRANCH="master"
+BRANCH="main"
 TARGET_DIR="$HOME/.dotfiles"
 
 # Function to check if a command exists

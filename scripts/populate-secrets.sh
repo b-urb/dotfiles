@@ -6,6 +6,9 @@ DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 TEMPLATES_DIR="$DOTFILES_DIR/templates"
 KUBE_CLUSTERS_DIR="$DOTFILES_DIR/kube/clusters"
 
+# Source checksum utilities
+source "$SCRIPT_DIR/checksum-utils.sh"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -83,9 +86,23 @@ populate_template() {
   content="${content//\{\{AZURE_TENANT_ID\}\}/$(get_secret "$ENV_VARS_FOLDER_ID" 'azure-tenant-id')}"
   content="${content//\{\{AZURE_DEFAULT_USERNAME\}\}/$(get_secret "$ENV_VARS_FOLDER_ID" 'azure-username')}"
 
-  # Write output
-  echo "$content" >"$output_file"
-  chmod 600 "$output_file"
+  # Calculate checksum of new content
+  local new_checksum=$(echo "$content" | calculate_hash)
+
+  # Calculate checksum of existing file (if it exists)
+  local existing_checksum=""
+  if [ -f "$output_file" ]; then
+    existing_checksum=$(cat "$output_file" | calculate_hash)
+  fi
+
+  # Only write if content changed
+  if [ "$new_checksum" != "$existing_checksum" ]; then
+    echo "  Writing: $output_file"
+    echo "$content" >"$output_file"
+    chmod 600 "$output_file"
+  else
+    echo "  Unchanged: $output_file"
+  fi
 }
 
 # Populate all templates
@@ -106,10 +123,27 @@ Linux)
   ;;
 esac
 
-echo -e "${GREEN}=== Restoring kubeconfigs from Bitwarden ===${NC}"
+echo -e "${GREEN}=== Checking if kubeconfigs need restoration ===${NC}"
 
-# Create kube/clusters directory if it doesn't exist
-mkdir -p "$KUBE_CLUSTERS_DIR"
+# Calculate stored checksum
+STORED_KUBE_CHECKSUM=$(get_stored_checksum "kubeconfigs")
+
+# Calculate current checksum of local files
+CURRENT_KUBE_CHECKSUM=$(calculate_kube_checksum)
+
+if [ -z "$STORED_KUBE_CHECKSUM" ] || [ "$CURRENT_KUBE_CHECKSUM" != "$STORED_KUBE_CHECKSUM" ]; then
+    echo -e "${YELLOW}Kubeconfigs need restoration${NC}"
+    RESTORE_KUBECONFIGS=true
+else
+    echo -e "${GREEN}✓ Kubeconfigs already up-to-date${NC}"
+    RESTORE_KUBECONFIGS=false
+fi
+
+if [ "$RESTORE_KUBECONFIGS" = "true" ]; then
+    echo -e "${GREEN}=== Restoring kubeconfigs from Bitwarden ===${NC}"
+
+    # Create kube/clusters directory if it doesn't exist
+    mkdir -p "$KUBE_CLUSTERS_DIR"
 
 # Get the kubeconfigs item from dotfiles/kubeconfig folder
 KUBE_ITEM_ID=$(bw list items --folderid "$KUBECONFIG_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null |
@@ -128,6 +162,59 @@ else
   done
 
   echo -e "${GREEN}✓ Kubeconfigs restored${NC}"
+fi
+fi
+
+echo -e "${GREEN}=== Checking if SSH keys need restoration ===${NC}"
+
+# Calculate stored checksum
+STORED_SSH_CHECKSUM=$(get_stored_checksum "ssh_keys")
+
+# Calculate current checksum of local files
+CURRENT_SSH_CHECKSUM=$(calculate_ssh_checksum)
+
+if [ -z "$STORED_SSH_CHECKSUM" ] || [ "$CURRENT_SSH_CHECKSUM" != "$STORED_SSH_CHECKSUM" ]; then
+    echo -e "${YELLOW}SSH keys need restoration${NC}"
+    RESTORE_SSH_KEYS=true
+else
+    echo -e "${GREEN}✓ SSH keys already up-to-date${NC}"
+    RESTORE_SSH_KEYS=false
+fi
+
+if [ "$RESTORE_SSH_KEYS" = "true" ]; then
+    echo -e "${GREEN}=== Restoring SSH keys from Bitwarden ===${NC}"
+
+    # Create ssh directory if it doesn't exist
+    SSH_DIR="$DOTFILES_DIR/ssh"
+    mkdir -p "$SSH_DIR"
+
+# Get folder ID
+SSH_KEYS_FOLDER_ID=$(get_folder_id "dotfiles/ssh-keys")
+
+# Get the ssh-keys item from dotfiles/ssh-keys folder
+SSH_ITEM_ID=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null | \
+  jq -r '.[] | select(.name=="ssh-keys") | .id')
+
+if [ -z "$SSH_ITEM_ID" ] || [ "$SSH_ITEM_ID" = "null" ]; then
+  echo -e "${YELLOW}No SSH keys found in Bitwarden (this is OK on first setup)${NC}"
+else
+  # List and download all attachments
+  bw get item "$SSH_ITEM_ID" --session "$BW_SESSION" | jq -r '.attachments[]? | .id + " " + .fileName' | while read -r attachment_id filename; do
+    if [ -n "$attachment_id" ] && [ -n "$filename" ]; then
+      echo -e "${GREEN}  Restoring SSH key: $filename${NC}"
+      bw get attachment "$attachment_id" --itemid "$SSH_ITEM_ID" --output "$SSH_DIR/$filename" --session "$BW_SESSION" 2>/dev/null
+
+      # Set proper permissions based on file type
+      if [[ "$filename" == *.pub ]]; then
+        chmod 644 "$SSH_DIR/$filename"  # Public keys
+      else
+        chmod 600 "$SSH_DIR/$filename"  # Private keys
+      fi
+    fi
+  done
+
+  echo -e "${GREEN}✓ SSH keys restored to $SSH_DIR${NC}"
+fi
 fi
 
 echo -e "${GREEN}=== All secrets populated successfully ===${NC}"
