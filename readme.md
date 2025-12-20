@@ -5,6 +5,7 @@
 ## Features
 
 - 🔐 **Secret Management**: Bitwarden CLI integration for zero-commit secrets
+- 🗝️ **SSH Agent**: Bitwarden Desktop SSH agent (default on, opt-out)
 - 🧩 **Modular Shell**: Composable Zsh configuration (10+ modules)
 - 🖥️ **Multi-Platform**: macOS (Yabai/SKHD/AeroSpace) + Linux (i3/Sway)
 - 🔄 **Auto-Sync**: Pre-commit hooks sync secrets bidirectionally
@@ -23,9 +24,20 @@
    sudo snap install bw
    ```
 
-2. **Git with SSH access** to this repository
+2. **Bitwarden Desktop (SSH Agent)**
+   ```bash
+   # macOS
+   brew install --cask bitwarden
 
-3. **jq** (JSON processor)
+   # Linux (Flatpak)
+   sudo apt install -y flatpak
+   sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+   sudo flatpak install -y flathub com.bitwarden.desktop
+   ```
+
+3. **Git with SSH access** to this repository
+
+4. **jq** (JSON processor)
    ```bash
    # macOS
    brew install jq
@@ -123,6 +135,14 @@ templates/gitconfig.tmpl  → gitconfig (generated, not tracked)
 Secrets stored in Bitwarden folders:
 - `dotfiles/env-vars/` - Environment variables (GitHub PAT, API keys, etc.)
 - `dotfiles/kubeconfig/` - Kubernetes cluster configurations
+- `dotfiles/ssh-keys/` - SSH key items (Bitwarden SSH Key type)
+
+### SSH Agent
+Bitwarden Desktop’s SSH agent is used by default. To opt out and force the local
+`ssh-agent`, set:
+```
+export DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1
+```
 
 ### Modular Zsh
 Shell configuration split into numbered modules:

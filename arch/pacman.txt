@@ -18,6 +18,7 @@ neovim
 vim
 tmux
 zsh
+flatpak
 
 # Modern CLI replacements
 exa

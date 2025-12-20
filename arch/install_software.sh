@@ -44,6 +44,15 @@ else
     echo "Warning: yay file not found"
 fi
 
+# Install Bitwarden Desktop via Flatpak
+if command -v flatpak &>/dev/null; then
+    echo "Installing Bitwarden Desktop (Flatpak)..."
+    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    sudo flatpak install -y flathub com.bitwarden.desktop
+else
+    echo "Warning: flatpak not found; skipping Bitwarden Desktop install"
+fi
+
 # Initialize rustup if installed
 if command -v rustup &>/dev/null; then
     echo "Initializing Rust toolchain..."

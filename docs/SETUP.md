@@ -61,6 +61,25 @@ Verify installation:
 bw --version
 ```
 
+#### 2b. Bitwarden Desktop (SSH Agent)
+
+Bitwarden Desktop provides the SSH agent used by these dotfiles (default on).
+
+```bash
+# macOS
+brew install --cask bitwarden
+
+# Linux (Flatpak)
+sudo apt install -y flatpak
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+sudo flatpak install -y flathub com.bitwarden.desktop
+
+# Arch Linux (Flatpak)
+sudo pacman -S flatpak
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+sudo flatpak install -y flathub com.bitwarden.desktop
+```
+
 #### 3. jq (JSON processor)
 
 Required by secret management scripts:
@@ -82,7 +101,7 @@ You need SSH access configured for GitHub to clone this repository:
 # Generate SSH key if you don't have one
 ssh-keygen -t ed25519 -C "your_email@example.com"
 
-# Add to ssh-agent
+# Add to ssh-agent (local fallback)
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
 
@@ -91,6 +110,20 @@ cat ~/.ssh/id_ed25519.pub
 ```
 
 Add the public key to your GitHub account: https://github.com/settings/keys
+
+#### Bitwarden SSH Agent (Default On)
+
+Enable **SSH Agent** in the Bitwarden desktop app settings. These dotfiles will automatically use the Bitwarden agent
+when it is available. To opt out and force the local `ssh-agent`, set:
+
+```bash
+export DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1
+```
+
+Verify the agent is working:
+```bash
+ssh-add -L
+```
 
 ### Optional Tools
 
@@ -150,7 +183,8 @@ This creates the following nested folder structure in your Bitwarden vault:
 ```
 dotfiles/
 ├── dotfiles/env-vars/     (for environment variables)
-└── dotfiles/kubeconfig/   (for Kubernetes configurations)
+├── dotfiles/kubeconfig/   (for Kubernetes configurations)
+└── dotfiles/ssh-keys/     (for SSH keys)
 ```
 
 ### Step 5: Populate Bitwarden Secrets
@@ -190,6 +224,38 @@ bw get template item | \
   bw encode | \
   bw create item
 ```
+
+#### SSH Keys (Bitwarden SSH Key Items)
+
+Store SSH keys as **SSH Key** items in the `dotfiles/ssh-keys/` folder. Use the naming schema:
+
+```
+ssh:<basename>
+```
+
+Examples:
+- `ssh:id_ed25519`
+- `ssh:work_github`
+
+Example (CLI):
+```bash
+SSH_KEYS_FOLDER_ID=$(bw list folders | jq -r '.[] | select(.name=="dotfiles/ssh-keys") | .id')
+
+bw get template item | \
+  jq ".folderId=\"$SSH_KEYS_FOLDER_ID\" \
+    | .type=5 \
+    | .name=\"ssh:id_ed25519\" \
+    | .sshKey.privateKey=\"$(cat ~/.ssh/id_ed25519)\" \
+    | .sshKey.publicKey=\"$(cat ~/.ssh/id_ed25519.pub)\" \
+    | .sshKey.fingerprint=\"$(ssh-keygen -lf ~/.ssh/id_ed25519.pub | awk '{print $2}')\"" | \
+  bw encode | \
+  bw create item
+```
+
+You can also create these in the Bitwarden UI by choosing **SSH Key** as the item type and naming it `ssh:<basename>`.
+
+If you previously stored SSH keys as attachments in Bitwarden, run `./scripts/populate-secrets.sh` to restore them locally,
+then make a commit to trigger `scripts/pre-commit.sh` and migrate them to SSH Key items.
 
 #### Creating Items via Web Vault
 

@@ -43,6 +43,11 @@ sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list # helps tools such as com
 # Update and upgrade the system
 sudo apt update && sudo apt upgrade -y
 
+# Flatpak + Bitwarden Desktop
+sudo apt install -y flatpak
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+sudo flatpak install -y flathub com.bitwarden.desktop
+
 # Essential development tools
 sudo apt install -y build-essential curl wget git \
   gcc g++ make cmake cmake-gui libboost-all-dev libeigen3-dev libusb-1.0-0-dev libpq-dev \

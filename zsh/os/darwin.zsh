@@ -26,8 +26,24 @@ unset __conda_setup
 # Autojump
 [ -f /opt/homebrew/etc/profile.d/autojump.sh ] && . /opt/homebrew/etc/profile.d/autojump.sh
 
+# Bitwarden SSH agent (default on, opt-out with DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1)
+__dotfiles_bw_ssh_sock=""
+if [ -z "$DOTFILES_DISABLE_BITWARDEN_SSH_AGENT" ]; then
+    if [ -z "$SSH_AUTH_SOCK" ] || [ ! -S "$SSH_AUTH_SOCK" ]; then
+        for sock in \
+            "$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock" \
+            "$HOME/.bitwarden-ssh-agent.sock"; do
+            if [ -S "$sock" ]; then
+                export SSH_AUTH_SOCK="$sock"
+                __dotfiles_bw_ssh_sock="$sock"
+                break
+            fi
+        done
+    fi
+fi
+
 # SSH agent with Keychain
-if [ -f ~/.ssh/id_rsa ]; then
+if [ -z "$__dotfiles_bw_ssh_sock" ] && [ -f ~/.ssh/id_rsa ]; then
     nohup ssh-add --apple-use-keychain ~/.ssh/id_rsa > /dev/null 2>&1 & disown
 fi
 

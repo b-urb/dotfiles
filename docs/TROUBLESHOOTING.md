@@ -218,6 +218,20 @@ unset BW_SESSION
 export BW_SESSION=$(bw unlock --raw)
 ```
 
+### SSH Agent Not Using Bitwarden
+
+**Symptom**:
+- `ssh-add -L` shows no keys, or shows keys from a different agent
+
+**Solutions**:
+1. Ensure Bitwarden Desktop is installed and running
+2. Enable **SSH Agent** in Bitwarden Desktop settings
+3. Check `SSH_AUTH_SOCK` points to a Bitwarden socket:
+   ```bash
+   echo "$SSH_AUTH_SOCK"
+   ```
+4. If you set `DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1`, unset it and restart your shell
+
 ### Bitwarden Server Connection Issues
 
 **Symptom**:

@@ -43,6 +43,7 @@ get_folder_id() {
 # Get folders
 ENV_VARS_FOLDER_ID=$(get_folder_id "dotfiles/env-vars")
 KUBECONFIG_FOLDER_ID=$(get_folder_id "dotfiles/kubeconfig")
+SSH_KEYS_FOLDER_ID=$(get_folder_id "dotfiles/ssh-keys")
 
 echo -e "${GREEN}=== Checking env files for changes ===${NC}"
 
@@ -215,37 +216,71 @@ if [ ! -d "$SSH_DIR" ]; then
     echo -e "${YELLOW}Skipping SSH key backup (directory not found)${NC}"
 elif has_changed "ssh_keys" "$CURRENT_SSH_CHECKSUM"; then
     echo -e "${YELLOW}SSH keys changed, syncing to Bitwarden...${NC}"
-    # Get or create the ssh-keys item in dotfiles/ssh-keys folder
-    SSH_KEYS_FOLDER_ID=$(get_folder_id "dotfiles/ssh-keys")
-    SSH_ITEM_ID=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null | \
-        jq -r '.[] | select(.name=="ssh-keys") | .id')
+    # Sync each SSH key as a Bitwarden SSH Key item
+    SSH_ITEMS_JSON=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null)
 
-    if [ -z "$SSH_ITEM_ID" ] || [ "$SSH_ITEM_ID" = "null" ]; then
-        echo -e "${YELLOW}Creating ssh-keys item in Bitwarden...${NC}"
-        SSH_ITEM_ID=$(bw get template item | \
-            jq ".type = 2 | .secureNote.type = 0 | .name = \"ssh-keys\" | .notes = \"SSH key pairs\" | .folderId = \"$SSH_KEYS_FOLDER_ID\"" | \
-            bw encode | bw create item | jq -r '.id')
-    fi
-
-    # Upload each SSH key file as an attachment
     for key_file in "$SSH_DIR"/*; do
-        # Skip if not a file or if it's .gitkeep
         [ ! -f "$key_file" ] && continue
         [[ "$(basename "$key_file")" == ".gitkeep" ]] && continue
+        [[ "$key_file" == *.pub ]] && continue
 
         filename=$(basename "$key_file")
+        item_name="ssh:$filename"
+        pub_file="${key_file}.pub"
 
-        # Check if attachment already exists
-        ATTACHMENT_ID=$(bw get item "$SSH_ITEM_ID" --session "$BW_SESSION" | jq -r ".attachments[]? | select(.fileName == \"$filename\") | .id")
-
-        if [ -n "$ATTACHMENT_ID" ] && [ "$ATTACHMENT_ID" != "null" ]; then
-            echo -e "${YELLOW}  Updating: $filename${NC}"
-            bw delete attachment "$ATTACHMENT_ID" --session "$BW_SESSION" > /dev/null 2>&1
+        if [ -f "$pub_file" ]; then
+            public_key=$(cat "$pub_file")
+            pub_for_fp="$pub_file"
         else
-            echo -e "${GREEN}  Adding: $filename${NC}"
+            if command -v ssh-keygen >/dev/null 2>&1; then
+                public_key=$(ssh-keygen -y -f "$key_file" 2>/dev/null || true)
+            else
+                public_key=""
+            fi
+
+            if [ -z "$public_key" ]; then
+                echo -e "${YELLOW}  Skipping $filename (missing public key)${NC}"
+                continue
+            fi
+
+            pub_for_fp="$(mktemp)"
+            echo "$public_key" > "$pub_for_fp"
         fi
 
-        bw create attachment --file "$key_file" --itemid "$SSH_ITEM_ID" --session "$BW_SESSION" > /dev/null 2>&1
+        fingerprint=""
+        if command -v ssh-keygen >/dev/null 2>&1; then
+            fingerprint=$(ssh-keygen -lf "$pub_for_fp" 2>/dev/null | awk '{print $2}')
+        fi
+
+        if [ -z "$fingerprint" ]; then
+            echo -e "${YELLOW}  Skipping $filename (could not compute fingerprint)${NC}"
+            [ -f "$pub_for_fp" ] && [ "$pub_for_fp" != "$pub_file" ] && rm -f "$pub_for_fp"
+            continue
+        fi
+
+        [ -f "$pub_for_fp" ] && [ "$pub_for_fp" != "$pub_file" ] && rm -f "$pub_for_fp"
+
+        private_key=$(cat "$key_file")
+
+        item_id=$(echo "$SSH_ITEMS_JSON" | jq -r --arg name "$item_name" '.[] | select(.name==$name) | .id' | head -n 1)
+
+        if [ -z "$item_id" ] || [ "$item_id" = "null" ]; then
+            echo -e "${YELLOW}  Creating: $item_name${NC}"
+            bw get template item --session "$BW_SESSION" | \
+                jq --arg name "$item_name" \
+                   --arg folder "$SSH_KEYS_FOLDER_ID" \
+                   --arg private "$private_key" \
+                   --arg public "$public_key" \
+                   --arg fp "$fingerprint" \
+                   '.type=5 | .name=$name | .folderId=$folder | .sshKey={privateKey:$private, publicKey:$public, fingerprint:$fp}' | \
+                bw encode | bw create item --session "$BW_SESSION" > /dev/null 2>&1
+        else
+            echo -e "${YELLOW}  Updating: $item_name${NC}"
+            item_json=$(bw get item "$item_id" --session "$BW_SESSION")
+            updated_json=$(echo "$item_json" | jq --arg private "$private_key" --arg public "$public_key" --arg fp "$fingerprint" \
+                '.type=5 | .sshKey.privateKey=$private | .sshKey.publicKey=$public | .sshKey.fingerprint=$fp')
+            echo "$updated_json" | bw encode | bw edit item "$item_id" --session "$BW_SESSION" > /dev/null 2>&1
+        fi
     done
 
     # Update checksum after successful sync
