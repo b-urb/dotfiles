@@ -217,7 +217,11 @@ if [ ! -d "$SSH_DIR" ]; then
 elif has_changed "ssh_keys" "$CURRENT_SSH_CHECKSUM"; then
     echo -e "${YELLOW}SSH keys changed, syncing to Bitwarden...${NC}"
     # Sync each SSH key as a Bitwarden SSH Key item
-    SSH_ITEMS_JSON=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null)
+    if ! SSH_ITEMS_JSON=$(bw list items --folderid "$SSH_KEYS_FOLDER_ID" --session "$BW_SESSION" 2>&1); then
+        echo -e "${RED}ERROR: Failed to list SSH key items from Bitwarden${NC}" >&2
+        echo "$SSH_ITEMS_JSON" >&2
+        exit 1
+    fi
 
     for key_file in "$SSH_DIR"/*; do
         [ ! -f "$key_file" ] && continue
@@ -225,6 +229,11 @@ elif has_changed "ssh_keys" "$CURRENT_SSH_CHECKSUM"; then
         [[ "$key_file" == *.pub ]] && continue
 
         filename=$(basename "$key_file")
+        if ! grep -q "PRIVATE KEY" "$key_file"; then
+            echo -e "${YELLOW}  Skipping $filename (not an SSH private key)${NC}"
+            continue
+        fi
+
         item_name="ssh:$filename"
         pub_file="${key_file}.pub"
 
@@ -239,7 +248,7 @@ elif has_changed "ssh_keys" "$CURRENT_SSH_CHECKSUM"; then
             fi
 
             if [ -z "$public_key" ]; then
-                echo -e "${YELLOW}  Skipping $filename (missing public key)${NC}"
+                echo -e "${YELLOW}  Skipping $filename (missing public key or passphrase-protected)${NC}"
                 continue
             fi
 
@@ -266,20 +275,54 @@ elif has_changed "ssh_keys" "$CURRENT_SSH_CHECKSUM"; then
 
         if [ -z "$item_id" ] || [ "$item_id" = "null" ]; then
             echo -e "${YELLOW}  Creating: $item_name${NC}"
-            bw get template item --session "$BW_SESSION" | \
-                jq --arg name "$item_name" \
+            if ! template_json=$(bw get template item --session "$BW_SESSION" 2>&1); then
+                echo -e "${RED}ERROR: Failed to get Bitwarden item template${NC}" >&2
+                echo "$template_json" >&2
+                exit 1
+            fi
+            if ! payload=$(echo "$template_json" | jq --arg name "$item_name" \
                    --arg folder "$SSH_KEYS_FOLDER_ID" \
                    --arg private "$private_key" \
                    --arg public "$public_key" \
                    --arg fp "$fingerprint" \
-                   '.type=5 | .name=$name | .folderId=$folder | .sshKey={privateKey:$private, publicKey:$public, fingerprint:$fp}' | \
-                bw encode | bw create item --session "$BW_SESSION" > /dev/null 2>&1
+                   '.type=5 | .name=$name | .folderId=$folder | .sshKey={privateKey:$private, publicKey:$public, fingerprint:$fp, keyFingerprint:$fp}' 2>&1); then
+                echo -e "${RED}ERROR: Failed to build SSH key payload${NC}" >&2
+                echo "$payload" >&2
+                exit 1
+            fi
+            if ! encoded=$(printf '%s' "$payload" | bw encode 2>&1); then
+                echo -e "${RED}ERROR: Failed to encode SSH key payload${NC}" >&2
+                echo "$encoded" >&2
+                exit 1
+            fi
+            if ! create_out=$(printf '%s' "$encoded" | bw create item --session "$BW_SESSION" 2>&1); then
+                echo -e "${RED}ERROR: Failed to create SSH key item $item_name${NC}" >&2
+                echo "$create_out" >&2
+                exit 1
+            fi
         else
             echo -e "${YELLOW}  Updating: $item_name${NC}"
-            item_json=$(bw get item "$item_id" --session "$BW_SESSION")
-            updated_json=$(echo "$item_json" | jq --arg private "$private_key" --arg public "$public_key" --arg fp "$fingerprint" \
-                '.type=5 | .sshKey.privateKey=$private | .sshKey.publicKey=$public | .sshKey.fingerprint=$fp')
-            echo "$updated_json" | bw encode | bw edit item "$item_id" --session "$BW_SESSION" > /dev/null 2>&1
+            if ! item_json=$(bw get item "$item_id" --session "$BW_SESSION" 2>&1); then
+                echo -e "${RED}ERROR: Failed to fetch existing SSH key item $item_name${NC}" >&2
+                echo "$item_json" >&2
+                exit 1
+            fi
+            if ! updated_json=$(echo "$item_json" | jq --arg private "$private_key" --arg public "$public_key" --arg fp "$fingerprint" \
+                '.type=5 | .sshKey.privateKey=$private | .sshKey.publicKey=$public | .sshKey.fingerprint=$fp | .sshKey.keyFingerprint=$fp' 2>&1); then
+                echo -e "${RED}ERROR: Failed to update SSH key payload for $item_name${NC}" >&2
+                echo "$updated_json" >&2
+                exit 1
+            fi
+            if ! encoded=$(printf '%s' "$updated_json" | bw encode 2>&1); then
+                echo -e "${RED}ERROR: Failed to encode updated SSH key payload for $item_name${NC}" >&2
+                echo "$encoded" >&2
+                exit 1
+            fi
+            if ! edit_out=$(printf '%s' "$encoded" | bw edit item "$item_id" --session "$BW_SESSION" 2>&1); then
+                echo -e "${RED}ERROR: Failed to update SSH key item $item_name${NC}" >&2
+                echo "$edit_out" >&2
+                exit 1
+            fi
         fi
     done
 
