@@ -21,6 +21,32 @@ else
     echo "Warning: pacman.txt not found"
 fi
 
+# Window Manager - Conditional based on display server type
+source "$SCRIPT_DIR/../scripts/detect-display-server.sh"
+
+DISPLAY_SERVER=$(detect_display_server)
+if [ "$DISPLAY_SERVER" = "unknown" ]; then
+    echo "⚠️  Display server type could not be detected (TTY or unknown environment)"
+    echo "   Defaulting to X11 (i3-wm). To override, set: WM_FORCE_DISPLAY_SERVER=wayland"
+    DISPLAY_SERVER="x11"
+fi
+
+echo "Installing window manager for: $DISPLAY_SERVER"
+
+if [ "$DISPLAY_SERVER" = "wayland" ]; then
+    # Sway and Wayland ecosystem
+    echo "Installing Sway (Wayland) window manager and tools..."
+    sudo pacman -S --needed --noconfirm sway swaylock swayidle swaybg
+    # Wayland-native tools
+    sudo pacman -S --needed --noconfirm waybar wofi grim slurp wl-clipboard
+    echo "✓ Installed Sway window manager and Wayland tools"
+else
+    # i3 and X11 ecosystem
+    echo "Installing i3 (X11) window manager and tools..."
+    sudo pacman -S --needed --noconfirm i3-wm i3lock i3status rofi
+    echo "✓ Installed i3 window manager and X11 tools"
+fi
+
 # Install yay if not present
 if ! command -v yay &>/dev/null; then
     echo "Installing yay (AUR helper)..."

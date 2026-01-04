@@ -106,24 +106,28 @@
       if: '[ "$(uname)" = Darwin ]'
       path: macos/ssh/config
       create: true
+      relink: true
     ~/.ssh/:
       glob: true
       path: ssh/*
       exclude:
         - ssh/config
         - ssh/.gitkeep
+        - ssh/known_hosts
+        - ssh/known_hosts.old
+        - ssh/*.asc
       create: true
       relink: true
 
     ~/kubectl_aliases: kubectl_aliases
 
     ~/.config/i3:
-      if: '[ "$(uname)" = Linux ]'
+      if: '[ "$(uname)" = Linux ] && { [ "${WM_FORCE_DISPLAY_SERVER:-}" = "x11" ] || { [ -z "${WM_FORCE_DISPLAY_SERVER:-}" ] && { [ "${XDG_SESSION_TYPE:-}" = "x11" ] || [ "${XDG_SESSION_TYPE:-unknown}" = "unknown" ]; }; }; }'
       path: config/i3/
       create: true
 
     ~/.config/sway:
-      if: '[ "$(uname)" = Linux ]'
+      if: '[ "$(uname)" = Linux ] && { [ "${WM_FORCE_DISPLAY_SERVER:-}" = "wayland" ] || { [ -z "${WM_FORCE_DISPLAY_SERVER:-}" ] && [ "${XDG_SESSION_TYPE:-}" = "wayland" ]; }; }'
       path: config/sway/
       create: true
 
