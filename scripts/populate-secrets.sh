@@ -100,6 +100,8 @@ populate_template() {
   # Only write if content changed
   if [ "$new_checksum" != "$existing_checksum" ]; then
     echo "  Writing: $output_file"
+    # Create parent directory if it doesn't exist
+    mkdir -p "$(dirname "$output_file")"
     echo "$content" >"$output_file"
     chmod 600 "$output_file"
   else
