@@ -229,9 +229,34 @@ setup_ssh_key() {
         chmod 644 "$SSH_KEY_FILE.pub"
     fi
 
-    eval "$(ssh-agent -s)"
-    ssh-add -D
-    ssh-add "$SSH_KEY_FILE"
+    # Check if Bitwarden Desktop SSH agent is available
+    BW_SSH_SOCK=""
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux: Check common locations for Bitwarden SSH socket
+        for sock in "$HOME/.config/Bitwarden/ssh-agent.sock" "$XDG_RUNTIME_DIR/bitwarden-ssh-agent.sock"; do
+            if [ -S "$sock" ]; then
+                BW_SSH_SOCK="$sock"
+                break
+            fi
+        done
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS: Bitwarden SSH socket location
+        BW_SSH_SOCK="$HOME/Library/Group Containers/LTZ2PFU5D6.com.bitwarden.desktop/ssh-agent.sock"
+    fi
+
+    if [ -n "$BW_SSH_SOCK" ] && [ -S "$BW_SSH_SOCK" ]; then
+        echo "Using Bitwarden Desktop SSH agent"
+        export SSH_AUTH_SOCK="$BW_SSH_SOCK"
+    else
+        echo "Bitwarden Desktop SSH agent not available, using system ssh-agent"
+        # Start ssh-agent
+        eval "$(ssh-agent -s)"
+        ssh-add -D 2>/dev/null || true
+
+        # Add the key with interactive passphrase prompt
+        echo "Adding SSH key to agent (you may be prompted for passphrase)..."
+        ssh-add "$SSH_KEY_FILE" </dev/tty
+    fi
 }
 
 # Execute functions in correct order
