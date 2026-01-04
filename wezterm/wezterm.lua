@@ -1,6 +1,12 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 local workspace = require("workspace")
+
+-- Detect OS
+local is_darwin = string.find(wezterm.target_triple, "darwin") ~= nil
+local is_linux = string.find(wezterm.target_triple, "linux") ~= nil
+local is_windows = string.find(wezterm.target_triple, "windows") ~= nil
+
 local VIM_ICON = utf8.char(0xe62b)
 local SUP_IDX = {
 	"¹",
@@ -244,5 +250,13 @@ local config = {
 	},
 }
 workspace.apply_to_config(config)
+
+-- Add OS-specific keybindings
+if is_linux then
+	-- Linux: Use Super (GUI/Windows key) + C/V for copy/paste
+	table.insert(config.keys, { key = "c", mods = "SUPER", action = act.CopyTo("Clipboard") })
+	table.insert(config.keys, { key = "v", mods = "SUPER", action = act.PasteFrom("Clipboard") })
+end
+-- macOS: Cmd+C/V work by default, no need to configure
 
 return config
