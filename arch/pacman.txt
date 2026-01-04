@@ -21,7 +21,7 @@ zsh
 flatpak
 
 # Modern CLI replacements
-exa
+eza
 bat
 fzf
 ripgrep
