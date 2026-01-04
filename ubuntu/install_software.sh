@@ -166,12 +166,46 @@ else
     rm -rf ~/fonts
     git clone https://github.com/githubnext/monaspace.git ~/fonts
     mkdir -p ~/.local/share/fonts
-    # Copy all font types (otf, variable, frozen)
-    cp -r ~/fonts/fonts/otf/*.otf ~/.local/share/fonts/ 2>/dev/null || true
-    cp -r ~/fonts/fonts/variable/*.ttf ~/.local/share/fonts/ 2>/dev/null || true
-    cp -r ~/fonts/fonts/frozen/*.ttf ~/.local/share/fonts/ 2>/dev/null || true
+    # Copy all font types (NerdFonts, Static OTF, Variable TTF, Frozen TTF)
+    # NerdFonts (OTF) - patched with icon glyphs for terminal use
+    find ~/fonts/fonts/NerdFonts -name "*.otf" -exec cp {} ~/.local/share/fonts/ \; 2>/dev/null || true
+    # Static Fonts (OTF) - includes all weights like Bold
+    find ~/fonts/fonts/"Static Fonts" -name "*.otf" -exec cp {} ~/.local/share/fonts/ \; 2>/dev/null || true
+    # Variable Fonts (TTF) - single variable font per family
+    find ~/fonts/fonts/"Variable Fonts" -name "*.ttf" -exec cp {} ~/.local/share/fonts/ \; 2>/dev/null || true
+    # Frozen Fonts (TTF) - includes all weights
+    find ~/fonts/fonts/"Frozen Fonts" -name "*.ttf" -exec cp {} ~/.local/share/fonts/ \; 2>/dev/null || true
     # Rebuild font cache
     fc-cache -f
     rm -rf ~/fonts
     echo "✓ Monaspace fonts installed"
+fi
+
+# Nerd Fonts - popular patched fonts with icons
+if fc-list | grep -qi "nerd font"; then
+    echo "Nerd Fonts already installed, skipping"
+else
+    echo "Installing Nerd Fonts..."
+    mkdir -p ~/.local/share/fonts
+
+    # Download and install Nerd Fonts from latest release
+    NERD_FONTS_VERSION="v3.3.0"
+    NERD_FONTS=(
+        "Hack"
+        "JetBrainsMono"
+        "FiraCode"
+        "Meslo"
+        "UbuntuMono"
+    )
+
+    for font in "${NERD_FONTS[@]}"; do
+        echo "  Installing ${font} Nerd Font..."
+        wget -q "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONTS_VERSION}/${font}.zip" -O "/tmp/${font}.zip"
+        unzip -qo "/tmp/${font}.zip" -d ~/.local/share/fonts/
+        rm "/tmp/${font}.zip"
+    done
+
+    # Rebuild font cache
+    fc-cache -f
+    echo "✓ Nerd Fonts installed"
 fi
