@@ -99,17 +99,38 @@ sudo apt install -y libjpeg-dev libpng-dev libtiff-dev libwebp-dev libopenjp2-7-
 sudo apt install -y \
   libhdf5-dev libnetcdf-dev
 
-# install correct neovim version
-sudo apt remove neovim neovim-runtime -y
-sudo apt install ninja-build gettext cmake unzip curl
-git clone https://github.com/neovim/neovim
-cd neovim
-make CMAKE_BUILD_TYPE=RelWithDebInfo
-cd build
-cpack -G DEB
-sudo dpkg -i nvim-linux64.deb
-cd ../..
-rm -rf neovim
+# install latest neovim
+sudo apt remove neovim neovim-runtime -y || true
+
+# Detect distribution
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    DISTRO=$ID
+else
+    DISTRO=$(lsb_release -is 2>/dev/null | tr '[:upper:]' '[:lower:]')
+fi
+
+if [ "$DISTRO" = "ubuntu" ]; then
+    echo "Installing Neovim from PPA (Ubuntu)..."
+    sudo add-apt-repository ppa:neovim-ppa/unstable -y
+    sudo apt update
+    sudo apt install -y neovim
+elif [ "$DISTRO" = "debian" ]; then
+    echo "Installing Neovim from source (Debian - no PPA support)..."
+    sudo apt install -y ninja-build gettext cmake unzip curl build-essential
+    git clone https://github.com/neovim/neovim
+    cd neovim
+    make CMAKE_BUILD_TYPE=RelWithDebInfo
+    cd build
+    cpack -G DEB
+    # Use correct package name (build creates nvim-linux-x86_64.deb)
+    sudo dpkg -i nvim-linux-*.deb
+    cd ../..
+    rm -rf neovim
+else
+    echo "Unknown distribution, installing from apt..."
+    sudo apt install -y neovim
+fi
 # install wezterm
 sudo apt install wezterm-nightly
 
