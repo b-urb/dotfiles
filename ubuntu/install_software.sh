@@ -116,17 +116,21 @@ if [ "$DISTRO" = "ubuntu" ]; then
     sudo apt update
     sudo apt install -y neovim
 elif [ "$DISTRO" = "debian" ]; then
-    echo "Installing Neovim from source (Debian - no PPA support)..."
-    sudo apt install -y ninja-build gettext cmake unzip curl build-essential
-    git clone https://github.com/neovim/neovim
-    cd neovim
-    make CMAKE_BUILD_TYPE=RelWithDebInfo
-    cd build
-    cpack -G DEB
-    # Use correct package name (build creates nvim-linux-x86_64.deb)
-    sudo dpkg -i nvim-linux-*.deb
-    cd ../..
-    rm -rf neovim
+    if command -v nvim &>/dev/null && [ "$(nvim --version | head -n1 | grep -oP 'v\d+\.\d+' | cut -d'v' -f2 | cut -d'.' -f1)" -ge "0" ]; then
+        echo "Neovim already installed, skipping build"
+    else
+        echo "Installing Neovim from source (Debian - no PPA support)..."
+        sudo apt install -y ninja-build gettext cmake unzip curl build-essential
+        git clone https://github.com/neovim/neovim
+        cd neovim
+        make CMAKE_BUILD_TYPE=RelWithDebInfo
+        cd build
+        cpack -G DEB
+        # Use correct package name (build creates nvim-linux-x86_64.deb)
+        sudo dpkg -i nvim-linux-*.deb
+        cd ../..
+        rm -rf neovim
+    fi
 else
     echo "Unknown distribution, installing from apt..."
     sudo apt install -y neovim
@@ -145,23 +149,27 @@ sudo apt install -y rofi
 
 # Install Cargo (Rust package manager)
 if ! command -v cargo &>/dev/null; then
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  echo "Installing Rust and Cargo..."
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
   source "$HOME/.cargo/env"
+  echo "✓ Rust and Cargo installed"
+else
+  echo "Rust and Cargo already installed, skipping"
 fi
 
-# Vim configuration
-git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
-rm -rf ~/.config/nvim/.git
-
 # Github Monaspace fonts
-echo "Installing Monaspace fonts..."
-git clone https://github.com/githubnext/monaspace.git ~/fonts
-mkdir -p ~/.local/share/fonts
-# Copy all font types (otf, variable, frozen)
-cp -r ~/fonts/fonts/otf/*.otf ~/.local/share/fonts/ 2>/dev/null || true
-cp -r ~/fonts/fonts/variable/*.ttf ~/.local/share/fonts/ 2>/dev/null || true
-cp -r ~/fonts/fonts/frozen/*.ttf ~/.local/share/fonts/ 2>/dev/null || true
-# Rebuild font cache
-fc-cache -f
-rm -rf ~/fonts
-echo "✓ Monaspace fonts installed"
+if fc-list | grep -qi "monaspace"; then
+    echo "Monaspace fonts already installed, skipping"
+else
+    echo "Installing Monaspace fonts..."
+    git clone https://github.com/githubnext/monaspace.git ~/fonts
+    mkdir -p ~/.local/share/fonts
+    # Copy all font types (otf, variable, frozen)
+    cp -r ~/fonts/fonts/otf/*.otf ~/.local/share/fonts/ 2>/dev/null || true
+    cp -r ~/fonts/fonts/variable/*.ttf ~/.local/share/fonts/ 2>/dev/null || true
+    cp -r ~/fonts/fonts/frozen/*.ttf ~/.local/share/fonts/ 2>/dev/null || true
+    # Rebuild font cache
+    fc-cache -f
+    rm -rf ~/fonts
+    echo "✓ Monaspace fonts installed"
+fi
