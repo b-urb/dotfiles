@@ -254,8 +254,9 @@ setup_ssh_key() {
         ssh-add -D 2>/dev/null || true
 
         # Add the key with interactive passphrase prompt
+        # Force ssh-add to use terminal instead of GUI askpass
         echo "Adding SSH key to agent (you may be prompted for passphrase)..."
-        ssh-add "$SSH_KEY_FILE" </dev/tty
+        DISPLAY="" SSH_ASKPASS="" SSH_ASKPASS_REQUIRE=never ssh-add "$SSH_KEY_FILE" </dev/tty >/dev/tty 2>&1
     fi
 }
 
