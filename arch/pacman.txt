@@ -76,5 +76,4 @@ git-lfs
 git-filter-repo
 
 # Window manager and tools
-i3-wm
-rofi
+# (i3-wm/sway installed conditionally in install_software.sh based on display server)

@@ -59,8 +59,32 @@ sudo apt install -y build-essential curl wget git \
 sudo apt install -y aria2 bat dos2unix iputils-ping ifstat net-tools \
   traceroute telnet sshuttle s3cmd kubectl
 
-# i3
-sudo apt install -y i3-wm
+# Window Manager - Conditional based on display server type
+source "$(dirname "$0")/../scripts/detect-display-server.sh"
+
+DISPLAY_SERVER=$(detect_display_server)
+if [ "$DISPLAY_SERVER" = "unknown" ]; then
+    echo "⚠️  Display server type could not be detected (TTY or unknown environment)"
+    echo "   Defaulting to X11 (i3-wm). To override, set: WM_FORCE_DISPLAY_SERVER=wayland"
+    DISPLAY_SERVER="x11"
+fi
+
+echo "Installing window manager for: $DISPLAY_SERVER"
+
+if [ "$DISPLAY_SERVER" = "wayland" ]; then
+    # Sway and Wayland ecosystem
+    echo "Installing Sway (Wayland) window manager and tools..."
+    sudo apt install -y sway swaylock swayidle swaybg
+    # Wayland-native tools
+    sudo apt install -y waybar wofi grim slurp wl-clipboard
+    echo "✓ Installed Sway window manager and Wayland tools"
+else
+    # i3 and X11 ecosystem
+    echo "Installing i3 (X11) window manager and tools..."
+    sudo apt install -y i3-wm i3lock i3status
+    # Note: rofi (X11 launcher) is installed later at line 99
+    echo "✓ Installed i3 window manager and X11 tools"
+fi
 
 # CLI tools
 sudo apt install -y zoxide fd-find ripgrep glances exa fzf duf bpytop \
