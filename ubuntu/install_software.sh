@@ -162,6 +162,8 @@ if fc-list | grep -qi "monaspace"; then
     echo "Monaspace fonts already installed, skipping"
 else
     echo "Installing Monaspace fonts..."
+    # Clean up any previous failed clone
+    rm -rf ~/fonts
     git clone https://github.com/githubnext/monaspace.git ~/fonts
     mkdir -p ~/.local/share/fonts
     # Copy all font types (otf, variable, frozen)
