@@ -153,7 +153,15 @@ fi
 git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
 rm -rf ~/.config/nvim/.git
 
-# Github Monaspace
-git clone git@github.com:githubnext/monaspace.git ~/fonts
-bash ~/fonts/util/install_linux.sh
+# Github Monaspace fonts
+echo "Installing Monaspace fonts..."
+git clone https://github.com/githubnext/monaspace.git ~/fonts
+mkdir -p ~/.local/share/fonts
+# Copy all font types (otf, variable, frozen)
+cp -r ~/fonts/fonts/otf/*.otf ~/.local/share/fonts/ 2>/dev/null || true
+cp -r ~/fonts/fonts/variable/*.ttf ~/.local/share/fonts/ 2>/dev/null || true
+cp -r ~/fonts/fonts/frozen/*.ttf ~/.local/share/fonts/ 2>/dev/null || true
+# Rebuild font cache
+fc-cache -f
 rm -rf ~/fonts
+echo "✓ Monaspace fonts installed"
