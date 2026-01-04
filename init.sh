@@ -153,8 +153,21 @@ install_git() {
 setup_bw_session() {
     if [ -z "$BW_SESSION" ]; then
         echo "BW_SESSION is not set. Logging in..."
-        bw config server https://warden.burbn.de
-        BW_SESSION=$(bw login --raw)
+
+        # Prompt for Bitwarden server URL
+        echo -n "Enter your Bitwarden server URL (press Enter for official bitwarden.com): " </dev/tty
+        read -r BW_SERVER </dev/tty
+
+        # Use official server if empty
+        if [ -z "$BW_SERVER" ]; then
+            BW_SERVER="https://vault.bitwarden.com"
+        fi
+
+        echo "Configuring Bitwarden server: $BW_SERVER"
+        bw config server "$BW_SERVER" </dev/null
+
+        # Redirect stdin from terminal for interactive login
+        BW_SESSION=$(bw login --raw </dev/tty)
         export BW_SESSION
     fi
 }
