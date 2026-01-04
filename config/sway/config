@@ -199,10 +199,10 @@ client.focused_inactive $base02 $base02 $base03 $base0F
 client.unfocused        $base02 $base02 $base03 $base0F
 client.urgent           $base02 $base08 $base00 $base0F
 
-### Bar - Waybar
-# Waybar is started via exec_always below
-# Config: ~/.config/waybar/config
-# Style: ~/.config/waybar/style.css
+### Bar
+bar {
+    swaybar_command waybar
+}
 
 ### Media keys
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
@@ -213,13 +213,8 @@ bindsym XF86MonBrightnessUp exec brightnessctl set +5%
 bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 
 ### Autostart
-exec_always {
-    # Status bar
-    killall waybar; waybar
-
-    # Notification daemon (mako for Wayland)
-    mako
-}
+# Notification daemon (mako for Wayland)
+exec mako
 
 # Idle configuration
 exec swayidle -w \
@@ -227,9 +222,6 @@ exec swayidle -w \
     timeout 600 'swaymsg "output * dpms off"' \
     resume 'swaymsg "output * dpms on"' \
     before-sleep 'swaylock -f -c 000000'
-
-# Clipboard manager
-exec wl-paste -t text --watch clipman store
 
 # Screenshots
 bindsym Print exec grim -g "$(slurp)" - | wl-copy
