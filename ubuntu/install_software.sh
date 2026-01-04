@@ -87,7 +87,7 @@ else
 fi
 
 # CLI tools
-sudo apt install -y zoxide fd-find ripgrep glances eza fzf duf bpytop \
+sudo apt install -y zsh zoxide fd-find ripgrep glances fzf duf bpytop \
   lsd git-lfs
 
 # Graphics and multimedia

@@ -131,6 +131,11 @@
       path: config/sway/
       create: true
 
+    ~/.config/waybar:
+      if: '[ "$(uname)" = Linux ] && { [ "${WM_FORCE_DISPLAY_SERVER:-}" = "wayland" ] || { [ -z "${WM_FORCE_DISPLAY_SERVER:-}" ] && [ "${XDG_SESSION_TYPE:-}" = "wayland" ]; }; }'
+      path: config/waybar/
+      create: true
+
     ~/.kube/config:
       path: kube/config
       create: true
