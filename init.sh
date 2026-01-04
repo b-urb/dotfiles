@@ -18,19 +18,26 @@ check_command() {
 check_command curl
 
 # Function to get dotfiles
-
 get_dotfiles() {
-    # Clone the repository directly to the target directory
-    git clone --single-branch --branch "$BRANCH" --recursive "git@github.com:$REPO.git" "$TARGET_DIR"
-
-    # Optionally, you can run git pull if you want to update it later
-    # cd "$TARGET_DIR" && git pull origin "$BRANCH"
+    if [ -d "$TARGET_DIR/.git" ]; then
+        echo "Dotfiles directory already exists, updating..."
+        cd "$TARGET_DIR" && git pull origin "$BRANCH" --recurse-submodules
+    else
+        # Clone the repository directly to the target directory
+        git clone --single-branch --branch "$BRANCH" --recursive "git@github.com:$REPO.git" "$TARGET_DIR"
+    fi
 }
 
 # Function to install dependencies
 install_deps() {
-    echo "Installing dependencies..."
+    # Skip if already installed (marker file exists)
+    if [ -f "$TARGET_DIR/.install_complete" ]; then
+        echo "Dependencies already installed (found marker file), skipping..."
+        echo "To force reinstall, remove $TARGET_DIR/.install_complete"
+        return 0
+    fi
 
+    echo "Installing dependencies..."
 
     # Detect OS and install
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -67,6 +74,10 @@ install_deps() {
     if [[ -f "$TARGET_DIR/install_extensions.sh" ]]; then
         "$TARGET_DIR/install_extensions.sh"
     fi
+
+    # Create marker file to indicate installation is complete
+    touch "$TARGET_DIR/.install_complete"
+    echo "Installation complete! Marker file created at $TARGET_DIR/.install_complete"
 }
 
 # Function to install Bitwarden CLI
@@ -151,29 +162,65 @@ install_git() {
 
 # Ensure BW_SESSION is set
 setup_bw_session() {
-    if [ -z "$BW_SESSION" ]; then
-        echo "BW_SESSION is not set. Logging in..."
+    # Check current status
+    BW_STATUS=$(bw status 2>/dev/null | jq -r '.status' 2>/dev/null || echo "unknown")
 
-        # Prompt for Bitwarden server URL
-        echo -n "Enter your Bitwarden server URL (press Enter for official bitwarden.com): " </dev/tty
-        read -r BW_SERVER </dev/tty
+    case "$BW_STATUS" in
+        "unlocked")
+            echo "Bitwarden already unlocked"
+            # Get the session if we don't have it in environment
+            if [ -z "$BW_SESSION" ]; then
+                echo "Getting current session..."
+                # Already unlocked, session should be in environment from previous unlock
+                # If not, we need to unlock again
+                BW_SESSION=$(bw unlock --raw </dev/tty)
+                export BW_SESSION
+            fi
+            ;;
+        "locked")
+            echo "Bitwarden is locked, unlocking..."
+            BW_SESSION=$(bw unlock --raw </dev/tty)
+            export BW_SESSION
+            ;;
+        "unauthenticated"|*)
+            echo "Not logged in to Bitwarden, logging in..."
 
-        # Use official server if empty
-        if [ -z "$BW_SERVER" ]; then
-            BW_SERVER="https://vault.bitwarden.com"
-        fi
+            # Get current server configuration
+            CURRENT_SERVER=$(bw status 2>/dev/null | jq -r '.serverUrl' 2>/dev/null || echo "")
 
-        echo "Configuring Bitwarden server: $BW_SERVER"
-        bw config server "$BW_SERVER" </dev/null
+            # Only prompt for server if not already configured or is the default
+            if [ -z "$CURRENT_SERVER" ] || [ "$CURRENT_SERVER" = "https://vault.bitwarden.com" ]; then
+                echo -n "Enter your Bitwarden server URL (press Enter for official bitwarden.com): " </dev/tty
+                read -r BW_SERVER </dev/tty
 
-        # Redirect stdin from terminal for interactive login
-        BW_SESSION=$(bw login --raw </dev/tty)
-        export BW_SESSION
-    fi
+                # Use official server if empty
+                if [ -z "$BW_SERVER" ]; then
+                    BW_SERVER="https://vault.bitwarden.com"
+                fi
+
+                if [ "$CURRENT_SERVER" != "$BW_SERVER" ]; then
+                    echo "Configuring Bitwarden server: $BW_SERVER"
+                    bw config server "$BW_SERVER" </dev/null
+                fi
+            else
+                echo "Using configured server: $CURRENT_SERVER"
+            fi
+
+            # Redirect stdin from terminal for interactive login
+            BW_SESSION=$(bw login --raw </dev/tty)
+            export BW_SESSION
+            ;;
+    esac
 }
 
 # Fetch and setup SSH key from Bitwarden
 setup_ssh_key() {
+    # Check if SSH key already exists and is loaded
+    if ssh-add -l >/dev/null 2>&1; then
+        echo "SSH keys already loaded in agent, skipping setup"
+        return 0
+    fi
+
     echo "Fetching SSH key from Bitwarden..."
 
     SSH_KEYS_FOLDER_ID=$(bw list folders --session "$BW_SESSION" 2>/dev/null | \
