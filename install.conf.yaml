@@ -92,9 +92,18 @@
 # statements to only create symlinks on the appropriate operating system.
 
 - link:
-    ~/.profile: profile
-    ~/.bashrc: bashrc
-    ~/.bash_logout: bash_logout
+    ~/.profile: 
+      path: profile
+      force: true
+      relink: true
+    ~/.bashrc: 
+      path: bashrc
+      force: true
+      relink: true
+    ~/.bash_logout: 
+      path: bash_logout
+      force: true
+      relink: true
     ~/.gitconfig: gitconfig
 
     ~/.zshrc:
@@ -190,7 +199,9 @@
       create: true
       relink: true
 
-    ~/.gradle/gradle.properties: gradle.properties
+    ~/.gradle/gradle.properties: 
+      path: gradle.properties
+      create: true
 
     ~/.config/yabai:
       if: '[ "$(uname)" = Darwin ]'
