@@ -1,0 +1,145 @@
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", monospace;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: #101218;
+    color: #d1d4e0;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background-color: transparent;
+    color: #7780a1;
+    border-bottom: 3px solid transparent;
+}
+
+#workspaces button:hover {
+    background: rgba(127, 128, 161, 0.2);
+    box-shadow: inherit;
+}
+
+#workspaces button.focused {
+    color: #d1d4e0;
+    border-bottom: 3px solid #97bbf7;
+}
+
+#workspaces button.urgent {
+    background-color: #ee829f;
+    color: #ffffff;
+}
+
+#mode {
+    background-color: #252936;
+    padding: 0 10px;
+    margin: 0 5px;
+}
+
+#window {
+    padding: 0 10px;
+    color: #a5ffe1;
+}
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#temperature,
+#network,
+#pulseaudio,
+#tray {
+    padding: 0 10px;
+    margin: 0 2px;
+    background-color: #1f222d;
+    color: #d1d4e0;
+}
+
+#clock {
+    background-color: #252936;
+    color: #97bbf7;
+    font-weight: bold;
+}
+
+#battery {
+    background-color: #1f222d;
+    color: #a5ffe1;
+}
+
+#battery.charging, #battery.plugged {
+    color: #a5ffe1;
+    background-color: #1f222d;
+}
+
+#battery.critical:not(.charging) {
+    background-color: #ee829f;
+    color: #ffffff;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: #ee829f;
+    }
+}
+
+#cpu {
+    color: #97e0ff;
+}
+
+#memory {
+    color: #c0b7f9;
+}
+
+#temperature {
+    color: #ffefcc;
+}
+
+#temperature.critical {
+    background-color: #ee829f;
+    color: #ffffff;
+}
+
+#network {
+    color: #a5ffe1;
+}
+
+#network.disconnected {
+    background-color: #ee829f;
+    color: #ffffff;
+}
+
+#pulseaudio {
+    color: #fcc09e;
+}
+
+#pulseaudio.muted {
+    color: #7780a1;
+}
+
+#tray {
+    background-color: #1f222d;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #ee829f;
+}
