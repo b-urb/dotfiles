@@ -1,0 +1,37 @@
+[[language]]
+name = "rust"
+auto-format = true
+formatter = { command = "rustfmt" }
+
+[[language]]
+name = "yaml"
+scope = "source.yaml"
+file-types = [
+  "yml",
+  "yaml",
+  { glob = ".prettierrc" },
+  { glob = ".clangd" },
+  { glob = ".clang-format" },
+  { glob = ".clang-tidy" },
+  { glob = ".gem/credentials" },
+  { glob = ".kube/config" },
+  { glob = ".kube/kuberc" },
+  { glob = "yarn.lock" },
+  "sublime-syntax",
+  "bu",
+  { glob = ".stylelintrc" },  # https://stylelint.io/user-guide/configure/
+  { glob = ".puppeteerrc" },  # https://pptr.dev/guides/configuration
+]
+comment-token = "#"
+indent = { tab-width = 2, unit = "  " }
+language-servers = [ "yaml-language-server", "ansible-language-server" ]
+injection-regex = "yml|yaml"
+formatter = { command = "yamlfmt", args = ['-'] }
+auto-format = true
+
+[language-server.yaml-language-server.config.yaml.schemas]
+kubernetes = "/*.yaml"
+
+[[grammar]]
+name = "yaml"
+source = { git = "https://github.com/ikatyang/tree-sitter-yaml", rev = "0e36bed171768908f331ff7dff9d956bae016efb" }

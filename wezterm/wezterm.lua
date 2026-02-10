@@ -204,6 +204,21 @@ local config = {
 				one_shot = false,
 			}),
 		},
+		{ key = "n", mods = "LEADER", action = act.SwitchToWorkspace },
+		-- Show the launcher in fuzzy selection mode and have it list all workspaces
+		-- and allow activating one.
+		{
+			key = "/",
+			mods = "LEADER",
+			action = act.ShowLauncherArgs({
+				flags = "FUZZY|WORKSPACES",
+			}),
+		},
+		{
+			key = "w",
+			mods = "CMD|SHIFT",
+			action = wezterm.action.CloseCurrentPane({ confirm = true }),
+		},
 	},
 
 	key_tables = {

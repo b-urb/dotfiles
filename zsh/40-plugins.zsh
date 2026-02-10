@@ -13,3 +13,6 @@ zinit from'gh-r' as'program' for \
 
 zinit ice depth=1
 zinit light jeffreytse/zsh-vi-mode
+
+eval "$(zoxide init zsh)"
+

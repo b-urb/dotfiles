@@ -4,5 +4,4 @@
 # (Currently none, but placeholder for future needs)
 #
 #
-. /usr/share/autojump/autojump.sh
 
