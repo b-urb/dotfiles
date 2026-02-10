@@ -1,0 +1,8 @@
+[[plugin.prepend_previewers]]
+url = "*.{3mf,obj,pts,ply,stl,step,stp}"
+run = "f3d-preview"
+
+# --- Preloaders ---
+[[plugin.prepend_preloaders]]
+url = "*.{3mf,obj,pts,ply,stl,step,stp}"
+run = "f3d-preview"

@@ -1,0 +1,7 @@
+[[plugin.deps]]
+use = "ruudjhuu/f3d-preview"
+rev = "713e8d0"
+hash = "248ffdf21c7006cf32960624db2db586"
+
+[flavor]
+deps = []

@@ -11,6 +11,7 @@ alias dig="dog"
 alias cat="bat"
 alias python="python3"
 alias vim="nvim"
+alias j="z"
 
 # Kubernetes
 source ~/kubectl_aliases

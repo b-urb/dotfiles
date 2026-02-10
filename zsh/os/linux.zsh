@@ -17,8 +17,6 @@ if [ -d "/home/linuxbrew/.linuxbrew" ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-# Autojump
-[[ -s /etc/profile.d/autojump.zsh ]] && source /etc/profile.d/autojump.zsh
 
 # Bitwarden SSH agent (default on, opt-out with DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1)
 __dotfiles_bw_ssh_sock=""

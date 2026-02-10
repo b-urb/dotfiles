@@ -189,6 +189,10 @@
         path: config/codex/config.toml
         create: true
         force: true
+    ~/.config/helix:
+        path: config/helix
+        create: true
+        force: true
     ~/.ideavimrc: ideavimrc
 
     ~/.config/starship.toml: starship.toml
@@ -206,6 +210,11 @@
     ~/.config/yabai:
       if: '[ "$(uname)" = Darwin ]'
       path: config/yabai
+      create: true
+      relink: true
+
+    ~/.config/yazi:
+      path: config/yazi
       create: true
       relink: true
 
