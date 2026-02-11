@@ -16,3 +16,4 @@ zinit light jeffreytse/zsh-vi-mode
 
 eval "$(zoxide init zsh)"
 
+eval "$(zellij setup --generate-auto-start zsh)"
