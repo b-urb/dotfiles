@@ -11,6 +11,7 @@ alias dig="dog"
 alias cat="bat"
 alias python="python3"
 alias vim="nvim"
+alias lg="lazygit"
 alias j="z"
 
 # Kubernetes

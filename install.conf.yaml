@@ -171,6 +171,11 @@
         create: true
         relink: true
         force: true
+    ~/.config/zellij:
+        path: config/zellij
+        create: true
+        relink: true
+        force: true
     ~/.config/k9s:
         path: config/k9s
         create: true
@@ -187,6 +192,10 @@
         create: true
     ~/.codex/config.toml:
         path: config/codex/config.toml
+        create: true
+        force: true
+    ~/.config/opencode/opencode.jsonc:
+        path: config/opencode/opencode.jsonc
         create: true
         force: true
     ~/.config/helix:

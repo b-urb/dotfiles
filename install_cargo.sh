@@ -6,3 +6,4 @@ cargo install rainfrog
 cargo install zoxide --locked
 cargo install atuin
 cargo install argo install spotify-tui
+cargo install --locked zellij
