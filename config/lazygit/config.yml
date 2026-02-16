@@ -67,7 +67,7 @@ customCommands:
     command: "glab mr view -w {{.SelectedLocalBranch.UpstreamBranch}}"
     context: "localBranches"
     description: "Go to MR in gitlab"
-    stream: true
+    output: log
   - key: "<c-r>"
     command: "gh pr create --fill --web"
     context: "global"
@@ -77,4 +77,4 @@ customCommands:
     description: "commit with commitizen"
     context: "files"
     loadingText: "opening commitizen commit tool"
-    subprocess: true
+    output: terminal

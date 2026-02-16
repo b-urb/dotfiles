@@ -167,7 +167,9 @@ local config = {
 		target = "CursorColor",
 	},
 	-- config.leader = { key = 'a', mods = 'CTRL', timeout_milliseconds = 4000 }
+
 	leader = { key = "Space", mods = "CTRL" },
+	-- if not os.getenv("ZELLIJ") then require("keybindings")(config) end
 
 	keys = {
 		-- Turn off the default CMD-m Hide action, allowing CMD-m to
