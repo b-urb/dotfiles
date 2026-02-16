@@ -1,22 +1,9 @@
--- ~/.config/wezterm/keybindings.lua
 local wezterm = require("wezterm")
 local act = wezterm.action
 
 local M = {}
 
--- inside zellij, these env vars are typically present
-local function in_zellij()
-	return (wezterm.getenv("ZELLIJ") ~= nil)
-		or (wezterm.getenv("ZELLIJ_SESSION_NAME") ~= nil)
-		or (wezterm.getenv("ZELLIJ_PANE_ID") ~= nil)
-end
-
 function M.build()
-	if in_zellij() then
-		-- Let zellij own keybindings; keep wezterm mostly default
-		return { leader = nil, keys = {}, key_tables = {} }
-	end
-
 	local leader = { key = "Space", mods = "CTRL", timeout_milliseconds = 1500 }
 
 	local keys = {
@@ -25,11 +12,25 @@ function M.build()
 		{ key = "t", mods = "LEADER", action = act.ActivateKeyTable({ name = "tab_mode", one_shot = false }) },
 		{ key = "s", mods = "LEADER", action = act.ActivateKeyTable({ name = "session_mode", one_shot = false }) },
 
-		-- common leader actions (optional)
+		-- common leader actions
 		{ key = "c", mods = "LEADER", action = act.SpawnTab("CurrentPaneDomain") },
 		{ key = "n", mods = "LEADER", action = act.SpawnWindow },
 		{ key = "w", mods = "LEADER", action = act.CloseCurrentTab({ confirm = true }) },
 		{ key = "q", mods = "LEADER", action = act.CloseCurrentPane({ confirm = true }) },
+
+		-- workspace shortcuts from legacy workspace.lua
+		{ key = "y", mods = "CTRL|SHIFT", action = act.SwitchToWorkspace({ name = "default" }) },
+		{
+			key = "u",
+			mods = "CTRL|SHIFT",
+			action = act.SwitchToWorkspace({
+				name = "monitoring",
+				spawn = {
+					args = { "top" },
+				},
+			}),
+		},
+		{ key = "i", mods = "CTRL|SHIFT", action = act.SwitchToWorkspace },
 
 		-- send literal Ctrl-Space to app if needed
 		{ key = "Space", mods = "LEADER", action = act.SendKey({ key = "Space", mods = "CTRL" }) },
@@ -166,7 +167,7 @@ function M.build()
 		},
 	}
 
-	return { leader = leader, keys = keys, key_tables = key_tables }
+	return { leader = leader, keys = keys, key_tables = key_tables, disable_default_key_bindings = false }
 end
 
 return M
