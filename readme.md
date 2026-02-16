@@ -16,6 +16,7 @@
 ### Prerequisites
 
 1. **Bitwarden CLI**
+
    ```bash
    # macOS
    brew install bitwarden-cli
@@ -25,6 +26,7 @@
    ```
 
 2. **Bitwarden Desktop (SSH Agent)**
+
    ```bash
    # macOS
    brew install --cask bitwarden
@@ -38,6 +40,7 @@
 3. **Git with SSH access** to this repository
 
 4. **jq** (JSON processor)
+
    ```bash
    # macOS
    brew install jq
@@ -58,6 +61,7 @@ curl -fsSL https://raw.githubusercontent.com/B-urb/dotfiles/main/init.sh | bash
 ```
 
 This will:
+
 - Install Git and Bitwarden CLI
 - Authenticate with Bitwarden
 - Set up SSH keys from Bitwarden
@@ -107,10 +111,12 @@ brew bundle --file=macos/Brewfile
 ## What Gets Installed
 
 ### Window Managers
+
 - **macOS**: Yabai, SKHD, AeroSpace, SketchyBar
 - **Linux**: i3, Sway
 
 ### Development Tools
+
 - **Editor**: Neovim (LazyVim)
 - **Terminal**: WezTerm + Starship prompt
 - **Git UI**: Lazygit
@@ -119,6 +125,7 @@ brew bundle --file=macos/Brewfile
 - **History**: Atuin (SQLite shell history sync)
 
 ### Secret Management
+
 - Templates with `{{PLACEHOLDER}}` syntax
 - Bitwarden CLI for secret injection
 - Pre-commit hooks for bidirectional sync
@@ -126,26 +133,35 @@ brew bundle --file=macos/Brewfile
 ## Key Concepts
 
 ### Template System
+
 Secret-containing files use templates tracked in git:
+
 ```
 templates/.env.tmpl       → .env (generated, not tracked)
 templates/gitconfig.tmpl  → gitconfig (generated, not tracked)
 ```
 
 Secrets stored in Bitwarden folders:
+
 - `dotfiles/env-vars/` - Environment variables (GitHub PAT, API keys, etc.)
 - `dotfiles/kubeconfig/` - Kubernetes cluster configurations
 - `dotfiles/ssh-keys/` - SSH key items (Bitwarden SSH Key type)
 
 ### SSH Agent
+
 Bitwarden Desktop’s SSH agent is used by default. To opt out and force the local
 `ssh-agent`, set:
+
 ```
 export DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1
+export DOTFILES_ENABLE_ZELLIJ="${DOTFILES_ENABLE_ZELLIJ:-1}"
+
 ```
 
 ### Modular Zsh
+
 Shell configuration split into numbered modules:
+
 ```
 zsh/10-zinit.zsh → zsh/20-completion.zsh → ... → zsh/90-completions.zsh
   + os/darwin.zsh (macOS) or os/linux.zsh (Linux)
@@ -154,7 +170,9 @@ zsh/10-zinit.zsh → zsh/20-completion.zsh → ... → zsh/90-completions.zsh
 ```
 
 ### Dotbot Installation
+
 `./install` → Dotbot reads `install.conf.yaml`:
+
 1. **Phase 1**: Populate secrets from Bitwarden
 2. **Phase 2**: Generate zshrc from modular components
 3. **Phase 3**: Merge kubeconfig files
@@ -193,6 +211,7 @@ To prevent Yabai from managing IntelliJ popups:
    - Check: "Always show full path in window header"
 
 2. Add to yabai config:
+
    ```bash
    yabai -m rule --add app="IntelliJ IDEA" manage=off
    yabai -m rule --add app="IntelliJ IDEA" title=".*\[(.*)\].*" manage=on
