@@ -1,16 +1,17 @@
 # Place a copy of this config to ~/.aerospace.toml
 # After that, you can edit ~/.aerospace.toml to your liking
 
+# [key-mapping.key-notation-to-key-code]
+# alt = 'alt'
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
 # Available commands: https://nikitabobko.github.io/AeroSpace/commands
 after-login-command = []
-
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
-  'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=8.0'
+  'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=8.0',
 ]
 # Start AeroSpace at login
 start-at-login = false
@@ -39,8 +40,10 @@ default-root-container-orientation = 'auto'
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
-exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+exec-on-workspace-change = [
+  '/bin/bash',
+  '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
 ]
 on-focus-changed = [
   'exec-and-forget sketchybar --trigger aerospace_focus_change FOCUSED_WINDOW=$',
@@ -57,15 +60,15 @@ preset = 'qwerty'
 
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
-run = 'move-node-to-workspace 1' # mnemonics T - Terminal
+run = 'move-node-to-workspace 1'     # mnemonics T - Terminal
 
 [[on-window-detected]]
 if.app-id = 'com.jetbrains.intellij'
-run = 'move-node-to-workspace 2' # mnemonics T - Terminal
+run = 'move-node-to-workspace 2'     # mnemonics T - Terminal
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.VSCode'
-run = 'move-node-to-workspace 2' # mnemonics T - Terminal
+run = 'move-node-to-workspace 2'   # mnemonics T - Terminal
 
 # [[on-window-detected]]
 # if.app-id = 'com.brave.Browser'
@@ -77,7 +80,7 @@ run = 'move-node-to-workspace 3' # mnemonics W - Web browser
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
-run = 'move-node-to-workspace 4' # mnemonics T - Terminal
+run = 'move-node-to-workspace 4'        # mnemonics T - Terminal
 
 [[on-window-detected]]
 if.app-id = 'md.obsidian'
@@ -93,7 +96,7 @@ run = 'move-node-to-workspace 5' # mnemonics T - Terminal
 
 [[on-window-detected]]
 if.app-id = 'com.todoist.mac.Todoist'
-run = 'move-node-to-workspace 5' # mnemonics T - Terminal
+run = 'move-node-to-workspace 5'      # mnemonics T - Terminal
 
 [[on-window-detected]]
 if.app-id = 'com.figma.Desktop'
@@ -102,8 +105,6 @@ run = 'move-node-to-workspace 7' # mnemonics I - IDE
 [[on-window-detected]]
 if.app-id = 'com.spotify.client'
 run = 'move-node-to-workspace 8' # mnemonics I - IDE
-
-
 
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
@@ -115,11 +116,11 @@ run = 'move-node-to-workspace 8' # mnemonics I - IDE
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
 inner.horizontal = 15
-inner.vertical =   10
-outer.left =       10
-outer.bottom =     10
-outer.top =        50
-outer.right =      10
+inner.vertical = 10
+outer.left = 10
+outer.bottom = 10
+outer.top = 50
+outer.right = 10
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -149,7 +150,7 @@ outer.right =      10
 #                   keypadMinus, keypadMultiply, keypadPlus
 # - Arrows.         left, down, up, right
 
-# All possible modifiers: cmd, alt, ctrl, shift
+# All possible altifiers: cmd, mod, ctrl, shift
 
 # All possible commands: https://nikitabobko.github.io/AeroSpace/commands
 
@@ -192,8 +193,8 @@ alt-shift-equal = 'resize smart +50'
 
 alt-f = 'fullscreen'
 
-alt-w = 'layout v_accordion' # 'layout stacking' in i3
-alt-t = 'layout h_accordion' # 'layout tabbed' in i3
+alt-w = 'layout v_accordion'               # 'layout stacking' in i3
+alt-t = 'layout h_accordion'               # 'layout tabbed' in i3
 alt-e = 'layout tiles horizontal vertical' # 'layout toggle split' in i3
 
 alt-shift-space = 'layout floating tiling' # 'floating toggle' in i3
@@ -272,12 +273,14 @@ alt-shift-semicolon = 'mode service'
 [mode.service.binding]
 esc = ['reload-config', 'mode main']
 r = ['flatten-workspace-tree', 'mode main'] # reset layout
-f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
+f = [
+  'layout floating tiling',
+  'mode main',
+] # Toggle between floating and tiling layout
 backspace = ['close-all-windows-but-current', 'mode main']
 
 # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
 #s = ['layout sticky tiling', 'mode main']
-
 
 
 [mode.resize.binding]

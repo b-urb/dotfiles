@@ -33,8 +33,9 @@
 
         HEADER
 
-        # Concatenate core modules in order (skip 00-env.zsh - OS detection happens at generation time)
-        cat zsh/10-zinit.zsh \
+        # Concatenate core modules in order
+        cat zsh/00-env.zsh \
+            zsh/10-zinit.zsh \
             zsh/20-completion.zsh \
             zsh/30-history.zsh \
             zsh/40-plugins.zsh \

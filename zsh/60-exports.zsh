@@ -17,5 +17,6 @@ export CGO_ENABLED=1
 export GODEBUG='netdns=cgo'
 export GOPRIVATE="dev.azure.com"
 
+
 # Load envman if available
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"

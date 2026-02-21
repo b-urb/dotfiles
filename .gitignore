@@ -5,6 +5,10 @@ bashrc
 .env
 .env.darwin
 .env.linux
+config/opencode/opencode.jsonc
+
+# Local dotfiles options overrides
+options/dotfiles.options.local.sh
 
 # Kubernetes configs (backed up to Bitwarden)
 kube/*

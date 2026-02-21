@@ -139,6 +139,7 @@ Secret-containing files use templates tracked in git:
 ```
 templates/.env.tmpl       → .env (generated, not tracked)
 templates/gitconfig.tmpl  → gitconfig (generated, not tracked)
+templates/opencode.jsonc.tmpl → config/opencode/opencode.jsonc (generated, not tracked)
 ```
 
 Secrets stored in Bitwarden folders:
@@ -150,20 +151,30 @@ Secrets stored in Bitwarden folders:
 ### SSH Agent
 
 Bitwarden Desktop’s SSH agent is used by default. To opt out and force the local
-`ssh-agent`, set:
+`ssh-agent`, set in `options/dotfiles.options.sh` or
+`options/dotfiles.options.local.sh`:
 
 ```
 export DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1
-export DOTFILES_ENABLE_ZELLIJ="${DOTFILES_ENABLE_ZELLIJ:-1}"
+export DOTFILES_ENABLE_ZELLIJ=0
 
 ```
+
+### Dotfiles Options
+
+Feature flags live in:
+
+- `options/dotfiles.options.sh` - tracked defaults
+- `options/dotfiles.options.local.sh` - optional local overrides (not tracked)
+
+Both `./install` and generated `~/.zshrc` load these options.
 
 ### Modular Zsh
 
 Shell configuration split into numbered modules:
 
 ```
-zsh/10-zinit.zsh → zsh/20-completion.zsh → ... → zsh/90-completions.zsh
+zsh/00-env.zsh → zsh/10-zinit.zsh → ... → zsh/90-completions.zsh
   + os/darwin.zsh (macOS) or os/linux.zsh (Linux)
   + distro/ubuntu.zsh or distro/arch.zsh
   = zshrc (auto-generated during install)

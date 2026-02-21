@@ -111,6 +111,7 @@ populate_template() {
 
 # Populate all templates
 populate_template "$TEMPLATES_DIR/codex.config.toml.tmpl" "$DOTFILES_DIR/config/codex/config.toml"
+populate_template "$TEMPLATES_DIR/opencode.jsonc.tmpl" "$DOTFILES_DIR/config/opencode/opencode.jsonc"
 populate_template "$TEMPLATES_DIR/gitconfig.tmpl" "$DOTFILES_DIR/gitconfig"
 populate_template "$TEMPLATES_DIR/bashrc.tmpl" "$DOTFILES_DIR/bashrc"
 
