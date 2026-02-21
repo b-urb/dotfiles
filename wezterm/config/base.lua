@@ -2,8 +2,50 @@ local wezterm = require("wezterm")
 
 local M = {}
 
+local function parse_bool(value)
+	if value == nil then
+		return nil
+	end
+	local normalized = string.lower(tostring(value))
+	if normalized == "1" or normalized == "true" or normalized == "yes" or normalized == "on" then
+		return true
+	end
+	if normalized == "0" or normalized == "false" or normalized == "no" or normalized == "off" then
+		return false
+	end
+	return nil
+end
+
+local function detect_bitwarden_ssh_sock()
+	local disable_bw = parse_bool(os.getenv("DOTFILES_DISABLE_BITWARDEN_SSH_AGENT"))
+	if disable_bw == true then
+		return nil
+	end
+
+	local runtime_dir = os.getenv("XDG_RUNTIME_DIR") or ""
+	local sockets = {
+		wezterm.home_dir .. "/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock",
+		wezterm.home_dir .. "/Library/Group Containers/LTZ2PFU5D6.com.bitwarden.desktop/ssh-agent.sock",
+		wezterm.home_dir .. "/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock",
+		wezterm.home_dir .. "/snap/bitwarden/current/.bitwarden-ssh-agent.sock",
+		wezterm.home_dir .. "/.bitwarden-ssh-agent.sock",
+	}
+
+	if runtime_dir ~= "" then
+		table.insert(sockets, 1, runtime_dir .. "/bitwarden-ssh-agent.sock")
+	end
+
+	for _, sock in ipairs(sockets) do
+		if #wezterm.glob(sock) == 1 then
+			return sock
+		end
+	end
+
+	return nil
+end
+
 function M.build()
-	return {
+	local config = {
 		font_size = 15.0,
 		font = wezterm.font("Monaspace Argon", { weight = "Bold", italic = false }),
 		color_scheme = "One Dark (Gogh)",
@@ -15,8 +57,9 @@ function M.build()
 			top = 2,
 		},
 		inactive_pane_hsb = {
-			saturation = 0.9,
-			brightness = 0.72,
+			hue = 1.0,
+			saturation = 0.85,
+			brightness = 0.35,
 		},
 		use_fancy_tab_bar = true,
 		window_frame = {
@@ -49,6 +92,16 @@ function M.build()
 			target = "CursorColor",
 		},
 	}
+
+	local bw_sock = detect_bitwarden_ssh_sock()
+	if bw_sock ~= nil then
+		config.default_ssh_auth_sock = bw_sock
+		config.set_environment_variables = {
+			SSH_AUTH_SOCK = bw_sock,
+		}
+	end
+
+	return config
 end
 
 return M

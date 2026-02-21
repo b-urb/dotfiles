@@ -1,3 +1,26 @@
+gui:
+  theme:
+    activeBorderColor:
+      - "#61afef" # Blue
+      - bold
+    inactiveBorderColor:
+      - "#5c6370" # Comment Grey
+    optionsTextColor:
+      - "#61afef" # Blue
+    selectedLineBgColor:
+      - "#3e4452" # Darker Grey
+    cherryPickedCommitFgColor:
+      - "#98c379" # Green
+    cherryPickedCommitBgColor:
+      - "#56b6c2" # Cyan
+    markedBaseCommitFgColor:
+      - "#61afef" # Blue
+    markedBaseCommitBgColor:
+      - "#98c379" # Green
+    unstagedChangesColor:
+      - "#e06c75" # Red
+    defaultFgColor:
+      - "#abb2bf" # Light Grey
 customCommands:
   # retrieved from: https://github.com/jesseduffield/lazygit/wiki/Custom-Commands-Compendium#conventional-commit
   - key: "<c-v>"

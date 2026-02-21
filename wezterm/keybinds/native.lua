@@ -9,22 +9,48 @@ local function move_pane_to_new_tab(_, pane)
 	end
 end
 
-local function focus_or_tab(direction, tab_delta)
-	return wezterm.action_callback(function(window, pane)
-		local tab = window:active_tab()
-		local has_adjacent = false
-		if tab ~= nil then
-			local ok, target = pcall(function()
-				return tab:get_pane_direction(direction)
-			end)
-			has_adjacent = ok and target ~= nil
-		end
+local function is_vim(pane)
+	return pane and pane:get_user_vars().IS_NVIM == "true"
+end
 
-		if has_adjacent then
-			window:perform_action(act.ActivatePaneDirection(direction), pane)
-		else
-			window:perform_action(act.ActivateTabRelative(tab_delta), pane)
+local function perform_focus_or_tab(window, pane, direction, tab_delta)
+	local tab = window:active_tab()
+	local has_adjacent = false
+	if tab ~= nil then
+		local ok, target = pcall(function()
+			return tab:get_pane_direction(direction)
+		end)
+		has_adjacent = ok and target ~= nil
+	end
+
+	if has_adjacent then
+		window:perform_action(act.ActivatePaneDirection(direction), pane)
+	else
+		window:perform_action(act.ActivateTabRelative(tab_delta), pane)
+	end
+end
+
+local function smart_move_action(key, direction, tab_delta)
+	return wezterm.action_callback(function(window, pane)
+		if is_vim(pane) then
+			window:perform_action(act.SendKey({ key = key, mods = "CTRL" }), pane)
+			return
 		end
+		if tab_delta ~= nil then
+			perform_focus_or_tab(window, pane, direction, tab_delta)
+		else
+			window:perform_action(act.ActivatePaneDirection(direction), pane)
+		end
+	end)
+end
+
+local function smart_resize_action(key, direction, amount)
+	return wezterm.action_callback(function(window, pane)
+		if is_vim(pane) then
+			window:perform_action(act.SendKey({ key = key, mods = "ALT" }), pane)
+			return
+		end
+		window:perform_action(act.AdjustPaneSize({ direction, amount }), pane)
 	end)
 end
 
@@ -35,20 +61,20 @@ function M.build()
 		{ key = "v", mods = "CTRL|SHIFT", action = act.PasteFrom("Clipboard") },
 
 		-- zellij-like global navigation/resize
-		{ key = "h", mods = "CTRL", action = focus_or_tab("Left", -1) },
-		{ key = "j", mods = "CTRL", action = act.ActivatePaneDirection("Down") },
-		{ key = "k", mods = "CTRL", action = act.ActivatePaneDirection("Up") },
-		{ key = "l", mods = "CTRL", action = focus_or_tab("Right", 1) },
-		{ key = "H", mods = "CTRL|SHIFT", action = act.AdjustPaneSize({ "Left", 3 }) },
-		{ key = "J", mods = "CTRL|SHIFT", action = act.AdjustPaneSize({ "Down", 2 }) },
-		{ key = "K", mods = "CTRL|SHIFT", action = act.AdjustPaneSize({ "Up", 2 }) },
-		{ key = "L", mods = "CTRL|SHIFT", action = act.AdjustPaneSize({ "Right", 3 }) },
+		{ key = "h", mods = "CTRL", action = smart_move_action("h", "Left", -1) },
+		{ key = "j", mods = "CTRL", action = smart_move_action("j", "Down") },
+		{ key = "k", mods = "CTRL", action = smart_move_action("k", "Up") },
+		{ key = "l", mods = "CTRL", action = smart_move_action("l", "Right", 1) },
+		{ key = "h", mods = "ALT", action = smart_resize_action("h", "Left", 3) },
+		{ key = "j", mods = "ALT", action = smart_resize_action("j", "Down", 2) },
+		{ key = "k", mods = "ALT", action = smart_resize_action("k", "Up", 2) },
+		{ key = "l", mods = "ALT", action = smart_resize_action("l", "Right", 3) },
 
 		-- zellij-like alt shortcuts
-		{ key = "LeftArrow", mods = "ALT", action = focus_or_tab("Left", -1) },
+		{ key = "LeftArrow", mods = "ALT", action = smart_move_action("h", "Left", -1) },
 		{ key = "DownArrow", mods = "ALT", action = act.ActivatePaneDirection("Down") },
 		{ key = "UpArrow", mods = "ALT", action = act.ActivatePaneDirection("Up") },
-		{ key = "RightArrow", mods = "ALT", action = focus_or_tab("Right", 1) },
+		{ key = "RightArrow", mods = "ALT", action = smart_move_action("l", "Right", 1) },
 		{ key = "n", mods = "ALT", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
 		{ key = "i", mods = "ALT", action = act.MoveTabRelative(-1) },
 		{ key = "o", mods = "ALT", action = act.MoveTabRelative(1) },
