@@ -3,8 +3,14 @@
 # Dotfiles feature flags (tracked defaults)
 
 # Terminal multiplexer mode:
-#   0/false/no/off  -> WezTerm-native mode (default)
-#   1/true/yes/on   -> Enable zellij autostart + zellij keybind mode
+#   DOTFILES_ZELLIJ_MODE=native  -> WezTerm-native mode
+#   DOTFILES_ZELLIJ_MODE=full    -> Full zellij mode (autostart + zellij keybind mode)
+#   DOTFILES_ZELLIJ_MODE=bridge  -> Per-WezTerm-pane isolated zellij bridge (plain UI)
+export DOTFILES_ZELLIJ_MODE=native
+
+# Legacy fallback toggle (used only when DOTFILES_ZELLIJ_MODE is unset):
+#   0/false/no/off  -> native
+#   1/true/yes/on   -> full
 export DOTFILES_ENABLE_ZELLIJ=0
 
 # WezTerm custom event handlers (tab title/right status/etc)

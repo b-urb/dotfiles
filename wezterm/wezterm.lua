@@ -88,7 +88,7 @@ local key_config = keybinds.build(mode.use_zellij_keybinds)
 if not is_wezterm_events_disabled() then
 	events.register()
 end
-status.register()
+status.register(mode)
 
 config.leader = key_config.leader
 config.keys = key_config.keys

@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local bridge_gc = require("bridge_gc")
 
 local M = {}
 local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
@@ -78,8 +79,9 @@ local function build_left_status()
 	return wezterm.format(cells)
 end
 
-function M.register()
+function M.register(mode)
 	wezterm.on("update-right-status", function(window, pane)
+		bridge_gc.collect(mode)
 		window:set_left_status(build_left_status())
 		window:set_right_status(build_right_status(window, pane))
 	end)

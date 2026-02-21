@@ -140,7 +140,7 @@ function M.build()
 				key = "x",
 				action = act.Multiple({
 					act.PopKeyTable,
-					act.CloseCurrentPane({ confirm = true }),
+					act.CloseCurrentPane({ confirm = false }),
 				}),
 			},
 			{
