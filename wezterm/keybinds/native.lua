@@ -87,10 +87,10 @@ function M.build()
 		{ key = "t", mods = "CTRL", action = act.ActivateKeyTable({ name = "tab_mode", one_shot = false }) },
 		{ key = "o", mods = "CTRL", action = act.ActivateKeyTable({ name = "session_mode", one_shot = false }) },
 		{ key = "n", mods = "CTRL", action = act.ActivateKeyTable({ name = "resize_mode", one_shot = false }) },
-		{ key = "/", mods = "CTRL", action = act.ActivateCopyMode },
+		{ key = "b", mods = "CTRL", action = act.ActivateCopyMode },
 
 		-- app/session actions
-		{ key = "q", mods = "CTRL", action = act.QuitApplication },
+		-- { key = "q", mods = "CTRL", action = act.QuitApplication },
 	}
 
 	local key_tables = {
