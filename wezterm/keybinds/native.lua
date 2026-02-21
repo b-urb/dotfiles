@@ -118,13 +118,31 @@ function M.build()
 
 			-- zellij-like pane actions
 			{ key = "d", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
-			{ key = "r", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
-			{ key = "n", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+			{
+				key = "r",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+				}),
+			},
+			{
+				key = "n",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+				}),
+			},
 			{ key = "f", action = act.TogglePaneZoomState },
 			{ key = "p", action = act.ActivatePaneDirection("Next") },
 
 			-- close / break out
-			{ key = "x", action = act.CloseCurrentPane({ confirm = true }) },
+			{
+				key = "x",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.CloseCurrentPane({ confirm = true }),
+				}),
+			},
 			{
 				key = "b",
 				action = wezterm.action_callback(move_pane_to_new_tab),
@@ -147,8 +165,20 @@ function M.build()
 
 			-- create/close/reorder
 			{ key = "c", action = act.SpawnTab("CurrentPaneDomain") },
-			{ key = "n", action = act.SpawnTab("CurrentPaneDomain") },
-			{ key = "x", action = act.CloseCurrentTab({ confirm = true }) },
+			{
+				key = "n",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.SpawnTab("CurrentPaneDomain"),
+				}),
+			},
+			{
+				key = "x",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.CloseCurrentTab({ confirm = true }),
+				}),
+			},
 			{ key = "H", action = act.MoveTabRelative(-1) },
 			{ key = "L", action = act.MoveTabRelative(1) },
 			{
@@ -159,13 +189,16 @@ function M.build()
 			-- rename
 			{
 				key = "r",
-				action = act.PromptInputLine({
-					description = "Rename tab",
-					action = wezterm.action_callback(function(window, _, line)
-						if line and line ~= "" then
-							window:active_tab():set_title(line)
-						end
-					end),
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.PromptInputLine({
+						description = "Rename tab",
+						action = wezterm.action_callback(function(window, _, line)
+							if line and line ~= "" then
+								window:active_tab():set_title(line)
+							end
+						end),
+					}),
 				}),
 			},
 
