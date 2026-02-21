@@ -16,7 +16,11 @@ zinit light jeffreytse/zsh-vi-mode
 
 eval "$(zoxide init zsh)"
 
-# Zellij control: set DOTFILES_ENABLE_ZELLIJ=0 to disable auto-start
-if [[ "${DOTFILES_ENABLE_ZELLIJ}" != "0" ]] && command -v zellij >/dev/null 2>&1; then
-    eval "$(zellij setup --generate-auto-start zsh)"
-fi
+# Zellij control: enabled only when DOTFILES_ENABLE_ZELLIJ is truthy
+case "${DOTFILES_ENABLE_ZELLIJ:l}" in
+    1|true|yes|on)
+        if command -v zellij >/dev/null 2>&1; then
+            eval "$(zellij setup --generate-auto-start zsh)"
+        fi
+        ;;
+esac

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Theme configuration
+  "theme": "one-dark",
+//  "model": "anthropic/claude-sonnet-4-5",
+  "mcp": {
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp", "--headless"]
+    },
+    "next-devtools": {
+      "type": "local",
+      "command": ["npx", "-y", "next-devtools-mcp@latest"]
+    },
+    "github": {
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer {{GITHUB_PAT}}",
+        "X-MCP-Toolsets": "all"
+      }
+    },
+    "pulumi": {
+      "type": "remote",
+      "url": "https://mcp.ai.pulumi.com/mcp"
+    },
+    "storybook": {
+      "type": "remote",
+      "url": "http://localhost:6006/mcp"
+    },
+    "directus": {
+      "type": "remote",
+      "url": "https://cms.burbn.de/mcp/",
+      "headers": {
+        "Authorization": "Bearer {{DIRECTUS_TOKEN}}",
+        "X-MCP-Toolsets": "all"
+      }
+    },
+    "kubernetes-readonly": {
+      "type": "local",
+      "command": ["npx", "mcp-server-kubernetes"],
+      "environment": {
+        "ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS": "true"
+      }
+    }
+  },
+  "autoupdate": true
+}

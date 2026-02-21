@@ -14,10 +14,16 @@ function M.build()
 		window_padding = {
 			top = 2,
 		},
+		inactive_pane_hsb = {
+			saturation = 0.9,
+			brightness = 0.72,
+		},
 		use_fancy_tab_bar = true,
 		window_frame = {
 			active_titlebar_bg = "#000000",
 			inactive_titlebar_bg = "#000000",
+			active_titlebar_border_bottom = "#61afef",
+			inactive_titlebar_border_bottom = "#1f2329",
 			font_size = 19.0,
 		},
 		hide_tab_bar_if_only_one_tab = false,
@@ -25,6 +31,7 @@ function M.build()
 		show_close_tab_button_in_tabs = false,
 		tab_bar_style = {},
 		colors = {
+			split = "#61afef",
 			tab_bar = {
 				background = "#000000",
 				new_tab = { bg_color = "#000000", fg_color = "#FCE8C3", intensity = "Bold" },
