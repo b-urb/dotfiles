@@ -1,4 +1,4 @@
-local native = require("keybinds.native")
+local native = require("keybinds.native-leader")
 local zellij = require("keybinds.zellij")
 
 local M = {}

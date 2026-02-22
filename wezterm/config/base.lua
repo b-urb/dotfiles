@@ -2,6 +2,11 @@ local wezterm = require("wezterm")
 
 local M = {}
 
+local function is_darwin()
+	local triple = wezterm.target_triple or ""
+	return triple:find("darwin", 1, true) ~= nil
+end
+
 local function parse_bool(value)
 	if value == nil then
 		return nil
@@ -20,6 +25,10 @@ local function detect_bitwarden_ssh_sock()
 	local disable_bw = parse_bool(os.getenv("DOTFILES_DISABLE_BITWARDEN_SSH_AGENT"))
 	if disable_bw == true then
 		return nil
+	end
+
+	if is_darwin() then
+		return wezterm.home_dir .. "/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 	end
 
 	local runtime_dir = os.getenv("XDG_RUNTIME_DIR") or ""

@@ -200,10 +200,10 @@ function M.build()
 		{ key = "]", mods = "ALT", action = act.ActivateTabRelative(1) },
 
 		-- modes
-		{ key = "p", mods = "CTRL", action = act.ActivateKeyTable({ name = "pane_mode", one_shot = false }) },
-		{ key = "t", mods = "CTRL", action = act.ActivateKeyTable({ name = "tab_mode", one_shot = false }) },
-		{ key = "o", mods = "CTRL", action = act.ActivateKeyTable({ name = "session_mode", one_shot = false }) },
-		{ key = "n", mods = "CTRL", action = act.ActivateKeyTable({ name = "resize_mode", one_shot = false }) },
+		{ key = "p", mods = "LEADER", action = act.ActivateKeyTable({ name = "pane_mode", one_shot = false }) },
+		{ key = "t", mods = "LEADER", action = act.ActivateKeyTable({ name = "tab_mode", one_shot = false }) },
+		{ key = "o", mods = "LEADER", action = act.ActivateKeyTable({ name = "session_mode", one_shot = false }) },
+		{ key = "n", mods = "LEADER", action = act.ActivateKeyTable({ name = "resize_mode", one_shot = false }) },
 		{ key = "/", mods = "CTRL", action = toggle_nvim_bottom_terminal("/") },
 		{ key = "_", mods = "CTRL", action = toggle_nvim_bottom_terminal("_") },
 		{ key = "b", mods = "CTRL", action = act.ActivateCopyMode },
@@ -217,7 +217,7 @@ function M.build()
 			{ key = "Escape", action = "PopKeyTable" },
 			{ key = "q", action = "PopKeyTable" },
 			{ key = "Enter", action = "PopKeyTable" },
-			{ key = "p", mods = "CTRL", action = "PopKeyTable" },
+			{ key = "p", mods = "LEADER", action = "PopKeyTable" },
 
 			-- focus
 			{ key = "h", action = act.ActivatePaneDirection("Left") },
@@ -272,7 +272,7 @@ function M.build()
 			{ key = "Escape", action = "PopKeyTable" },
 			{ key = "q", action = "PopKeyTable" },
 			{ key = "Enter", action = "PopKeyTable" },
-			{ key = "t", mods = "CTRL", action = "PopKeyTable" },
+			{ key = "t", mods = "LEADER", action = "PopKeyTable" },
 
 			-- nav
 			{ key = "h", action = act.ActivateTabRelative(-1) },
@@ -337,7 +337,7 @@ function M.build()
 			{ key = "Escape", action = "PopKeyTable" },
 			{ key = "q", action = "PopKeyTable" },
 			{ key = "Enter", action = "PopKeyTable" },
-			{ key = "n", mods = "CTRL", action = "PopKeyTable" },
+			{ key = "n", mods = "LEADER", action = "PopKeyTable" },
 
 			{ key = "h", action = act.AdjustPaneSize({ "Left", 2 }) },
 			{ key = "j", action = act.AdjustPaneSize({ "Down", 2 }) },
@@ -357,7 +357,7 @@ function M.build()
 			{ key = "Escape", action = "PopKeyTable" },
 			{ key = "q", action = "PopKeyTable" },
 			{ key = "Enter", action = "PopKeyTable" },
-			{ key = "o", mods = "CTRL", action = "PopKeyTable" },
+			{ key = "o", mods = "LEADER", action = "PopKeyTable" },
 
 			-- fuzzy find/switch workspaces ("sessions")
 			{ key = "f", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
@@ -412,7 +412,8 @@ function M.build()
 		},
 	}
 
-	return { leader = nil, keys = keys, key_tables = key_tables, disable_default_key_bindings = true }
+	local leader = { key = "Space", mods = "CTRL", timeout_milliseconds = 1500 }
+	return { leader = leader, keys = keys, key_tables = key_tables, disable_default_key_bindings = true }
 end
 
 return M
