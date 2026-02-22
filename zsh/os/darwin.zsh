@@ -50,3 +50,12 @@ fi
 
 # Source macOS-specific .env
 [ -f "$HOME/.dotfiles/.env.darwin" ] && source "$HOME/.dotfiles/.env.darwin"
+
+# In WezTerm on macOS, always prefer Bitwarden SSH agent socket.
+if [ -z "$DOTFILES_DISABLE_BITWARDEN_SSH_AGENT" ] && [ -n "$WEZTERM_PANE" ]; then
+    __dotfiles_wezterm_bw_sock="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+    if [ -S "$__dotfiles_wezterm_bw_sock" ]; then
+        export SSH_AUTH_SOCK="$__dotfiles_wezterm_bw_sock"
+    fi
+    unset __dotfiles_wezterm_bw_sock
+fi
