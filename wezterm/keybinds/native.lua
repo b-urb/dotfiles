@@ -236,7 +236,13 @@ function M.build()
 			{ key = "L", action = act.AdjustPaneSize({ "Right", 5 }) },
 
 			-- zellij-like pane actions
-			{ key = "d", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
+			{
+				key = "d",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.SplitVertical({ domain = "CurrentPaneDomain" }),
+				}),
+			},
 			{
 				key = "r",
 				action = act.Multiple({
@@ -360,53 +366,86 @@ function M.build()
 			{ key = "o", mods = "CTRL", action = "PopKeyTable" },
 
 			-- fuzzy find/switch workspaces ("sessions")
-			{ key = "f", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
-			{ key = "w", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
-			{ key = "l", action = act.ShowLauncherArgs({ flags = "FUZZY|TABS|WORKSPACES" }) },
-			{ key = "c", action = act.ActivateCommandPalette },
+			{
+				key = "f",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }),
+				}),
+			},
+			{
+				key = "w",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }),
+				}),
+			},
+			{
+				key = "l",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.ShowLauncherArgs({ flags = "FUZZY|TABS|WORKSPACES" }),
+				}),
+			},
+			{
+				key = "c",
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.ActivateCommandPalette,
+				}),
+			},
 
 			-- new workspace (prompt)
 			{
 				key = "n",
-				action = act.PromptInputLine({
-					description = "New workspace name",
-					action = wezterm.action_callback(function(window, pane, line)
-						if not line or line == "" then
-							return
-						end
-						window:perform_action(
-							act.SwitchToWorkspace({ name = line, spawn = { domain = "CurrentPaneDomain" } }),
-							pane
-						)
-					end),
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.PromptInputLine({
+						description = "New workspace name",
+						action = wezterm.action_callback(function(window, pane, line)
+							if not line or line == "" then
+								return
+							end
+							window:perform_action(
+								act.SwitchToWorkspace({ name = line, spawn = { domain = "CurrentPaneDomain" } }),
+								pane
+							)
+						end),
+					}),
 				}),
 			},
 
 			-- switch workspace by name (prompt)
 			{
 				key = "s",
-				action = act.PromptInputLine({
-					description = "Switch to workspace",
-					action = wezterm.action_callback(function(window, pane, line)
-						if not line or line == "" then
-							return
-						end
-						window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
-					end),
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.PromptInputLine({
+						description = "Switch to workspace",
+						action = wezterm.action_callback(function(window, pane, line)
+							if not line or line == "" then
+								return
+							end
+							window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
+						end),
+					}),
 				}),
 			},
 
 			-- "rename" workspace (switch to a new name)
 			{
 				key = "r",
-				action = act.PromptInputLine({
-					description = "Rename workspace (switch to new name)",
-					action = wezterm.action_callback(function(window, pane, line)
-						if not line or line == "" then
-							return
-						end
-						window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
-					end),
+				action = act.Multiple({
+					act.PopKeyTable,
+					act.PromptInputLine({
+						description = "Rename workspace (switch to new name)",
+						action = wezterm.action_callback(function(window, pane, line)
+							if not line or line == "" then
+								return
+							end
+							window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
+						end),
+					}),
 				}),
 			},
 		},
