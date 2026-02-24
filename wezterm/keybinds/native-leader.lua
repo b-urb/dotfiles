@@ -51,16 +51,42 @@ local function cleanup_nvim_bottom_state(tab)
 		return nil, key
 	end
 
-	if state.pane_id ~= nil and find_pane_info_by_id(tab, state.pane_id) == nil then
+	if state.owner_pane_id == nil or state.terminal_pane_id == nil then
 		nvim_bottom_panes[key] = nil
 		return nil, key
 	end
 
-	if state.last_active_pane_id ~= nil and find_pane_info_by_id(tab, state.last_active_pane_id) == nil then
-		state.last_active_pane_id = nil
+	if find_pane_info_by_id(tab, state.owner_pane_id) == nil then
+		nvim_bottom_panes[key] = nil
+		return nil, key
+	end
+
+	if find_pane_info_by_id(tab, state.terminal_pane_id) == nil then
+		nvim_bottom_panes[key] = nil
+		return nil, key
 	end
 
 	return state, key
+end
+
+local function tab_has_only_tracked_pair(tab, state)
+	local panes = tab:panes_with_info()
+	if #panes ~= 2 then
+		return false
+	end
+
+	local owner_found = false
+	local terminal_found = false
+	for _, info in ipairs(panes) do
+		local id = info.pane:pane_id()
+		if id == state.owner_pane_id then
+			owner_found = true
+		elseif id == state.terminal_pane_id then
+			terminal_found = true
+		end
+	end
+
+	return owner_found and terminal_found
 end
 
 local function toggle_nvim_bottom_terminal(trigger_key)
@@ -74,41 +100,42 @@ local function toggle_nvim_bottom_terminal(trigger_key)
 		local state, key = cleanup_nvim_bottom_state(tab)
 		local pane_id = pane and pane:pane_id() or nil
 		local from_nvim = is_vim(pane)
-		local from_bottom_pane = state ~= nil and state.pane_id == pane_id
 
-		if state ~= nil and state.pane_id ~= nil then
-			state.hidden = is_tab_zoomed(tab)
+		if state ~= nil then
+			local from_owner_pane = pane_id == state.owner_pane_id
+			local from_bottom_pane = pane_id == state.terminal_pane_id
 
-			if not from_nvim and not from_bottom_pane then
-				window:perform_action(act.SendKey({ key = trigger_key, mods = "CTRL" }), pane)
+			if not from_owner_pane and not from_bottom_pane then
+				if not from_nvim then
+					window:perform_action(act.SendKey({ key = trigger_key, mods = "CTRL" }), pane)
+				end
 				return
 			end
 
-			local bottom_info = find_pane_info_by_id(tab, state.pane_id)
-			if bottom_info ~= nil then
-				if state.hidden then
-					state.last_active_pane_id = pane_id
-					tab:set_zoomed(false)
-					bottom_info.pane:activate()
-					state.hidden = false
-					return
-				end
-
-				if from_bottom_pane and state.last_active_pane_id ~= nil then
-					local restore_info = find_pane_info_by_id(tab, state.last_active_pane_id)
-					if restore_info ~= nil then
-						restore_info.pane:activate()
-					end
-				elseif from_nvim then
-					state.last_active_pane_id = pane_id
-				end
-
-				tab:set_zoomed(true)
-				state.hidden = true
+			if not tab_has_only_tracked_pair(tab, state) then
 				return
 			end
 
-			nvim_bottom_panes[key] = nil
+			local owner_info = find_pane_info_by_id(tab, state.owner_pane_id)
+			local bottom_info = find_pane_info_by_id(tab, state.terminal_pane_id)
+			if owner_info == nil or bottom_info == nil then
+				nvim_bottom_panes[key] = nil
+				return
+			end
+
+			if is_tab_zoomed(tab) then
+				tab:set_zoomed(false)
+				bottom_info.pane:activate()
+				state.hidden = false
+				return
+			end
+
+			if from_bottom_pane then
+				owner_info.pane:activate()
+			end
+
+			tab:set_zoomed(true)
+			state.hidden = true
 			return
 		end
 
@@ -123,8 +150,8 @@ local function toggle_nvim_bottom_terminal(trigger_key)
 		})
 		bottom_pane:activate()
 		nvim_bottom_panes[key] = {
-			pane_id = bottom_pane:pane_id(),
-			last_active_pane_id = pane_id,
+			owner_pane_id = pane_id,
+			terminal_pane_id = bottom_pane:pane_id(),
 			hidden = false,
 		}
 	end)

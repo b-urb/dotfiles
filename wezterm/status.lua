@@ -34,14 +34,6 @@ local function compact(value, max_width)
 	return value:sub(1, max_width - 1) .. "~"
 end
 
-local function basename(path)
-	if path == nil or path == "" then
-		return ""
-	end
-	local name = path:gsub("(.*[/\\])(.*)", "%2")
-	return name:gsub("%.exe$", "")
-end
-
 local function key_table_mode(window)
 	local name = window:active_key_table()
 	if name == nil or name == "" then
@@ -95,17 +87,12 @@ local function build_right_status(window, pane)
 end
 
 local function tab_title(tab)
-	local user_title = tab.active_pane.user_vars.panetitle
-	if user_title ~= nil and user_title ~= "" then
-		return user_title
+	local manual_title = tab.tab_title
+	if manual_title ~= nil and manual_title ~= "" then
+		return manual_title
 	end
 
-	local process = basename(tab.active_pane.foreground_process_name)
-	if process ~= "" and process ~= "zsh" then
-		return process
-	end
-
-	return tab.active_pane.title or "shell"
+	return "Tab " .. tostring(tab.tab_index + 1)
 end
 
 local function build_tab_title(tab, hover, max_width)

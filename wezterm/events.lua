@@ -2,29 +2,6 @@ local wezterm = require("wezterm")
 
 local M = {}
 
-local VIM_ICON = utf8.char(0xe62b)
-local SUP_IDX = {
-	"¹",
-	"²",
-	"³",
-	"⁴",
-	"⁵",
-	"⁶",
-	"⁷",
-	"⁸",
-	"⁹",
-	"¹⁰",
-	"¹¹",
-	"¹²",
-	"¹³",
-	"¹⁴",
-	"¹⁵",
-	"¹⁶",
-	"¹⁷",
-	"¹⁸",
-	"¹⁹",
-	"²⁰",
-}
 local SUB_IDX = {
 	"₁",
 	"₂",
@@ -51,8 +28,13 @@ local SOLID_LEFT_ARROW = utf8.char(0xe0ba)
 local SOLID_LEFT_MOST = utf8.char(0x2588)
 local SOLID_RIGHT_ARROW = utf8.char(0xe0bc)
 
-local function basename(s)
-	return string.gsub(s, "(.*[/\\])(.*)", "%2")
+local function resolve_tab_label(tab)
+	local manual_title = tab.tab_title
+	if manual_title ~= nil and manual_title ~= "" then
+		return manual_title
+	end
+
+	return "Tab " .. tostring(tab.tab_index + 1)
 end
 
 function M.register()
@@ -68,7 +50,6 @@ function M.register()
 		local edge_background = "#000000"
 		local background = "#4E4E4E"
 		local foreground = "#1C1B19"
-		local dim_foreground = "#000000"
 
 		if tab.is_active then
 			background = "#90EE90"
@@ -79,24 +60,14 @@ function M.register()
 		end
 
 		local edge_foreground = background
-		local process_name = tab.active_pane.foreground_process_name
-		local pane_title = tab.active_pane.title
-		local exec_name = basename(process_name):gsub("%.exe$", "")
-		local title_with_icon
-
-		if exec_name == "nvim" then
-			title_with_icon = VIM_ICON .. pane_title:gsub("^(%S+)%s+(%d+/%d+) %- nvim", " %2 %1")
-		else
-			title_with_icon = pane_title
-		end
+		local title_with_icon = resolve_tab_label(tab)
 
 		local left_arrow = SOLID_LEFT_ARROW
 		if tab.tab_index == 0 then
 			left_arrow = SOLID_LEFT_MOST
 		end
 		local id = SUB_IDX[tab.tab_index + 1]
-		local pid = SUP_IDX[tab.active_pane.pane_index + 1]
-		local title = " " .. wezterm.truncate_right(title_with_icon, max_width - 5) .. " "
+		local title = " " .. wezterm.truncate_right(title_with_icon, math.max(6, max_width - 5)) .. " "
 
 		return {
 			{ Attribute = { Intensity = "Bold" } },
@@ -107,8 +78,6 @@ function M.register()
 			{ Foreground = { Color = foreground } },
 			{ Text = id },
 			{ Text = title },
-			{ Foreground = { Color = dim_foreground } },
-			{ Text = pid },
 			{ Background = { Color = edge_background } },
 			{ Foreground = { Color = edge_foreground } },
 			{ Text = SOLID_RIGHT_ARROW },
