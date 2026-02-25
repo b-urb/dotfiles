@@ -156,7 +156,6 @@ Bitwarden Desktop’s SSH agent is used by default. To opt out and force the loc
 
 ```
 export DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1
-export DOTFILES_ZELLIJ_MODE=native  # native|full|bridge
 
 ```
 

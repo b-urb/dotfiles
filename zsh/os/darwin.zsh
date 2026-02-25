@@ -2,7 +2,7 @@
 
 # macOS-specific exports
 export XDG_CONFIG_HOME="$HOME/.config"
-export PATH="/Applications/Xcode.app/Contents/Developer/usr/bin:/opt/homebrew/opt/go@1.21/bin:$PATH"
+export PATH="/Applications/Xcode.app/Contents/Developer/usr/bin:$PATH"
 export DYLD_FALLBACK_LIBRARY_PATH="$(xcode-select --print-path)/Toolchains/XcodeDefault.xctoolchain/usr/lib/"
 export LDFLAGS=-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib

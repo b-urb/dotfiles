@@ -1,11 +1,17 @@
-local native = require("keybinds.native-leader")
-local zellij = require("keybinds.zellij")
+local native = require("keybinds.native")
 
 local M = {}
+-- Toggle to disable dotfiles keybindings and keep WezTerm defaults.
+local use_zellij = false
 
-function M.build(use_zellij_keybinds)
-	if use_zellij_keybinds then
-		return zellij.build()
+function M.build()
+	if use_zellij then
+		return {
+			leader = nil,
+			keys = {},
+			key_tables = {},
+			disable_default_key_bindings = false,
+		}
 	end
 	return native.build()
 end

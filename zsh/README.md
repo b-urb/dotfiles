@@ -69,7 +69,7 @@ Example: Need to add Docker config between functions (80) and completions (90)?
 - `options/dotfiles.options.sh` (tracked defaults)
 - `options/dotfiles.options.local.sh` (local overrides)
 
-**Why first?**: Flags like `DOTFILES_ENABLE_ZELLIJ` must be available before `40-plugins.zsh` executes.
+**Why first?**: Shared options are available before plugin initialization.
 
 ### 10-zinit.zsh - Plugin Manager
 
