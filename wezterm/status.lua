@@ -1,5 +1,4 @@
 local wezterm = require("wezterm")
-local bridge_gc = require("bridge_gc")
 
 local M = {}
 local CORNER_LEFT = utf8.char(0xe0b6)
@@ -130,13 +129,12 @@ local function build_tab_title(tab, hover, max_width)
 	}
 end
 
-function M.register(mode)
+function M.register()
 	wezterm.on("format-tab-title", function(tab, _, _, _, hover, max_width)
 		return build_tab_title(tab, hover, max_width)
 	end)
 
 	wezterm.on("update-right-status", function(window, pane)
-		bridge_gc.collect(mode)
 		window:set_left_status("")
 		window:set_right_status(build_right_status(window, pane))
 	end)
