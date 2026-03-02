@@ -16,7 +16,8 @@ $kubernetes\
 """
 
 [directory]
-style = "fg:#FFFFFF"
+# style = "fg:#abb2bf"
+style = "fg:#c9d1d9"
 format = "[$path]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -33,7 +34,8 @@ truncation_symbol = "…/"
 
 [c]
 symbol = " "
-style = "bg:#86BBD8"
+# style = "bg:#61afef"
+style = "bg:#58a6ff"
 format = '[$symbol ($version)]($style)'
 
 [env_var.VIMSHELL]
@@ -46,7 +48,8 @@ style = 'green italic'
 
 [env_var.USER]
 format = "[$env_value]($style)"
-style = '#FF13F0 italic'
+# style = '#c678dd italic'
+style = '#bc8cff italic'
 
 [git_branch]
 symbol = ""
@@ -73,13 +76,16 @@ format = '[$symbol ($version)]($style)'
 [time]
 disabled = false
 time_format = "%R" # Hour:Minute Format
-style = "bg:#33658A"
-format = '[[ ♥ $time ](bg:#33658A) ]($style)'
+# style = "bg:#61afef"
+style = "bg:#1f6feb"
+# format = '[[ ♥ $time ](bg:#61afef) ]($style)'
+format = '[[ ♥ $time ](bg:#1f6feb) ]($style)'
 
 [kubernetes]
 format = '[ ⛵ $context\($namespace\)]($style)'
 disabled = false
-style="#2E6DE7"
+# style="#61afef"
+style="#58a6ff"
 [kubernetes.context_aliases]
 "dev-mips-ql" = "mips"
 "minikube" = "mk"
@@ -90,7 +96,8 @@ disabled = false
 
 [status]
 map_symbol = true
-style = "fg:#7CFC00"
+# style = "fg:#98c379"
+style = "fg:#58a6ff"
 success_symbol = " "
 format = '[\[$symbol$common_meaning$signal_name$maybe_int\]]($style) '
 disabled = false

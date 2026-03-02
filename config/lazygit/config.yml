@@ -1,26 +1,36 @@
 gui:
   theme:
     activeBorderColor:
-      - "#61afef" # Blue
+      # - "#61afef" # Blue
+      - "#58a6ff" # GitHub Dark Colorblind blue
       - bold
     inactiveBorderColor:
-      - "#5c6370" # Comment Grey
+      # - "#5c6370" # Comment Grey
+      - "#8b949e" # GitHub muted fg
     optionsTextColor:
-      - "#61afef" # Blue
+      # - "#61afef" # Blue
+      - "#58a6ff" # GitHub Dark Colorblind blue
     selectedLineBgColor:
-      - "#3e4452" # Darker Grey
+      # - "#3e4452" # Darker Grey
+      - "#21262d" # GitHub canvas subtle
     cherryPickedCommitFgColor:
-      - "#98c379" # Green
+      # - "#98c379" # Green
+      - "#79c0ff" # GitHub bright blue
     cherryPickedCommitBgColor:
-      - "#56b6c2" # Cyan
+      # - "#56b6c2" # Cyan
+      - "#0c2d6b" # GitHub dark blue bg
     markedBaseCommitFgColor:
-      - "#61afef" # Blue
+      # - "#61afef" # Blue
+      - "#58a6ff" # GitHub Dark Colorblind blue
     markedBaseCommitBgColor:
-      - "#98c379" # Green
+      # - "#98c379" # Green
+      - "#1f6feb" # GitHub blue emphasis
     unstagedChangesColor:
-      - "#e06c75" # Red
+      # - "#e06c75" # Red
+      - "#ec8e2c" # GitHub orange (danger/open)
     defaultFgColor:
-      - "#abb2bf" # Light Grey
+      # - "#abb2bf" # Light Grey
+      - "#c9d1d9" # GitHub default fg
 customCommands:
   # retrieved from: https://github.com/jesseduffield/lazygit/wiki/Custom-Commands-Compendium#conventional-commit
   - key: "<c-v>"

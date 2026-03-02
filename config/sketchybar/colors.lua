@@ -1,30 +1,33 @@
 return {
-  black = 0xff181819,
-  white = 0xffe2e2e3,
-  red = 0xfffc5d7c,
-  green = 0xff9ed072,
-  blue = 0xff76cce0,
-  yellow = 0xffe7c664,
-  orange = 0xfff39660,
-  magenta = 0xffb39df3,
-  grey = 0xff7f8490,
+  black = 0xff0d1117,
+  white = 0xffc9d1d9,
+  red = 0xffec8e2c,
+  green = 0xff58a6ff,
+  blue = 0xff79c0ff,
+  yellow = 0xffd29922,
+  orange = 0xfffdac54,
+  magenta = 0xffbc8cff,
+  grey = 0xff8b949e,
   transparent = 0x00000000,
 
   spaces = {
-    highlight = 0xff90ee90 },
+    highlight = 0xff58a6ff,
+  },
   bar = {
-    bg = 0xf02c2e34,
-    border = 0xff2c2e34,
+    bg = 0xf00d1117,
+    border = 0xff30363d,
   },
   popup = {
-    bg = 0xc02c2e34,
-    border = 0xff7f8490
+    bg = 0xc0161b22,
+    border = 0xff30363d,
   },
-  bg1 = 0xff363944,
-  bg2 = 0xff414550,
+  bg1 = 0xff161b22,
+  bg2 = 0xff21262d,
 
   with_alpha = function(color, alpha)
-    if alpha > 1.0 or alpha < 0.0 then return color end
+    if alpha > 1.0 or alpha < 0.0 then
+      return color
+    end
     return (color & 0x00ffffff) | (math.floor(alpha * 255.0) << 24)
   end,
 }

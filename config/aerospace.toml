@@ -119,7 +119,7 @@ inner.horizontal = 15
 inner.vertical = 10
 outer.left = 10
 outer.bottom = 10
-outer.top = 50
+outer.top = 58
 outer.right = 10
 
 # Keybindings are managed by skhd in:

@@ -21,6 +21,7 @@ return {
     "folke/snacks.nvim",
     opts = function(_, opts)
       opts.picker = opts.picker or {}
+      opts.picker.ui_select = true
       opts.picker.sources = opts.picker.sources or {}
       opts.picker.sources.explorer = opts.picker.sources.explorer or {}
 
