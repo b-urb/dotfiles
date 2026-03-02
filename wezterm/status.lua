@@ -6,12 +6,33 @@ local CORNER_RIGHT = utf8.char(0xe0b4)
 local TAB_LEFT = utf8.char(0xe0b6)
 local TAB_RIGHT = utf8.char(0xe0b4)
 
-local TAB_BAR_BG = "#282c34"
-local TAB_ACTIVE_EDGE = "#61afef"
-local TAB_ACTIVE_BG = "#61afef"
-local TAB_ACTIVE_FG = "#1e222a"
-local TAB_INACTIVE_FG = "#5c6370"
-local TAB_HOVER_FG = "#abb2bf"
+-- local TAB_BAR_BG = "#282c34"
+local TAB_BAR_BG = "#0d1117"
+-- local TAB_ACTIVE_EDGE = "#61afef"
+local TAB_ACTIVE_EDGE = "#58a6ff"
+-- local TAB_ACTIVE_BG = "#61afef"
+local TAB_ACTIVE_BG = "#58a6ff"
+-- local TAB_ACTIVE_FG = "#1e222a"
+local TAB_ACTIVE_FG = "#0d1117"
+-- local TAB_INACTIVE_FG = "#5c6370"
+local TAB_INACTIVE_FG = "#8b949e"
+-- local TAB_HOVER_FG = "#abb2bf"
+local TAB_HOVER_FG = "#c9d1d9"
+
+-- local WORKSPACE_EDGE = "#a464bf"
+local WORKSPACE_EDGE = "#8957e5"
+-- local WORKSPACE_BG = "#c678dd"
+local WORKSPACE_BG = "#bc8cff"
+-- local DOMAIN_EDGE = "#c79f5d"
+local DOMAIN_EDGE = "#b76100"
+-- local DOMAIN_BG = "#e5c07b"
+local DOMAIN_BG = "#ec8e2c"
+-- local CLOCK_EDGE = "#4b9bd6"
+local CLOCK_EDGE = "#1f6feb"
+-- local CLOCK_BG = "#61afef"
+local CLOCK_BG = "#58a6ff"
+-- local BADGE_FG = "#1e222a"
+local BADGE_FG = "#0d1117"
 
 local function uppercase_or_default(value, default_value)
 	if value == nil or value == "" then
@@ -44,13 +65,19 @@ end
 
 local function mode_colors(mode)
 	local palette = {
-		NORMAL = { edge = "#7da55a", bg = "#98c379", fg = "#1e222a" },
-		PANE = { edge = "#4b9bd6", bg = "#61afef", fg = "#1e222a" },
-		TAB = { edge = "#a464bf", bg = "#c678dd", fg = "#1e222a" },
-		RESIZE = { edge = "#c79f5d", bg = "#e5c07b", fg = "#1e222a" },
-		SESSION = { edge = "#4aa4b0", bg = "#56b6c2", fg = "#1e222a" },
+		-- NORMAL = { edge = "#7da55a", bg = "#98c379", fg = "#1e222a" },
+		NORMAL = { edge = "#1f6feb", bg = "#58a6ff", fg = BADGE_FG },
+		-- PANE = { edge = "#4b9bd6", bg = "#61afef", fg = "#1e222a" },
+		PANE = { edge = "#1158c7", bg = "#79c0ff", fg = BADGE_FG },
+		-- TAB = { edge = "#a464bf", bg = "#c678dd", fg = "#1e222a" },
+		TAB = { edge = "#8957e5", bg = "#bc8cff", fg = BADGE_FG },
+		-- RESIZE = { edge = "#c79f5d", bg = "#e5c07b", fg = "#1e222a" },
+		RESIZE = { edge = "#9e6a03", bg = "#d29922", fg = BADGE_FG },
+		-- SESSION = { edge = "#4aa4b0", bg = "#56b6c2", fg = "#1e222a" },
+		SESSION = { edge = "#116329", bg = "#39c5cf", fg = BADGE_FG },
 	}
-	return palette[mode] or { edge = "#535965", bg = "#7f8795", fg = "#1e222a" }
+	-- return palette[mode] or { edge = "#535965", bg = "#7f8795", fg = "#1e222a" }
+	return palette[mode] or { edge = "#30363d", bg = "#6e7681", fg = BADGE_FG }
 end
 
 local function push_badge(cells, icon, text, edge_color, badge_bg, badge_fg, bold)
@@ -76,11 +103,14 @@ local function build_right_status(window, pane)
 	local mode_style = mode_colors(active_mode)
 	local cells = {}
 	push_badge(cells, "󰘳", active_mode, mode_style.edge, mode_style.bg, mode_style.fg, true)
-	push_badge(cells, "󱂬", workspace, "#a464bf", "#c678dd", "#1e222a", false)
+	-- push_badge(cells, "󱂬", workspace, "#a464bf", "#c678dd", "#1e222a", false)
+	push_badge(cells, "󱂬", workspace, WORKSPACE_EDGE, WORKSPACE_BG, BADGE_FG, false)
 	if domain ~= "local" then
-		push_badge(cells, "󰆍", domain, "#c79f5d", "#e5c07b", "#1e222a", false)
+		-- push_badge(cells, "󰆍", domain, "#c79f5d", "#e5c07b", "#1e222a", false)
+		push_badge(cells, "󰆍", domain, DOMAIN_EDGE, DOMAIN_BG, BADGE_FG, false)
 	end
-	push_badge(cells, "", clock, "#4b9bd6", "#61afef", "#1e222a", false)
+	-- push_badge(cells, "", clock, "#4b9bd6", "#61afef", "#1e222a", false)
+	push_badge(cells, "", clock, CLOCK_EDGE, CLOCK_BG, BADGE_FG, false)
 
 	return wezterm.format(cells)
 end

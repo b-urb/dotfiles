@@ -3,6 +3,9 @@ local act = wezterm.action
 
 local M = {}
 local nvim_bottom_panes = {}
+-- Use "minimize" or "recreate" for tabs with extra panes.
+local multi_pane_toggle_mode = "minimize"
+local nvim_bottom_terminal_size = 0.20
 
 local function move_pane_to_new_tab(_, pane)
 	if pane ~= nil then
@@ -51,7 +54,15 @@ local function cleanup_nvim_bottom_state(tab)
 		return nil, key
 	end
 
-	if state.owner_pane_id == nil or state.terminal_pane_id == nil then
+	if state.owner_pane_id == nil then
+		nvim_bottom_panes[key] = nil
+		return nil, key
+	end
+
+	if state.terminal_pane_id == nil then
+		if state.hidden == true then
+			return state, key
+		end
 		nvim_bottom_panes[key] = nil
 		return nil, key
 	end
@@ -62,6 +73,9 @@ local function cleanup_nvim_bottom_state(tab)
 	end
 
 	if find_pane_info_by_id(tab, state.terminal_pane_id) == nil then
+		if state.hidden == true then
+			return state, key
+		end
 		nvim_bottom_panes[key] = nil
 		return nil, key
 	end
@@ -89,6 +103,84 @@ local function tab_has_only_tracked_pair(tab, state)
 	return owner_found and terminal_found
 end
 
+local function toggle_multi_pane_minimize(window, state, owner_info, bottom_info, from_bottom_pane)
+	if owner_info == nil or bottom_info == nil then
+		return false
+	end
+
+	if state.hidden then
+		local restore_rows = state.multi_restore_rows or 0
+		if restore_rows > 0 then
+			window:perform_action(act.AdjustPaneSize({ "Up", restore_rows }), owner_info.pane)
+		end
+		bottom_info.pane:activate()
+		state.hidden = false
+		state.multi_restore_rows = nil
+		return true
+	end
+
+	local height = bottom_info.height or 0
+	local shrink_rows = math.max(0, height - 1)
+	if shrink_rows > 0 then
+		window:perform_action(act.AdjustPaneSize({ "Down", shrink_rows }), owner_info.pane)
+	end
+
+	state.multi_restore_rows = shrink_rows
+	state.hidden = true
+	if from_bottom_pane then
+		owner_info.pane:activate()
+	end
+
+	return true
+end
+
+local function toggle_multi_pane_recreate(window, state, owner_info, bottom_info, from_bottom_pane)
+	if owner_info == nil then
+		return false
+	end
+
+	if state.hidden then
+		if bottom_info ~= nil then
+			state.terminal_pane_id = bottom_info.pane:pane_id()
+			state.hidden = false
+			bottom_info.pane:activate()
+			return true
+		end
+
+		local new_bottom = owner_info.pane:split({
+			direction = "Bottom",
+			size = nvim_bottom_terminal_size,
+		})
+		new_bottom:activate()
+		state.terminal_pane_id = new_bottom:pane_id()
+		state.hidden = false
+		return true
+	end
+
+	if bottom_info == nil then
+		state.hidden = true
+		state.terminal_pane_id = nil
+		return true
+	end
+
+	if from_bottom_pane then
+		owner_info.pane:activate()
+	end
+
+	window:perform_action(act.CloseCurrentPane({ confirm = false }), bottom_info.pane)
+	state.hidden = true
+	state.terminal_pane_id = nil
+	return true
+end
+
+local function toggle_multi_pane(window, state, owner_info, bottom_info, from_bottom_pane)
+	if multi_pane_toggle_mode == "recreate" then
+		return toggle_multi_pane_recreate(window, state, owner_info, bottom_info, from_bottom_pane)
+	end
+
+	return toggle_multi_pane_minimize(window, state, owner_info, bottom_info, from_bottom_pane)
+end
+
 local function toggle_nvim_bottom_terminal(trigger_key)
 	return wezterm.action_callback(function(window, pane)
 		local tab = window:active_tab()
@@ -113,6 +205,9 @@ local function toggle_nvim_bottom_terminal(trigger_key)
 			end
 
 			if not tab_has_only_tracked_pair(tab, state) then
+				local owner_info = find_pane_info_by_id(tab, state.owner_pane_id)
+				local bottom_info = find_pane_info_by_id(tab, state.terminal_pane_id)
+				toggle_multi_pane(window, state, owner_info, bottom_info, from_bottom_pane)
 				return
 			end
 
@@ -146,7 +241,7 @@ local function toggle_nvim_bottom_terminal(trigger_key)
 
 		local bottom_pane = pane:split({
 			direction = "Bottom",
-			size = 0.30,
+			size = nvim_bottom_terminal_size,
 		})
 		bottom_pane:activate()
 		nvim_bottom_panes[key] = {

@@ -1,3 +1,4 @@
 k9s:
   ui:
-    skin: catppuccin-mocha
+    # skin: onedark
+    skin: github_dark_colorblind

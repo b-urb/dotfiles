@@ -12,13 +12,20 @@ spacebar -m config spacing_left         25
 spacebar -m config spacing_right        15
 spacebar -m config text_font            "Helvetica Neue:Bold:12.0"
 spacebar -m config icon_font            "Font Awesome 5 Free:Solid:12.0"
-spacebar -m config background_color     0xff202020
-spacebar -m config foreground_color     0xffa8a8a8
-spacebar -m config space_icon_color     0xff458588
-spacebar -m config power_icon_color     0xffcd950c
-spacebar -m config battery_icon_color   0xffd75f5f
-spacebar -m config dnd_icon_color       0xffa8a8a8
-spacebar -m config clock_icon_color     0xffa8a8a8
+# spacebar -m config background_color     0xff282c34
+spacebar -m config background_color     0xff0d1117
+# spacebar -m config foreground_color     0xffabb2bf
+spacebar -m config foreground_color     0xffc9d1d9
+# spacebar -m config space_icon_color     0xff61afef
+spacebar -m config space_icon_color     0xff58a6ff
+# spacebar -m config power_icon_color     0xffe5c07b
+spacebar -m config power_icon_color     0xffd29922
+# spacebar -m config battery_icon_color   0xffe06c75
+spacebar -m config battery_icon_color   0xffec8e2c
+# spacebar -m config dnd_icon_color       0xff5c6370
+spacebar -m config dnd_icon_color       0xff8b949e
+# spacebar -m config clock_icon_color     0xff5c6370
+spacebar -m config clock_icon_color     0xff8b949e
 spacebar -m config power_icon_strip      
 spacebar -m config space_icon_strip     I II III IV V VI VII VIII IX X
 spacebar -m config space_icon           

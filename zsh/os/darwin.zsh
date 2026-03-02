@@ -42,7 +42,7 @@ fi
 
 # SSH agent with Keychain
 if [ -z "$__dotfiles_bw_ssh_sock" ] && [ -f ~/.ssh/id_rsa ]; then
-    nohup ssh-add --apple-use-keychain ~/.ssh/id_rsa > /dev/null 2>&1 & disown
+    # nohup ssh-add --apple-use-keychain ~/.ssh/id_rsa > /dev/null 2>&1 & disown
 fi
 
 # Source global .env

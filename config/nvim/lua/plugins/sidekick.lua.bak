@@ -1,0 +1,24 @@
+return {
+  {
+    "folke/sidekick.nvim",
+    keys = {
+      { "<tab>", false, mode = { "n" } },
+    },
+    opts = function(_, opts)
+      opts.nes = opts.nes or {}
+      opts.nes.enabled = false
+
+      opts.cli = opts.cli or {}
+      opts.cli.mux = vim.tbl_deep_extend("force", opts.cli.mux or {}, {
+        enabled = true,
+        backend = "zellij", -- or "tmux"
+      })
+
+      LazyVim.cmp.actions.ai_nes = function()
+        return false
+      end
+
+      pcall(vim.keymap.del, "n", "<leader>uN")
+    end,
+  },
+}

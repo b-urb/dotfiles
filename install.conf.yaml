@@ -199,6 +199,14 @@
         path: config/opencode/opencode.jsonc
         create: true
         force: true
+    ~/.config/opencode/tui.json:
+        path: config/opencode/tui.json
+        create: true
+        force: true
+    ~/.config/opencode/themes:
+        path: config/opencode/themes
+        create: true
+        relink: true
     ~/.config/helix:
         path: config/helix
         create: true
