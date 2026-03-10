@@ -182,14 +182,8 @@
         create: true
         relink: true
         force: true
-    ~/.config/atuin:
-        path: config/atuin
-        create: true
     ~/.config/lazygit:
         path: config/lazygit
-        create: true
-    ~/.config/.gitignore:
-        path: gitignore
         create: true
     ~/.codex/config.toml:
         path: config/codex/config.toml
@@ -212,6 +206,20 @@
         create: true
         force: true
     ~/.ideavimrc: ideavimrc
+
+    "~/Library/Application Support/Code/User":
+      if: '[ "$(uname)" = Darwin ]'
+      path: config/vscode/User
+      create: true
+      relink: true
+      force: true
+
+    ~/.config/Code/User:
+      if: '[ "$(uname)" = Linux ]'
+      path: config/vscode/User
+      create: true
+      relink: true
+      force: true
 
     ~/.config/starship.toml: starship.toml
 

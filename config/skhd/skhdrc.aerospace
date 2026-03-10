@@ -75,4 +75,5 @@ aerospace_service < ctrl - g ; default
 aerospace_service < escape : aerospace reload-config; skhd -k "ctrl - g"
 aerospace_service < r : aerospace flatten-workspace-tree; skhd -k "ctrl - g"
 aerospace_service < f : aerospace layout floating tiling; skhd -k "ctrl - g"
+aerospace_service < x : /bin/bash -lc 'osascript -e "tell application \"AeroSpace\" to quit" >/dev/null 2>&1 || true; sleep 0.35; for proc in AeroSpace aerospace; do pids="$(pgrep -x "$proc" || true)"; [ -n "$pids" ] && kill -TERM $pids >/dev/null 2>&1 || true; done; sleep 0.35; for proc in AeroSpace aerospace; do pids="$(pgrep -x "$proc" || true)"; [ -n "$pids" ] && kill -KILL $pids >/dev/null 2>&1 || true; done; open -a AeroSpace'; skhd -k "ctrl - g"
 aerospace_service < 0x33 : aerospace close-all-windows-but-current; skhd -k "ctrl - g"
