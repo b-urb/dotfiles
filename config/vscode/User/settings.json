@@ -1,0 +1,425 @@
+{
+  "files.autoSave": "onFocusChange",
+  "editor.inlineSuggest.enabled": true,
+  "CodeGPT.apiKey": "HuggingFace",
+  "editor.inlayHints.enabled": "off",
+  "workbench.colorCustomizations": {
+    "editor.lineHighlightBackground": "#1073cf2d",
+    "editor.lineHighlightBorder": "#9fced11f"
+  },
+  "editor.wordWrap": "off",
+  "diffEditor.wordWrap": "off",
+  "editor.guides.indentation": false,
+  "editor.guides.bracketPairs": false,
+  "editor.accessibilitySupport": "off",
+  "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
+  "chat.tools.terminal.autoApprove": {
+    "jsonnetfmt": true,
+    "diff": true,
+    "true": true,
+    "./jsonnet-fmt-check.sh": true
+  },
+  "vim.leader": " ",
+  "vim.useSystemClipboard": true,
+  "vim.useCtrlKeys": true,
+  "vim.hlsearch": true,
+  "vim.incsearch": true,
+  "vim.sneak": true,
+  "vim.easymotion": true,
+  "vim.easymotionMarkerForegroundColorOneChar": "#58a6ff",
+  "vim.easymotionMarkerForegroundColorTwoCharFirst": "#79c0ff",
+  "vim.easymotionMarkerForegroundColorTwoCharSecond": "#3fb950",
+  "vim.easymotionIncSearchForegroundColor": "#79c0ff",
+  "vim.easymotionMarkerBackgroundColor": "#0000",
+  "vim.easymotionDimColor": "#484f58",
+  "vim.easymotionDimBackground": true,
+  "vim.easymotionKeys": "hklyuiopnmqwertzxcvbasdgjf",
+  "vim.camelCaseMotion.enable": true,
+  "vim.smartRelativeLine": true,
+  "vim.visualstar": true,
+  "vim.highlightedyank.enable": true,
+  "vim.handleKeys": {
+    "<C-h>": false,
+    "<C-j>": false,
+    "<C-k>": false,
+    "<C-l>": false,
+    "<C-f>": false,
+    "<C-p>": false
+  },
+  "vim.insertModeKeyBindings": [
+    {
+      "before": [
+        "j",
+        "j"
+      ],
+      "after": [
+        "<Esc>"
+      ]
+    }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": [
+        "<space>"
+      ],
+      "commands": [
+        {
+          "command": "_setContext",
+          "args": [
+            "leaderkeyState",
+            "SPC"
+          ]
+        },
+        {
+          "command": "leaderkey.render",
+          "args": "SPC"
+        }
+      ]
+    },
+    {
+      "before": [
+        ","
+      ],
+      "commands": [
+        {
+          "command": "_setContext",
+          "args": [
+            "leaderkeyState",
+            ","
+          ]
+        },
+        {
+          "command": "leaderkey.render",
+          "args": ","
+        }
+      ]
+    },
+    {
+      "before": [
+        "s"
+      ],
+      "after": [
+        "<leader>",
+        "<leader>",
+        "2",
+        "s"
+      ]
+    },
+    {
+      "before": [
+        ">"
+      ],
+      "commands": [
+        "editor.action.indentLines"
+      ]
+    },
+    {
+      "before": [
+        "<"
+      ],
+      "commands": [
+        "editor.action.outdentLines"
+      ]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": [
+        "<space>"
+      ],
+      "commands": [
+        {
+          "command": "_setContext",
+          "args": [
+            "leaderkeyState",
+            "SPC"
+          ]
+        },
+        {
+          "command": "leaderkey.render",
+          "args": "SPC"
+        }
+      ]
+    },
+    {
+      "before": [
+        ","
+      ],
+      "commands": [
+        {
+          "command": "_setContext",
+          "args": [
+            "leaderkeyState",
+            ","
+          ]
+        },
+        {
+          "command": "leaderkey.render",
+          "args": ","
+        }
+      ]
+    },
+    {
+      "before": [
+        "s"
+      ],
+      "after": [
+        "<leader>",
+        "<leader>",
+        "2",
+        "s"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "h"
+      ],
+      "commands": [
+        "workbench.action.focusLeftGroup"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "j"
+      ],
+      "commands": [
+        "workbench.action.focusBelowGroup"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "k"
+      ],
+      "commands": [
+        "workbench.action.focusAboveGroup"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "l"
+      ],
+      "commands": [
+        "workbench.action.focusRightGroup"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "H"
+      ],
+      "commands": [
+        "workbench.action.moveEditorToLeftGroup"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "J"
+      ],
+      "commands": [
+        "workbench.action.moveEditorToBelowGroup"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "K"
+      ],
+      "commands": [
+        "workbench.action.moveEditorToAboveGroup"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "L"
+      ],
+      "commands": [
+        "workbench.action.moveEditorToRightGroup"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "v"
+      ],
+      "commands": [
+        "workbench.action.splitEditorRight"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "s"
+      ],
+      "commands": [
+        "workbench.action.splitEditorDown"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "c"
+      ],
+      "commands": [
+        "workbench.action.closeActiveEditor"
+      ]
+    },
+    {
+      "before": [
+        "<C-w>",
+        "="
+      ],
+      "commands": [
+        "workbench.action.evenEditorWidths"
+      ]
+    },
+    {
+      "before": [
+        "g",
+        "d"
+      ],
+      "commands": [
+        "editor.action.revealDefinition"
+      ]
+    },
+    {
+      "before": [
+        "g",
+        "r"
+      ],
+      "commands": [
+        "editor.action.goToReferences"
+      ]
+    },
+    {
+      "before": [
+        "g",
+        "i"
+      ],
+      "commands": [
+        "editor.action.goToImplementation"
+      ]
+    },
+    {
+      "before": [
+        "[",
+        "d"
+      ],
+      "commands": [
+        "editor.action.marker.prev"
+      ]
+    },
+    {
+      "before": [
+        "]",
+        "d"
+      ],
+      "commands": [
+        "editor.action.marker.next"
+      ]
+    }
+  ],
+  "leaderkey.overrides.user": {
+    "SPC e": {
+      "name": "Toggle Explorer",
+      "command": "workbench.view.explorer"
+    },
+    "SPC n": {
+      "name": "Focus Explorer",
+      "command": "workbench.files.action.focusFilesExplorer"
+    },
+    "SPC o": {
+      "name": "Reveal File In Explorer",
+      "command": "workbench.files.action.showActiveFileInExplorer"
+    },
+    "SPC r": {
+      "name": "Refresh Explorer",
+      "command": "workbench.files.action.refreshFilesExplorer"
+    },
+    "SPC q": {
+      "name": "Close Sidebar",
+      "command": "workbench.action.closeSidebar"
+    },
+    "SPC w": {
+      "name": "Save",
+      "command": "workbench.action.files.save"
+    },
+    "SPC W": {
+      "name": "Save All",
+      "command": "workbench.action.files.saveAll"
+    },
+    "SPC x": {
+      "name": "Close Buffer",
+      "command": "workbench.action.closeActiveEditor"
+    },
+    "SPC /": {
+      "name": "Toggle Comment",
+      "command": "editor.action.commentLine"
+    },
+    "SPC b": "Buffers",
+    "SPC b o": {
+      "name": "Close Other Buffers",
+      "command": "workbench.action.closeOtherEditors"
+    },
+    "SPC b n": {
+      "name": "Next Buffer",
+      "command": "workbench.action.nextEditor"
+    },
+    "SPC b p": {
+      "name": "Previous Buffer",
+      "command": "workbench.action.previousEditor"
+    },
+    "SPC f": "Find",
+    "SPC f f": {
+      "name": "Find File",
+      "command": "workbench.action.quickOpen"
+    },
+    "SPC f g": {
+      "name": "Find In Files",
+      "command": "workbench.action.findInFiles"
+    },
+    "SPC f r": {
+      "name": "Open Recent",
+      "command": "workbench.action.openRecent"
+    },
+    "SPC f s": {
+      "name": "Goto Symbol",
+      "command": "workbench.action.gotoSymbol"
+    },
+    "SPC c": "Code",
+    "SPC c a": {
+      "name": "Code Action",
+      "command": "editor.action.codeAction"
+    },
+    "SPC c r": {
+      "name": "Rename Symbol",
+      "command": "editor.action.rename"
+    },
+    "SPC g": "Git",
+    "SPC g g": {
+      "name": "Source Control",
+      "command": "workbench.view.scm"
+    },
+    "SPC t": "Terminal",
+    "SPC t t": {
+      "name": "Toggle Terminal",
+      "command": "workbench.action.terminal.toggleTerminal"
+    },
+    "SPC p": "Problems",
+    "SPC p p": {
+      "name": "Show Problems",
+      "command": "workbench.actions.view.problems"
+    }
+  },
+  "extensions.experimental.affinity": {
+    "vscodevim.vim": 1
+  },
+  "vscode-easymotion.styles": {
+    
+  }
+}

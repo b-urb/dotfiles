@@ -1,124 +1,236 @@
 local colors = require("colors")
 local settings = require("settings")
 local app_icons = require("helpers.app_icons")
+local AEROSPACE_BIN = "/opt/homebrew/bin/aerospace"
 
-local max_workspaces = 9
+local WORKSPACES_CMD = AEROSPACE_BIN
+  .. " list-workspaces --all --format '%{workspace}|%{monitor-appkit-nsscreen-screens-id}|%{monitor-id}|%{workspace-is-focused}'"
+local MONITORS_CMD = AEROSPACE_BIN
+  .. " list-monitors --format '%{monitor-appkit-nsscreen-screens-id}|%{monitor-is-main}'"
 
--- Add padding to the left
-sbar.add("item", {
-	icon = { drawing = false },
-	label = { drawing = false },
-	background = { drawing = false },
-	padding_left = 6,
-	padding_right = 0,
-})
+local function workspace_windows_cmd(workspace_id)
+  return AEROSPACE_BIN
+    .. " list-windows --workspace "
+    .. workspace_id
+    .. " --format '%{app-name}' --json"
+end
 
+local function trim(str)
+  return (str or ""):gsub("^%s+", ""):gsub("%s+$", "")
+end
+
+local function icon_for_app(app)
+  return app_icons[app] or app_icons.default
+end
+
+local function read_accessible_workspaces()
+  local ids = {}
+  local seen = {}
+  local path = (os.getenv("HOME") or "") .. "/.config/skhd/skhdrc.aerospace"
+  local file = io.open(path, "r")
+
+  if file then
+    for line in file:lines() do
+      local stripped = trim(line)
+      if stripped ~= "" and not stripped:match("^#") then
+        local workspace = stripped:match("aerospace%s+workspace%s+([%w]+)")
+        if not workspace then
+          workspace = stripped:match("aerospace%s+move%-node%-to%-workspace%s+([%w]+)")
+        end
+
+        if workspace then
+          workspace = workspace:upper()
+          if not seen[workspace] then
+            seen[workspace] = true
+            table.insert(ids, workspace)
+          end
+        end
+      end
+    end
+    file:close()
+  end
+
+  if #ids == 0 then
+    ids = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "X", "Z" }
+  end
+
+  return ids
+end
+
+local function parse_workspace_state(raw)
+  local state = {}
+
+  for line in (raw or ""):gmatch("[^\r\n]+") do
+    local workspace, appkit_screen_id, monitor_id, focused = line:match("^([^|]+)|([^|]+)|([^|]+)|([^|]+)$")
+    workspace = workspace and workspace:upper() or nil
+    if workspace then
+      local display = tonumber(appkit_screen_id) or tonumber(monitor_id)
+      state[workspace] = {
+        display = display,
+        focused = focused == "true",
+      }
+    end
+  end
+
+  return state
+end
+
+local function read_workspace_state()
+  local handle = io.popen(WORKSPACES_CMD)
+  if not handle then
+    return {}
+  end
+
+  local raw = handle:read("*a") or ""
+  handle:close()
+  return parse_workspace_state(raw)
+end
+
+local function detect_secondary_display_id()
+  local handle = io.popen(MONITORS_CMD)
+  if not handle then
+    return nil
+  end
+
+  local raw = handle:read("*a") or ""
+  handle:close()
+
+  for line in raw:gmatch("[^\r\n]+") do
+    local appkit_screen_id, is_main = line:match("^([^|]+)|([^|]+)$")
+    local display = tonumber(appkit_screen_id)
+    if display and is_main == "false" then
+      return display
+    end
+  end
+
+  return nil
+end
+
+local function set_workspace_display(item_name, display)
+  local target = display and tostring(display) or "all"
+  sbar.exec("sketchybar --set " .. item_name .. " display=" .. target)
+end
+
+local workspace_ids = read_accessible_workspaces()
 local workspaces = {}
 
-local function updateWindows(workspace_index)
-	local get_windows =
-		string.format("aerospace list-windows --workspace %s --format '%%{app-name}' --json", workspace_index)
-	sbar.exec(get_windows, function(open_windows)
-		local icon_line = ""
-		local no_app = true
-		for i, open_window in ipairs(open_windows) do
-			no_app = false
-			local app = open_window["app-name"]
-			local lookup = app_icons[app]
-			local icon = ((lookup == nil) and app_icons["default"] or lookup)
-			icon_line = icon_line .. " " .. icon
-		end
-		sbar.animate("tanh", 10, function()
-			if no_app then
-				workspaces[workspace_index]:set({
-					icon = { drawing = false },
-					label = { drawing = false },
-					background = { drawing = false },
-					padding_right = 0,
-					padding_left = 0,
-				})
-				return
-			end
+sbar.add("item", {
+  icon = { drawing = false },
+  label = { drawing = false },
+  background = { drawing = false },
+  padding_left = 8,
+  padding_right = 0,
+})
 
-			workspaces[workspace_index]:set({
-				icon = { drawing = true },
-				label = { drawing = true, string = icon_line },
-				background = { drawing = true },
-				padding_right = 1,
-				padding_left = 4,
-			})
-		end)
-	end)
+sbar.remove("/aerospace\\.space\\.focused_app\\..*/")
+
+for _, workspace_id in ipairs(workspace_ids) do
+  local workspace = sbar.add("item", "aerospace.space." .. workspace_id, {
+    icon = {
+      font = {
+        family = settings.font.numbers,
+        style = settings.font.style_map["Bold"],
+        size = 15.0,
+      },
+      string = workspace_id,
+      color = colors.grey,
+      highlight_color = colors.spaces.highlight,
+      padding_left = 18,
+      padding_right = 10,
+    },
+    label = {
+      color = colors.grey,
+      highlight_color = colors.spaces.highlight,
+      padding_right = 12,
+      font = "sketchybar-app-font:Regular:18.0",
+      y_offset = -1,
+      drawing = false,
+      highlight = false,
+    },
+    padding_right = 3,
+    padding_left = 6,
+    background = {
+      drawing = true,
+      color = colors.with_alpha(colors.bg1, 0.35),
+      border_color = colors.spaces.highlight,
+      border_width = 0,
+      corner_radius = 10,
+      height = 30,
+    },
+  })
+
+  workspace:subscribe("mouse.clicked", function()
+    sbar.exec(AEROSPACE_BIN .. " workspace " .. workspace_id)
+  end)
+
+  workspaces[workspace_id] = workspace
 end
 
-for workspace_index = 1, max_workspaces do
-	local workspace = sbar.add("item", {
-		icon = {
-			font = { family = settings.font.numbers },
-			string = workspace_index,
-			color = colors.grey,
-			highlight_color = colors.spaces.highlight,
-			padding_left = 15,
-			padding_right = 8,
-		},
-		label = {
-			padding_right = 20,
-			color = colors.grey,
-			highlight_color = colors.spaces.highlight,
-			font = "sketchybar-app-font:Regular:18.0",
-			y_offset = -1,
-		},
-		padding_right = 1,
-		padding_left = 4,
-		background = {
-			border_color = colors.spaces.highlight,
-		},
-	})
+local function refresh_workspaces()
+  local workspace_state = read_workspace_state()
+  local secondary_display_id = detect_secondary_display_id()
 
-	workspaces[workspace_index] = workspace
+  for _, workspace_id in ipairs(workspace_ids) do
+    local workspace = workspaces[workspace_id]
+    local state = workspace_state[workspace_id] or {}
 
-	workspace:subscribe("aerospace_workspace_change", function(env)
-		local focused_workspace = tonumber(env.FOCUSED_WORKSPACE)
-		local is_focused = focused_workspace == workspace_index
+    sbar.exec(workspace_windows_cmd(workspace_id), function(rows)
+      local apps = {}
+      local seen_apps = {}
 
-		sbar.animate("tanh", 10, function()
-			workspace:set({
-				icon = { highlight = is_focused },
-				label = { highlight = is_focused },
-				background = {
-					border_width = is_focused and 2 or 0,
-				},
-			})
-		end)
-	end)
+      if type(rows) == "table" then
+        for _, row in ipairs(rows) do
+          local app_name = row["app-name"]
+          if app_name and not seen_apps[app_name] then
+            seen_apps[app_name] = true
+            table.insert(apps, app_name)
+          end
+        end
+      end
 
-	workspace:subscribe("aerospace_focus_change", function()
-		updateWindows(workspace_index)
-	end)
+      local app_line = ""
+      for _, app_name in ipairs(apps) do
+        app_line = app_line .. " " .. icon_for_app(app_name)
+      end
 
-	--   space:subscribe("mouse.clicked", function(env)
-	--     if env.BUTTON == "other" then
-	--       space_popup:set({ background = { image = "space." .. env.SID } })
-	--       space:set({ popup = { drawing = "toggle" } })
-	--     else
-	--       local op = "--focus"
-	--       sbar.exec("yabai -m space " .. op .. " " .. env.SID)
-	--     end
-	--   end)
-	--
-	--   space:subscribe("mouse.exited", function(_)
-	--     space:set({ popup = { drawing = false } })
-	--   end)
-	-- end
+      local has_windows = #apps > 0
+      local is_focused = state.focused == true
+      local display = state.display
 
-	-- initial setup
-	updateWindows(workspace_index)
-	sbar.exec("aerospace list-workspaces --focused", function(focused_workspace)
-		workspaces[tonumber(focused_workspace)]:set({
-			icon = { highlight = true },
-			label = { highlight = true },
-			background = { border_width = 2 },
-			color = colors.orange,
-		})
-	end)
+      if not display and workspace_id:match("^[A-Z]$") then
+        display = secondary_display_id
+      end
+
+      set_workspace_display(workspace.name, display)
+
+      workspace:set({
+        drawing = true,
+        icon = { highlight = is_focused },
+        label = {
+          drawing = has_windows,
+          string = app_line,
+          color = colors.grey,
+          highlight = is_focused,
+        },
+        background = {
+          border_width = is_focused and 2 or 0,
+          border_color = colors.spaces.highlight,
+        },
+      })
+    end)
+  end
 end
+
+local observer = sbar.add("item", {
+  drawing = false,
+  updates = true,
+})
+
+observer:subscribe({
+  "routine",
+  "system_woke",
+  "aerospace_workspace_change",
+  "aerospace_focus_change",
+}, refresh_workspaces)
+
+refresh_workspaces()

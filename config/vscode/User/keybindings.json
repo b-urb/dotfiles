@@ -1,0 +1,61 @@
+[
+  {
+    "key": "ctrl+h",
+    "command": "workbench.action.focusLeftGroup",
+    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.focusBelowGroup",
+    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "workbench.action.focusAboveGroup",
+    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.focusRightGroup",
+    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+shift+h",
+    "command": "workbench.action.moveEditorToLeftGroup",
+    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "command": "workbench.action.moveEditorToBelowGroup",
+    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "workbench.action.moveEditorToAboveGroup",
+    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "workbench.action.moveEditorToRightGroup",
+    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+p",
+    "command": "workbench.action.quickOpen",
+    "when": "!terminalFocus && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+shift+p",
+    "command": "workbench.action.showCommands",
+    "when": "!terminalFocus && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+shift+e",
+    "command": "workbench.view.explorer",
+    "when": "!terminalFocus && !leaderkeyState"
+  },
+  {
+    "key": "ctrl+`",
+    "command": "workbench.action.terminal.toggleTerminal"
+  }
+]
