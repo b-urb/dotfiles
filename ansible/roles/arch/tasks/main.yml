@@ -1,0 +1,89 @@
+---
+- name: update pacman package cache
+  community.general.pacman:
+    update_cache: true
+  become: true
+
+- name: upgrade all pacman packages
+  community.general.pacman:
+    upgrade: true
+  become: true
+
+- name: install pacman packages
+  community.general.pacman:
+    name: "{{ arch_packages }}"
+    state: present
+  become: true
+
+# yay AUR helper bootstrap
+- name: check if yay is installed
+  ansible.builtin.command: which yay
+  register: yay_check
+  failed_when: false
+  changed_when: false
+
+- name: install yay build dependencies
+  community.general.pacman:
+    name:
+      - base-devel
+      - git
+    state: present
+  become: true
+  when: yay_check.rc != 0
+
+- name: clone yay from AUR
+  ansible.builtin.git:
+    repo: https://aur.archlinux.org/yay.git
+    dest: /tmp/yay
+    depth: 1
+  when: yay_check.rc != 0
+
+- name: build and install yay
+  ansible.builtin.command:
+    cmd: makepkg -si --noconfirm
+    chdir: /tmp/yay
+  when: yay_check.rc != 0
+  # makepkg must not run as root
+  become: false
+
+- name: clean up yay build directory
+  ansible.builtin.file:
+    path: /tmp/yay
+    state: absent
+  when: yay_check.rc != 0
+
+- name: install AUR packages via yay
+  ansible.builtin.command:
+    cmd: "yay -S --needed --noconfirm {{ item }}"
+  loop: "{{ aur_packages }}"
+  become: false
+  changed_when: false
+
+# Flatpak + Bitwarden Desktop
+- name: install flatpak
+  community.general.pacman:
+    name: flatpak
+    state: present
+  become: true
+
+- name: add flathub remote
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+    state: present
+  become: true
+
+- name: install bitwarden desktop via flatpak
+  community.general.flatpak:
+    name: com.bitwarden.desktop
+    state: present
+  become: true
+
+# Rust toolchain init (rustup is installed via pacman above)
+- name: initialize rust stable toolchain
+  ansible.builtin.command:
+    cmd: rustup default stable
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ ansible_env.HOME }}/.cargo/bin"
+  changed_when: false
+  failed_when: false

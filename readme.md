@@ -50,32 +50,28 @@ The generated `~/.zshrc` is assembled from partials in `.chezmoitemplates/zsh/`.
 
 ## Software install
 
-**macOS** — `brew bundle` runs automatically via a `run_onchange_after_` script whenever `Brewfile` changes.
+Software provisioning is managed by an Ansible playbook (`ansible/local.yml`). chezmoi triggers it automatically via a `run_onchange_after_` script on first apply and again whenever any role or variable file changes.
 
-**Linux** — run the appropriate script manually after `chezmoi apply`:
-
-```bash
-# Arch
-./arch/install_software.sh
-
-# Ubuntu
-./ubuntu/install_software.sh
-```
-
-Rust crates (eza, zoxide, atuin, starship, etc.) are installed via:
+To run it manually at any time:
 
 ```bash
-./install_cargo.sh
+ansible-playbook ansible/local.yml
+
+# Override display server on Linux:
+ansible-playbook ansible/local.yml --extra-vars "wm_display_server=wayland"
 ```
 
-**Windows** — the `run_once_before_02` PowerShell script installs the following via winget and Scoop:
+The playbook uses Ansible's fact-gathering to detect the OS and runs only the relevant roles:
 
-- WezTerm, Git, WSL + Ubuntu
-- Bitwarden Desktop (with SSH agent) and Bitwarden CLI
-- neovim, ripgrep, fzf, jq, starship, lazygit, kubectl, helm
-- Monaspace font
+| Platform | Roles |
+|---|---|
+| macOS | common, macos (homebrew formulae + casks), rust, vscode_extensions |
+| Ubuntu/Debian | common, ubuntu (apt repos + packages + flatpak), linux_common (docker), wm_linux, fonts, rust, vscode_extensions |
+| Arch | common, arch (pacman + yay + AUR), linux_common (docker), wm_linux, fonts, rust, vscode_extensions |
 
-After the script runs, open Bitwarden Desktop and enable **Settings > App Settings > Enable SSH Agent** so that WezTerm picks up the SSH agent pipe.
+Package lists live in `ansible/roles/<role>/vars/main.yml`. Cargo crates and VS Code extensions are in `ansible/group_vars/all.yml` (shared across all platforms).
+
+**Windows** — provisioned by the `run_once_before_02` PowerShell script (winget + Scoop). Installs WezTerm, Git, WSL + Ubuntu, Bitwarden Desktop + CLI, core CLI tools, and Monaspace font. After it runs, enable **Settings > App Settings > Enable SSH Agent** in Bitwarden Desktop.
 
 ## Bitwarden structure
 
@@ -107,11 +103,21 @@ On Windows only WezTerm and the codex/opencode configs are placed. Shell configs
 
 ```
 .chezmoitemplates/zsh/   zshrc partials (00-env through 90-completions, os-darwin, os-linux, distro-*)
-.chezmoiscripts/         run_once and run_onchange scripts (deps, brew bundle, kubeconfig merge)
+.chezmoiscripts/         run_once and run_onchange scripts (deps, ansible, kubeconfig merge)
+ansible/                 Ansible playbook and roles for software provisioning
+  local.yml              top-level playbook
+  group_vars/all.yml     cargo crates and vscode extensions (all platforms)
+  roles/macos/           homebrew formulae and casks
+  roles/ubuntu/          apt repos, packages, flatpak
+  roles/arch/            pacman, yay bootstrap, AUR packages
+  roles/linux_common/    docker install and service setup
+  roles/wm_linux/        i3 (x11) or sway (wayland) conditional install
+  roles/fonts/           Monaspace and Nerd Fonts
+  roles/rust/            rustup + cargo crates from group_vars
+  roles/vscode_extensions/ VS Code extensions from group_vars
 dot_config/              ~/.config contents (nvim, k9s, wezterm, sketchybar, etc.)
 private_dot_ssh/         SSH key templates rendered from Bitwarden
 scripts/                 setup-bitwarden.sh, pre-commit.sh, checksum-utils.sh
 kube/clusters/           kubeconfig files (gitignored, backed up to Bitwarden)
 ssh/                     SSH keys (gitignored, backed up to Bitwarden)
-Brewfile                 macOS packages
 ```

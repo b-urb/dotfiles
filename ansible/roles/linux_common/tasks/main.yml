@@ -1,0 +1,23 @@
+---
+# Tasks that apply to all Linux distros after the distro-specific role runs.
+
+- name: install docker (distro package)
+  ansible.builtin.package:
+    name: docker
+    state: present
+  become: true
+
+- name: enable and start docker service
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started
+  become: true
+
+- name: add current user to docker group
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: true
+  become: true
+  # Log out and back in, or run `newgrp docker`, for this to take effect.

@@ -1,0 +1,89 @@
+---
+- name: create user fonts directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/share/fonts"
+    state: directory
+    mode: "0755"
+
+# Monaspace
+- name: check if Monaspace is installed
+  ansible.builtin.shell:
+    cmd: fc-list | grep -qi monaspace && echo yes || echo no
+  register: monaspace_check
+  changed_when: false
+
+- name: clone monaspace repository
+  ansible.builtin.git:
+    repo: https://github.com/githubnext/monaspace.git
+    dest: /tmp/monaspace
+    depth: 1
+  when: monaspace_check.stdout == "no"
+
+- name: install monaspace NerdFonts (OTF)
+  ansible.builtin.shell:
+    cmd: find /tmp/monaspace/fonts/NerdFonts -name "*.otf" -exec cp {} {{ ansible_env.HOME }}/.local/share/fonts/ \;
+  when: monaspace_check.stdout == "no"
+
+- name: install monaspace static fonts (OTF)
+  ansible.builtin.shell:
+    cmd: find "/tmp/monaspace/fonts/Static Fonts" -name "*.otf" -exec cp {} {{ ansible_env.HOME }}/.local/share/fonts/ \;
+  when: monaspace_check.stdout == "no"
+
+- name: install monaspace variable fonts (TTF)
+  ansible.builtin.shell:
+    cmd: find "/tmp/monaspace/fonts/Variable Fonts" -name "*.ttf" -exec cp {} {{ ansible_env.HOME }}/.local/share/fonts/ \;
+  when: monaspace_check.stdout == "no"
+
+- name: install monaspace frozen fonts (TTF)
+  ansible.builtin.shell:
+    cmd: find "/tmp/monaspace/fonts/Frozen Fonts" -name "*.ttf" -exec cp {} {{ ansible_env.HOME }}/.local/share/fonts/ \;
+  when: monaspace_check.stdout == "no"
+
+- name: clean up monaspace build directory
+  ansible.builtin.file:
+    path: /tmp/monaspace
+    state: absent
+  when: monaspace_check.stdout == "no"
+
+# Nerd Fonts
+- name: check if Nerd Fonts are installed
+  ansible.builtin.shell:
+    cmd: fc-list | grep -qi "nerd font" && echo yes || echo no
+  register: nerdfonts_check
+  changed_when: false
+
+- name: download and install Nerd Fonts
+  vars:
+    nerd_fonts_version: "v3.3.0"
+    nerd_fonts:
+      - Hack
+      - JetBrainsMono
+      - FiraCode
+      - Meslo
+      - UbuntuMono
+  block:
+    - name: download nerd font archives
+      ansible.builtin.get_url:
+        url: "https://github.com/ryanoasis/nerd-fonts/releases/download/{{ nerd_fonts_version }}/{{ item }}.zip"
+        dest: "/tmp/{{ item }}.zip"
+        mode: "0644"
+      loop: "{{ nerd_fonts }}"
+
+    - name: extract nerd font archives
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ item }}.zip"
+        dest: "{{ ansible_env.HOME }}/.local/share/fonts/"
+        remote_src: true
+      loop: "{{ nerd_fonts }}"
+
+    - name: clean up nerd font archives
+      ansible.builtin.file:
+        path: "/tmp/{{ item }}.zip"
+        state: absent
+      loop: "{{ nerd_fonts }}"
+  when: nerdfonts_check.stdout == "no"
+
+- name: rebuild font cache
+  ansible.builtin.command: fc-cache -f
+  changed_when: false
+  when: monaspace_check.stdout == "no" or nerdfonts_check.stdout == "no"

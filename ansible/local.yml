@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: true
+
+  roles:
+    - common
+
+    - role: macos
+      when: ansible_os_family == "Darwin"
+
+    - role: ubuntu
+      when: ansible_distribution in ["Ubuntu", "Debian"]
+
+    - role: arch
+      when: ansible_distribution == "Archlinux"
+
+    - role: linux_common
+      when: ansible_system == "Linux"
+
+    - role: wm_linux
+      when: ansible_system == "Linux"
+
+    - role: fonts
+      when: ansible_system == "Linux"
+
+    - role: rust
+
+    - role: vscode_extensions

@@ -1,0 +1,26 @@
+---
+# Packages present on all supported platforms via the system package manager.
+# ansible.builtin.package dispatches to apt/pacman/brew automatically.
+# Platform-specific tools that don't exist cross-platform are handled in
+# the macos, ubuntu, and arch roles respectively.
+
+- name: install common packages
+  ansible.builtin.package:
+    name:
+      - git
+      - curl
+      - wget
+      - jq
+      - neovim
+      - zsh
+      - htop
+      - tmux
+      - ripgrep
+      - fzf
+      - fd
+      - bat
+      - zoxide
+      - eza
+      - git-lfs
+    state: present
+  become: true
