@@ -1,0 +1,88 @@
+---
+# Shared variables across all platforms
+
+# Cargo crates installed after Rust/rustup is set up.
+# Flags like --locked are appended inline.
+cargo_crates:
+  - cargo-update
+  - cargo-edit
+  - eza
+  - atac --locked
+  - rainfrog
+  - zoxide --locked
+  - atuin
+  - spotify-tui
+  - zellij --locked
+  - just
+  - starship --locked
+  - create-tauri-app
+  - tauri-cli
+  - trunk
+  - doclytics
+
+# VS Code extensions (full list from Brewfile).
+# Installed via `code --install-extension` when VS Code is present.
+vscode_extensions:
+  - 2gua.rainbow-brackets
+  - aaron-bond.better-comments
+  - alefragnani.bookmarks
+  - ardenivanov.svelte-intellisense
+  - britesnow.vscode-toggle-quotes
+  - christian-kohler.path-intellisense
+  - danielsanmedium.dscodegpt
+  - davidanson.vscode-markdownlint
+  - dbaeumer.vscode-eslint
+  - deque-systems.vscode-axe-linter
+  - eamodio.gitlens
+  - esbenp.prettier-vscode
+  - fill-labs.dependi
+  - formulahendry.auto-close-tag
+  - formulahendry.auto-rename-tag
+  - github.copilot
+  - github.copilot-chat
+  - golang.go
+  - gruntfuggly.todo-tree
+  - hbenl.vscode-test-explorer
+  - ibrahimcesar.ibrahimcesar-nextjs-developer-pack
+  - jimmyzjx.leaderkey
+  - jscearcy.rust-doc-viewer
+  - leodevbro.blockman
+  - mariusalchimavicius.json-to-ts
+  - meganrogge.template-string-converter
+  - mhutchie.git-graph
+  - mikestead.dotenv
+  - ms-azuretools.vscode-containers
+  - ms-azuretools.vscode-docker
+  - ms-kubernetes-tools.vscode-kubernetes-tools
+  - ms-vscode-remote.remote-containers
+  - ms-vscode.test-adapter-converter
+  - ms-vscode.vscode-typescript-tslint-plugin
+  - ms-vsliveshare.vsliveshare
+  - naumovs.color-highlight
+  - oderwat.indent-rainbow
+  - openai.chatgpt
+  - orta.vscode-jest
+  - panicbit.cargo
+  - pkief.material-icon-theme
+  - pulkitgangwar.nextjs-snippets
+  - quicktype.quicktype
+  - rangav.vscode-thunder-client
+  - redhat.vscode-yaml
+  - richie5um2.vscode-sort-json
+  - rust-lang.rust-analyzer
+  - serayuzgur.crates
+  - shardulm94.trailing-spaces
+  - shd101wyy.markdown-preview-enhanced
+  - sleistner.vscode-fileutils
+  - streetsidesoftware.code-spell-checker
+  - svelte.svelte-vscode
+  - swellaby.vscode-rust-test-adapter
+  - tamasfe.even-better-toml
+  - tauri-apps.tauri-vscode
+  - usernamehw.errorlens
+  - vadimcn.vscode-lldb
+  - visualstudioexptteam.intellicode-api-usage-examples
+  - visualstudioexptteam.vscodeintellicode
+  - vivaxy.vscode-conventional-commits
+  - vscodevim.vim
+  - zerotaskx.rust-extension-pack

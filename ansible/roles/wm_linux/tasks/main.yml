@@ -1,0 +1,53 @@
+---
+# wm_display_server is passed as an extra-var from the chezmoi script.
+# It mirrors chezmoi.toml [data].wmForceDisplayServer.
+# Falls back to $XDG_SESSION_TYPE if blank, then defaults to x11.
+
+- name: resolve display server type
+  ansible.builtin.set_fact:
+    resolved_ds: >-
+      {{
+        wm_display_server
+        if (wm_display_server is defined and wm_display_server != "")
+        else (lookup('env', 'XDG_SESSION_TYPE') | default('x11', true))
+      }}
+
+- name: display detected display server
+  ansible.builtin.debug:
+    msg: "Installing window manager for display server: {{ resolved_ds }}"
+
+# X11 path: i3
+- name: install i3 window manager (X11)
+  ansible.builtin.package:
+    name:
+      - i3-wm
+      - i3lock
+      - i3status
+      - rofi
+    state: present
+  become: true
+  when: resolved_ds != "wayland"
+
+# Wayland path: sway
+- name: install sway window manager (Wayland)
+  ansible.builtin.package:
+    name:
+      - sway
+      - swaylock
+      - swayidle
+      - swaybg
+    state: present
+  become: true
+  when: resolved_ds == "wayland"
+
+- name: install wayland ecosystem tools
+  ansible.builtin.package:
+    name:
+      - waybar
+      - wofi
+      - grim
+      - slurp
+      - wl-clipboard
+    state: present
+  become: true
+  when: resolved_ds == "wayland"

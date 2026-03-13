@@ -1,0 +1,80 @@
+---
+arch_packages:
+  # Base development tools
+  - base-devel
+  - curl
+  - wget
+  - git
+  - git-lfs
+  - git-filter-repo
+  - gcc
+  - make
+  - cmake
+  - boost
+  - eigen
+  - libusb
+  - postgresql-libs
+
+  # Essential CLI tools
+  - htop
+  - jq
+  - neovim
+  - vim
+  - tmux
+  - zsh
+  - flatpak
+
+  # Modern CLI replacements
+  - eza
+  - bat
+  - fzf
+  - ripgrep
+  - fd
+  - lsd
+  - zoxide
+  - duf
+  - bpytop
+  - glances
+  - atuin
+
+  # Networking
+  - aria2
+  - dos2unix
+  - iputils
+  - net-tools
+  - traceroute
+  - inetutils
+  - sshuttle
+  - s3cmd
+
+  # Kubernetes / containers
+  - docker
+  - docker-compose
+  - kubectl
+  - kubectx
+
+  # Languages and runtimes
+  - go
+  - nodejs
+  - npm
+  - yarn
+  - python
+  - python-pip
+  - jdk-openjdk
+  - maven
+  - gradle
+  - rustup
+
+  # Multimedia
+  - ffmpeg
+  - imagemagick
+  - sqlite
+
+  # Fonts
+  - ttf-hack
+  - ttf-jetbrains-mono
+  - noto-fonts-emoji
+
+aur_packages:
+  - rm-improved
+  - wezterm

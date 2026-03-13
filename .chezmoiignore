@@ -6,8 +6,7 @@
 # Repo-level files that should never be placed in $HOME
 README.md
 docs/
-Brewfile
-Brewfile.lock.json
+ansible/
 ubuntu/
 arch/
 macos/
@@ -20,7 +19,6 @@ elgato-scripts/
 other/
 newsboat/
 chrome-extensions.json
-install_cargo.sh
 install_extensions.sh
 init.sh
 install.conf.yaml

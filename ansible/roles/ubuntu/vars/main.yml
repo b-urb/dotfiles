@@ -1,0 +1,96 @@
+---
+ubuntu_packages:
+  # Build essentials
+  - build-essential
+  - gcc
+  - g++
+  - make
+  - cmake
+  - cmake-gui
+  - ninja-build
+  - gettext
+  - unzip
+
+  # Libraries
+  - libboost-all-dev
+  - libeigen3-dev
+  - libusb-1.0-0-dev
+  - libpq-dev
+  - libhdf5-dev
+  - libnetcdf-dev
+  - libjpeg-dev
+  - libpng-dev
+  - libtiff-dev
+  - libwebp-dev
+  - libopenjp2-7-dev
+  - libheif-dev
+  - libraw-dev
+  - libass-dev
+  - libbluray-dev
+  - libharfbuzz-dev
+  - libglib2.0-dev
+  - libpango1.0-dev
+  - libtbb-dev
+
+  # Languages and runtimes
+  - golang-go
+  - nodejs
+  - npm
+  - yarn
+  - openjdk-17-jdk
+  - maven
+  - gradle
+  - python3
+  - python3-pip
+  - sqlite3
+
+  # CLI tools
+  - jq
+  - htop
+  - tmux
+  - zsh
+  - git
+  - git-lfs
+  - git-filter-repo
+  - curl
+  - wget
+  - aria2
+  - bat
+  - dos2unix
+  - ripgrep
+  - fd-find
+  - fzf
+  - zoxide
+  - lsd
+  - duf
+  - bpytop
+  - glances
+  - s3cmd
+  - sshuttle
+  - ffmpeg
+  - imagemagick
+
+  # Networking
+  - iputils-ping
+  - ifstat
+  - net-tools
+  - traceroute
+  - telnet
+
+  # Kubernetes / containers
+  - kubectl
+  - docker-compose
+
+  # Fonts
+  - fonts-hack-ttf
+  - fonts-jetbrains-mono
+  - fonts-noto-color-emoji
+
+  # System utilities
+  - apt-transport-https
+  - ca-certificates
+  - gnupg
+  - rofi
+
+  # WezTerm (from fury repo added above)
+  - wezterm-nightly

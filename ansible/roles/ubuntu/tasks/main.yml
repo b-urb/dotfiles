@@ -1,0 +1,157 @@
+---
+- name: install prerequisite packages for apt repos
+  ansible.builtin.apt:
+    name:
+      - curl
+      - gpg
+      - apt-transport-https
+      - ca-certificates
+    state: present
+    update_cache: true
+  become: true
+
+# WezTerm repo
+- name: create apt keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: add wezterm gpg key
+  ansible.builtin.shell:
+    cmd: curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /etc/apt/keyrings/wezterm-fury.gpg
+  args:
+    creates: /etc/apt/keyrings/wezterm-fury.gpg
+  become: true
+
+- name: add wezterm apt repository
+  ansible.builtin.copy:
+    content: "deb [signed-by=/etc/apt/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *\n"
+    dest: /etc/apt/sources.list.d/wezterm.list
+    mode: "0644"
+  become: true
+  notify: apt update
+
+# Kubernetes repo
+- name: add kubernetes gpg key
+  ansible.builtin.shell:
+    cmd: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  args:
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  become: true
+
+- name: set kubernetes keyring permissions
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    mode: "0644"
+  become: true
+
+- name: add kubernetes apt repository
+  ansible.builtin.copy:
+    content: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /\n"
+    dest: /etc/apt/sources.list.d/kubernetes.list
+    mode: "0644"
+  become: true
+  notify: apt update
+
+- name: run apt update after adding repos
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+
+- name: upgrade all packages
+  ansible.builtin.apt:
+    upgrade: safe
+  become: true
+
+- name: install apt packages
+  ansible.builtin.apt:
+    name: "{{ ubuntu_packages }}"
+    state: present
+  become: true
+
+# Neovim — use PPA on Ubuntu, build from source on Debian
+- name: add neovim PPA (Ubuntu only)
+  ansible.builtin.apt_repository:
+    repo: ppa:neovim-ppa/unstable
+    state: present
+  become: true
+  when: ansible_distribution == "Ubuntu"
+
+- name: install neovim from PPA (Ubuntu)
+  ansible.builtin.apt:
+    name: neovim
+    state: latest
+    update_cache: true
+  become: true
+  when: ansible_distribution == "Ubuntu"
+
+- name: install neovim build dependencies (Debian)
+  ansible.builtin.apt:
+    name:
+      - ninja-build
+      - gettext
+      - cmake
+      - unzip
+      - build-essential
+    state: present
+  become: true
+  when: ansible_distribution == "Debian"
+
+- name: check neovim version (Debian)
+  ansible.builtin.command: nvim --version
+  register: nvim_version_check
+  failed_when: false
+  changed_when: false
+  when: ansible_distribution == "Debian"
+
+- name: build and install neovim from source (Debian)
+  block:
+    - name: clone neovim
+      ansible.builtin.git:
+        repo: https://github.com/neovim/neovim.git
+        dest: /tmp/neovim
+        depth: 1
+    - name: build neovim
+      ansible.builtin.command:
+        cmd: make CMAKE_BUILD_TYPE=RelWithDebInfo
+        chdir: /tmp/neovim
+    - name: package neovim deb
+      ansible.builtin.command:
+        cmd: cpack -G DEB
+        chdir: /tmp/neovim/build
+    - name: install neovim deb
+      ansible.builtin.shell:
+        cmd: dpkg -i nvim-linux-*.deb
+        chdir: /tmp/neovim/build
+      become: true
+    - name: clean up neovim build
+      ansible.builtin.file:
+        path: /tmp/neovim
+        state: absent
+  when:
+    - ansible_distribution == "Debian"
+    - nvim_version_check.rc != 0
+
+# Flatpak + Bitwarden Desktop
+- name: install flatpak
+  ansible.builtin.apt:
+    name: flatpak
+    state: present
+  become: true
+
+- name: add flathub remote
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+    state: present
+  become: true
+
+- name: install bitwarden desktop via flatpak
+  community.general.flatpak:
+    name: com.bitwarden.desktop
+    state: present
+  become: true
+
+

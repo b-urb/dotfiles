@@ -1,0 +1,21 @@
+---
+- name: check if VS Code (code) is on PATH
+  ansible.builtin.command: which code
+  register: code_which
+  failed_when: false
+  changed_when: false
+
+- name: skip extensions if VS Code is not installed
+  ansible.builtin.debug:
+    msg: "VS Code not found on PATH — skipping extension install"
+  when: code_which.rc != 0
+
+- name: install VS Code extensions
+  ansible.builtin.command:
+    cmd: "code --install-extension {{ item }} --force"
+  loop: "{{ vscode_extensions }}"
+  when: code_which.rc == 0
+  # --force makes this idempotent (reinstalls if already present but same version).
+  # changed_when: false suppresses spurious "changed" output since code exits 0
+  # whether it installed or skipped.
+  changed_when: false
