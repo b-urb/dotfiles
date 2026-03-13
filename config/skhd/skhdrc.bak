@@ -15,12 +15,12 @@ alt + shift - q : $(yabai -m window $(yabai -m query --windows --window | jq -re
 alt - y : yabai -m window --swap west
 
 # focus monitor
-alt - 0x2B : yabai -m display --focus prev
-alt - 0x2F : yabai -m display --focus next
+alt - 0x2B : yabai -m display --focus prev # ,
+alt - 0x2F : yabai -m display --focus next # .
 
 #move space to monitor
-alt + shift - 0x2B : yabai -m space --move prev
-alt + shift - 0x2F : yabai -m space --move next
+alt + shift - 0x2B : yabai -m space --move prev # ,
+alt + shift - 0x2F : yabai -m space --move next # .
 #resize
 
 # defines a new alte 'resize' with an on_enter command, that captures keypresses
@@ -34,7 +34,7 @@ cmd + shift - r ; resize
 # from 'resize' alte, activate alte 'default'
 # (this is the keypress required to leave resize alte)
 resize < escape ; default
-resize < 0x32 ; default
+resize < 0x32 ; default # `
 
 resize <  h : yabai -m window --resize left:-20:0
 
@@ -154,5 +154,4 @@ alt + shift - l : ~/.config/skhd/stackwindow.sh east #yabai -m window --warp eas
 
 ## destroy desktop
 #cmd + alt - w : yabai -m space --destroy
-
 

@@ -1,43 +1,93 @@
 [
   {
     "key": "ctrl+h",
+    "command": "-extension.vim_ctrl+h",
+    "when": "editorTextFocus && vim.active && vim.use<C-h> && !inDebugRepl"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "-extension.vim_ctrl+j",
+    "when": "editorTextFocus && vim.active && vim.use<C-j> && !inDebugRepl"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "-extension.vim_ctrl+k",
+    "when": "editorTextFocus && vim.active && vim.use<C-k> && !inDebugRepl"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "-extension.vim_navigateCtrlL",
+    "when": "editorTextFocus && vim.active && vim.use<C-l> && !inDebugRepl"
+  },
+  {
+    "key": "ctrl+h",
     "command": "workbench.action.focusLeftGroup",
-    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+    "when": "editorTextFocus && !terminalFocus && multipleEditorGroups && activeEditorGroupIndex != 1"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.focusPanel",
+    "when": "editorTextFocus && panelVisible && !terminalFocus && !multipleEditorGroups"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "panelFocus || terminalFocus"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "sideBarFocus"
+  },
+  {
+    "key": "ctrl+h",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "auxiliaryBarFocus"
+  },
+  {
+    "key": "ctrl+h",
+    "command": "workbench.view.explorer",
+    "when": "editorTextFocus && !terminalFocus && activeEditorGroupIndex == 1"
   },
   {
     "key": "ctrl+j",
     "command": "workbench.action.focusBelowGroup",
-    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+    "when": "editorTextFocus && !terminalFocus && (multipleEditorGroups || !panelVisible)"
   },
   {
     "key": "ctrl+k",
     "command": "workbench.action.focusAboveGroup",
-    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+    "when": "editorTextFocus && !terminalFocus"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.focusAuxiliaryBar",
+    "when": "editorTextFocus && !terminalFocus && activeEditorGroupLast"
   },
   {
     "key": "ctrl+l",
     "command": "workbench.action.focusRightGroup",
-    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+    "when": "editorTextFocus && !terminalFocus && !activeEditorGroupLast"
   },
   {
     "key": "ctrl+shift+h",
     "command": "workbench.action.moveEditorToLeftGroup",
-    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+    "when": "editorTextFocus && !terminalFocus"
   },
   {
     "key": "ctrl+shift+j",
     "command": "workbench.action.moveEditorToBelowGroup",
-    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+    "when": "editorTextFocus && !terminalFocus"
   },
   {
     "key": "ctrl+shift+k",
     "command": "workbench.action.moveEditorToAboveGroup",
-    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+    "when": "editorTextFocus && !terminalFocus"
   },
   {
     "key": "ctrl+shift+l",
     "command": "workbench.action.moveEditorToRightGroup",
-    "when": "editorTextFocus && !terminalFocus && vim.active && vim.mode != 'Insert' && !leaderkeyState"
+    "when": "editorTextFocus && !terminalFocus"
   },
   {
     "key": "ctrl+p",
