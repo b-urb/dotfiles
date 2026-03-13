@@ -1,17 +1,18 @@
 # AeroSpace hotkeys via skhd
 # mod = alt (hardcoded). Replace `alt` to switch modifier.
 
-:: aerospace_resize @
-:: aerospace_service @
+:: default : /opt/homebrew/bin/sketchybar --trigger aerospace_mode_change INFO=DEFAULT >/dev/null 2>&1 || true
+:: aerospace_resize @ : /opt/homebrew/bin/sketchybar --trigger aerospace_mode_change INFO=RESIZE >/dev/null 2>&1 || true
+:: aerospace_service @ : /opt/homebrew/bin/sketchybar --trigger aerospace_mode_change INFO=SERVICE >/dev/null 2>&1 || true
 
 # Enter modal modes
 alt - r ; aerospace_resize
-alt + shift - 0x29 ; aerospace_service
+alt + shift - 0x29 ; aerospace_service # ;
 
 # Main mode (AeroSpace)
-alt - 0x24 : osascript -e 'tell application "com.github.wez.wezterm" to do script ""' -e 'tell application "com.github.wez.wezterm" to activate'
-alt - 0x2C : aerospace layout tiles horizontal vertical
-alt - 0x2B : aerospace layout accordion horizontal vertical
+alt - 0x24 : osascript -e 'tell application "com.github.wez.wezterm" to do script ""' -e 'tell application "com.github.wez.wezterm" to activate' # return
+alt - 0x2C : aerospace layout tiles horizontal vertical # /
+alt - 0x2B : aerospace layout accordion horizontal vertical # ,
 
 alt - h : aerospace focus left
 alt - j : aerospace focus down
@@ -23,14 +24,14 @@ alt + shift - j : aerospace join-with down
 alt + shift - k : aerospace join-with up
 alt + shift - l : aerospace join-with right
 
-alt + shift - 0x1B : aerospace resize smart -50
-alt + shift - 0x18 : aerospace resize smart +50
+alt + shift - 0x1B : aerospace resize smart -50 # -
+alt + shift - 0x18 : aerospace resize smart +50 # =
 
 alt - f : aerospace fullscreen
 alt - w : aerospace layout v_accordion
 alt - t : aerospace layout h_accordion
 alt - e : aerospace layout tiles horizontal vertical
-alt + shift - 0x31 : aerospace layout floating tiling
+alt + shift - 0x31 : aerospace layout floating tiling # space
 alt + shift - q : aerospace close
 
 alt - 1 : aerospace workspace 1
@@ -57,14 +58,14 @@ alt + shift - 9 : aerospace move-node-to-workspace 9
 alt + shift - x : aerospace move-node-to-workspace X
 alt + shift - z : aerospace move-node-to-workspace Z
 
-alt + shift - 0x2B : aerospace move-workspace-to-monitor --wrap-around next
-alt + shift - 0x2F : aerospace move-workspace-to-monitor --wrap-around next
+alt + shift - 0x2B : aerospace move-workspace-to-monitor --wrap-around next # ,
+alt + shift - 0x2F : aerospace move-workspace-to-monitor --wrap-around next # .
 
 alt + shift - c : aerospace reload-config
 
 # Resize mode
 aerospace_resize < escape ; default
-aerospace_resize < 0x24 ; default
+aerospace_resize < 0x24 ; default # return
 aerospace_resize < h : aerospace resize width -50
 aerospace_resize < j : aerospace resize height +50
 aerospace_resize < k : aerospace resize height -50
@@ -76,4 +77,4 @@ aerospace_service < escape : aerospace reload-config; skhd -k "ctrl - g"
 aerospace_service < r : aerospace flatten-workspace-tree; skhd -k "ctrl - g"
 aerospace_service < f : aerospace layout floating tiling; skhd -k "ctrl - g"
 aerospace_service < x : /bin/bash -lc 'osascript -e "tell application \"AeroSpace\" to quit" >/dev/null 2>&1 || true; sleep 0.35; for proc in AeroSpace aerospace; do pids="$(pgrep -x "$proc" || true)"; [ -n "$pids" ] && kill -TERM $pids >/dev/null 2>&1 || true; done; sleep 0.35; for proc in AeroSpace aerospace; do pids="$(pgrep -x "$proc" || true)"; [ -n "$pids" ] && kill -KILL $pids >/dev/null 2>&1 || true; done; open -a AeroSpace'; skhd -k "ctrl - g"
-aerospace_service < 0x33 : aerospace close-all-windows-but-current; skhd -k "ctrl - g"
+aerospace_service < 0x33 : aerospace close-all-windows-but-current; skhd -k "ctrl - g" # delete

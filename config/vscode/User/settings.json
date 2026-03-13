@@ -161,6 +161,14 @@
     },
     {
       "before": [
+        ":"
+      ],
+      "commands": [
+        "workbench.action.showCommands"
+      ]
+    },
+    {
+      "before": [
         "s"
       ],
       "after": [
@@ -421,5 +429,8 @@
   },
   "vscode-easymotion.styles": {
     
+  },
+  "vs-kubernetes": {
+    "vs-kubernetes.ignore-recommendations": true
   }
 }
