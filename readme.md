@@ -1,234 +1,117 @@
 # Dotfiles
 
-> Personal dotfiles for macOS and Linux (Arch/Ubuntu), managed with Dotbot and Bitwarden
+Personal dotfiles for macOS, Linux (Arch/Ubuntu), and Windows, managed with [chezmoi](https://chezmoi.io) and Bitwarden.
 
-## Features
+## Bootstrap
 
-- 🔐 **Secret Management**: Bitwarden CLI integration for zero-commit secrets
-- 🗝️ **SSH Agent**: Bitwarden Desktop SSH agent (default on, opt-out)
-- 🧩 **Modular Shell**: Composable Zsh configuration (10+ modules)
-- 🖥️ **Multi-Platform**: macOS (Yabai/SKHD/AeroSpace) + Linux (i3/Sway)
-- 🔄 **Auto-Sync**: Pre-commit hooks sync secrets bidirectionally
-- ⚡ **Modern Tools**: Neovim, WezTerm, K9s, Lazygit, Starship, Atuin
-
-## Quick Start
-
-### Prerequisites
-
-1. **Bitwarden CLI**
-
-   ```bash
-   # macOS
-   brew install bitwarden-cli
-
-   # Linux
-   sudo snap install bw
-   ```
-
-2. **Bitwarden Desktop (SSH Agent)**
-
-   ```bash
-   # macOS
-   brew install --cask bitwarden
-
-   # Linux (Flatpak)
-   sudo apt install -y flatpak
-   sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-   sudo flatpak install -y flathub com.bitwarden.desktop
-   ```
-
-3. **Git with SSH access** to this repository
-
-4. **jq** (JSON processor)
-
-   ```bash
-   # macOS
-   brew install jq
-
-   # Linux (Ubuntu/Debian)
-   sudo apt install jq
-
-   # Linux (Arch)
-   sudo pacman -S jq
-   ```
-
-### One-Line Installation
-
-For a completely fresh system, run this command to bootstrap everything:
+**macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/B-urb/dotfiles/main/init.sh | bash
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:B-urb/dotfiles.git
 ```
 
-This will:
+**Windows** (PowerShell, run as Administrator)
 
-- Install Git and Bitwarden CLI
-- Authenticate with Bitwarden
-- Set up SSH keys from Bitwarden
-- Clone the dotfiles repository
-- Install all dependencies
-- Run the full installation
+```powershell
+winget install twpayne.chezmoi
+chezmoi init --apply git@github.com:B-urb/dotfiles.git
+```
 
-### Manual Installation
+On Windows, chezmoi runs the `run_once_before_02` PowerShell script automatically to install Git, WezTerm, WSL, Scoop, and the Bitwarden CLI before placing any dotfiles.
 
-If you prefer step-by-step installation:
+chezmoi will prompt for a Bitwarden unlock and for a few machine-local settings (display server on Linux, whether to disable the Bitwarden SSH agent). It then renders all templates and places files.
+
+If this is the first time setting up Bitwarden folders for these dotfiles, run `scripts/setup-bitwarden.sh` before the above.
+
+## Daily use
 
 ```bash
-# 1. Clone with submodules
-git clone --recursive git@github.com:B-urb/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
+chezmoi apply          # re-render templates and sync files to $HOME
+chezmoi update         # pull latest from git, then apply
+chezmoi edit ~/.zshrc  # open the source template in $EDITOR
+chezmoi diff           # preview what would change
+```
 
-# 2. Configure and authenticate Bitwarden
-bw config server https://warden.burbn.de
-export BW_SESSION=$(bw unlock --raw)
+## How it works
 
-# 3. First-time setup (creates Bitwarden folders)
-./scripts/setup-bitwarden.sh
+**chezmoi** manages files in `$HOME` from a source directory (`~/.local/share/chezmoi`, which is this repo). It renders Go templates on apply and copies or symlinks the results.
 
-# 4. Populate Bitwarden secrets (manual step - see docs/SETUP.md)
+Secrets never touch the repository. Files that contain secrets are `.tmpl` files in the source tree; the `bitwarden` template function fetches values from the vault at apply time.
 
-# 5. Install dependencies
-# macOS:
-brew bundle --file=macos/Brewfile
+```
+dot_gitconfig.tmpl  →  ~/.gitconfig          (email from Bitwarden)
+private_dot_env.tmpl  →  ~/.env              (global env vars, chmod 600)
+private_dot_env.darwin.tmpl  →  ~/.env.darwin
+private_dot_ssh/private_id_rsa.tmpl  →  ~/.ssh/id_rsa  (from BW SSH Key item)
+dot_config/opencode/opencode.jsonc.tmpl  →  ~/.config/opencode/opencode.jsonc
+```
 
-# Arch Linux:
+The generated `~/.zshrc` is assembled from partials in `.chezmoitemplates/zsh/`. Edit those files and run `chezmoi apply` to regenerate.
+
+## Software install
+
+**macOS** — `brew bundle` runs automatically via a `run_onchange_after_` script whenever `Brewfile` changes.
+
+**Linux** — run the appropriate script manually after `chezmoi apply`:
+
+```bash
+# Arch
 ./arch/install_software.sh
 
-# Ubuntu:
+# Ubuntu
 ./ubuntu/install_software.sh
-
-# 6. Run installation
-./install
 ```
 
-## Documentation
+Rust crates (eza, zoxide, atuin, starship, etc.) are installed via:
 
-- **[📚 Detailed Setup Guide](docs/SETUP.md)** - Step-by-step installation with explanations
-- **[🏗️ Repository Structure](docs/STRUCTURE.md)** - Architecture and component documentation
-- **[🔧 Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
-- **[✨ Contributing](docs/CONTRIBUTING.md)** - How to extend and customize
-
-## What Gets Installed
-
-### Window Managers
-
-- **macOS**: Yabai, SKHD, AeroSpace, SketchyBar
-- **Linux**: i3, Sway
-
-### Development Tools
-
-- **Editor**: Neovim (LazyVim)
-- **Terminal**: WezTerm + Starship prompt
-- **Git UI**: Lazygit
-- **Kubernetes**: K9s, kubectl aliases
-- **Shell**: Zsh + Zinit + 20+ plugins
-- **History**: Atuin (SQLite shell history sync)
-
-### Secret Management
-
-- Templates with `{{PLACEHOLDER}}` syntax
-- Bitwarden CLI for secret injection
-- Pre-commit hooks for bidirectional sync
-
-## Key Concepts
-
-### Template System
-
-Secret-containing files use templates tracked in git:
-
-```
-templates/.env.tmpl       → .env (generated, not tracked)
-templates/gitconfig.tmpl  → gitconfig (generated, not tracked)
-templates/opencode.jsonc.tmpl → config/opencode/opencode.jsonc (generated, not tracked)
+```bash
+./install_cargo.sh
 ```
 
-Secrets stored in Bitwarden folders:
+**Windows** — the `run_once_before_02` PowerShell script installs the following via winget and Scoop:
 
-- `dotfiles/env-vars/` - Environment variables (GitHub PAT, API keys, etc.)
-- `dotfiles/kubeconfig/` - Kubernetes cluster configurations
-- `dotfiles/ssh-keys/` - SSH key items (Bitwarden SSH Key type)
+- WezTerm, Git, WSL + Ubuntu
+- Bitwarden Desktop (with SSH agent) and Bitwarden CLI
+- neovim, ripgrep, fzf, jq, starship, lazygit, kubectl, helm
+- Monaspace font
 
-### SSH Agent
+After the script runs, open Bitwarden Desktop and enable **Settings > App Settings > Enable SSH Agent** so that WezTerm picks up the SSH agent pipe.
 
-Bitwarden Desktop’s SSH agent is used by default. To opt out and force the local
-`ssh-agent`, set in `options/dotfiles.options.sh` or
-`options/dotfiles.options.local.sh`:
+## Bitwarden structure
 
-```
-export DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1
+Secrets are stored in these vault folders:
 
 ```
-
-### Dotfiles Options
-
-Feature flags live in:
-
-- `options/dotfiles.options.sh` - tracked defaults
-- `options/dotfiles.options.local.sh` - optional local overrides (not tracked)
-
-Both `./install` and generated `~/.zshrc` load these options.
-
-### Modular Zsh
-
-Shell configuration split into numbered modules:
-
-```
-zsh/00-env.zsh → zsh/10-zinit.zsh → ... → zsh/90-completions.zsh
-  + os/darwin.zsh (macOS) or os/linux.zsh (Linux)
-  + distro/ubuntu.zsh or distro/arch.zsh
-  = zshrc (auto-generated during install)
+dotfiles/env-vars/    key/value login items (password field = value)
+dotfiles/kubeconfig/  kubeconfig files as attachments on a secure note
+dotfiles/ssh-keys/    SSH Key items (type 5), one per key pair
 ```
 
-### Dotbot Installation
+The pre-commit hook (`scripts/pre-commit.sh`) syncs kubeconfig files and SSH keys back to the vault on commit. Env vars are edited directly in Bitwarden; there is no reverse sync for those.
 
-`./install` → Dotbot reads `install.conf.yaml`:
+## Machine-local config
 
-1. **Phase 1**: Populate secrets from Bitwarden
-2. **Phase 2**: Generate zshrc from modular components
-3. **Phase 3**: Merge kubeconfig files
-4. **Phase 4**: Symlink configs to home directory
-5. **Phase 5**: Clean up dead symlinks
+`chezmoi init` generates `~/.config/chezmoi/chezmoi.toml` with per-machine settings:
 
-## Project Structure
-
-```
-.
-├── config/           # Application configs (nvim, k9s, yabai, etc.)
-├── zsh/              # Modular shell configuration
-│   ├── 10-zinit.zsh through 90-completions.zsh
-│   ├── os/           # OS-specific (darwin.zsh, linux.zsh)
-│   └── distro/       # Distro-specific (ubuntu.zsh, arch.zsh)
-├── templates/        # Secret templates (tracked in git)
-├── scripts/          # Automation scripts
-│   ├── populate-secrets.sh   # Bitwarden → templates
-│   ├── setup-bitwarden.sh    # Create folder structure
-│   └── pre-commit.sh         # Sync secrets back to Bitwarden
-├── macos/            # macOS-specific (Brewfile, ssh)
-├── arch/             # Arch Linux packages
-├── ubuntu/           # Ubuntu packages
-├── kube/             # Kubernetes configs
-└── wezterm/          # Terminal configuration
+```toml
+[data]
+    disableBwSshAgent    = false   # set true to use system ssh-agent instead
+    wmForceDisplayServer = ""      # "x11" or "wayland" to override auto-detect (Linux only)
 ```
 
-## Useful Tips
+Edit this file directly and run `chezmoi apply` to update the rendered output.
 
-### IntelliJ IDEA with Yabai
+On Windows only WezTerm and the codex/opencode configs are placed. Shell configs (zshrc, bashrc, SSH keys, kubeconfigs) are excluded — those live inside WSL and are managed from there independently.
 
-To prevent Yabai from managing IntelliJ popups:
+## Structure
 
-1. Enable full path in window header:
-   - Go to: IntelliJ IDEA > Preferences > Appearance & behavior > Appearance
-   - Check: "Always show full path in window header"
-
-2. Add to yabai config:
-
-   ```bash
-   yabai -m rule --add app="IntelliJ IDEA" manage=off
-   yabai -m rule --add app="IntelliJ IDEA" title=".*\[(.*)\].*" manage=on
-   ```
-
-This allows Yabai to manage the main window while leaving popups alone.
-
-## License
-
-MIT
+```
+.chezmoitemplates/zsh/   zshrc partials (00-env through 90-completions, os-darwin, os-linux, distro-*)
+.chezmoiscripts/         run_once and run_onchange scripts (deps, brew bundle, kubeconfig merge)
+dot_config/              ~/.config contents (nvim, k9s, wezterm, sketchybar, etc.)
+private_dot_ssh/         SSH key templates rendered from Bitwarden
+scripts/                 setup-bitwarden.sh, pre-commit.sh, checksum-utils.sh
+kube/clusters/           kubeconfig files (gitignored, backed up to Bitwarden)
+ssh/                     SSH keys (gitignored, backed up to Bitwarden)
+Brewfile                 macOS packages
+```

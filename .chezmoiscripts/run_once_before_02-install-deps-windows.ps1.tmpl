@@ -1,0 +1,97 @@
+{{- if ne .chezmoi.os "windows" }}# Not Windows — skip{{ else -}}
+# Install core dependencies on Windows.
+# Runs once per machine (tracked by content hash).
+# Requires PowerShell 5+ and an internet connection.
+# Run PowerShell as Administrator for the first-time setup.
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+function Has-Command($name) {
+    return [bool](Get-Command $name -ErrorAction SilentlyContinue)
+}
+
+# --- winget (should be present on Windows 11 / updated Windows 10) ----------
+if (-not (Has-Command "winget")) {
+    Write-Error "winget not found. Install App Installer from the Microsoft Store and re-run."
+    exit 1
+}
+
+# --- Scoop (per-user package manager, no admin required) --------------------
+if (-not (Has-Command "scoop")) {
+    Write-Host "Installing Scoop..."
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+    Invoke-RestMethod -Uri "https://get.scoop.sh" | Invoke-Expression
+}
+
+# --- Git --------------------------------------------------------------------
+if (-not (Has-Command "git")) {
+    Write-Host "Installing Git..."
+    winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
+    # Reload PATH so git is available immediately
+    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
+                [System.Environment]::GetEnvironmentVariable("PATH", "User")
+}
+
+# --- WezTerm ----------------------------------------------------------------
+if (-not (Has-Command "wezterm")) {
+    Write-Host "Installing WezTerm..."
+    winget install --id wez.wezterm -e --source winget --accept-package-agreements --accept-source-agreements
+}
+
+# --- Bitwarden Desktop (includes SSH agent) ---------------------------------
+$bwDesktop = Get-AppxPackage -Name "8bitSolutionsLLC.bitwardendesktop" -ErrorAction SilentlyContinue
+if (-not $bwDesktop) {
+    Write-Host "Installing Bitwarden Desktop..."
+    winget install --id Bitwarden.Bitwarden -e --source winget --accept-package-agreements --accept-source-agreements
+    Write-Host "NOTE: Open Bitwarden Desktop, enable Settings > App Settings > Enable SSH Agent, then re-run chezmoi apply."
+}
+
+# --- Bitwarden CLI -----------------------------------------------------------
+if (-not (Has-Command "bw")) {
+    Write-Host "Installing Bitwarden CLI..."
+    scoop bucket add extras
+    scoop install bitwarden-cli
+}
+
+# --- WSL --------------------------------------------------------------------
+$wslState = wsl --status 2>&1
+if ($LASTEXITCODE -ne 0 -or $wslState -match "not installed") {
+    Write-Host "Installing WSL with Ubuntu..."
+    wsl --install -d Ubuntu
+    Write-Host "WSL installed. A reboot may be required before continuing."
+    Write-Host "After reboot, run: chezmoi apply"
+    exit 0
+} else {
+    Write-Host "WSL already installed."
+}
+
+# --- Core CLI tools via Scoop -----------------------------------------------
+$scoopTools = @(
+    "neovim",
+    "ripgrep",
+    "fzf",
+    "jq",
+    "starship",
+    "lazygit",
+    "kubectl",
+    "helm"
+)
+
+foreach ($tool in $scoopTools) {
+    if (-not (Has-Command $tool)) {
+        Write-Host "Installing $tool via Scoop..."
+        scoop install $tool
+    }
+}
+
+# --- Monaspace font (used by WezTerm config) --------------------------------
+$fontInstalled = Get-Item "C:\Windows\Fonts\MonaspaceArgon*" -ErrorAction SilentlyContinue
+if (-not $fontInstalled) {
+    Write-Host "Installing Monaspace font via Scoop..."
+    scoop bucket add nerd-fonts
+    scoop install Monaspace
+}
+
+Write-Host "Windows dependencies ready."
+{{- end }}

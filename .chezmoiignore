@@ -39,7 +39,7 @@ wezterm/wezterm-session-manager/
 .config/vscode/User/chatEditingSessions/
 
 # ─────────────────────────────────────────────────────────────────────────────
-# macOS-only configs — ignore on Linux
+# macOS-only configs
 # ─────────────────────────────────────────────────────────────────────────────
 {{ if ne .chezmoi.os "darwin" }}
 .config/sketchybar/
@@ -50,7 +50,7 @@ wezterm/wezterm-session-manager/
 {{ end }}
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Linux-only configs — ignore on macOS
+# Linux-only configs
 # ─────────────────────────────────────────────────────────────────────────────
 {{ if ne .chezmoi.os "linux" }}
 .config/i3/
@@ -59,7 +59,7 @@ wezterm/wezterm-session-manager/
 {{ end }}
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Linux display-server-specific — ignore based on wmForceDisplayServer or prompt
+# Linux display-server-specific
 # ─────────────────────────────────────────────────────────────────────────────
 {{ if .isLinux }}
 {{ if not .isX11 }}
@@ -69,4 +69,38 @@ wezterm/wezterm-session-manager/
 .config/sway/
 .config/waybar/
 {{ end }}
+{{ end }}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Windows-only: exclude everything except wezterm and codex/opencode configs
+# ─────────────────────────────────────────────────────────────────────────────
+{{ if .isWindows }}
+.config/sketchybar/
+.config/yabai/
+.config/skhd/
+.config/spacebar/
+.aerospace.toml
+.config/i3/
+.config/sway/
+.config/waybar/
+.config/atuin/
+.config/helix/
+.config/k9s/
+.config/karabiner/
+.config/lazygit/
+.config/nvim/
+.config/zellij/
+.config/yazi/
+.config/vscode/
+.bash_logout
+.profile
+.bashrc
+.zshrc
+.kubectl_aliases
+.newsboat/
+.kube/
+.ssh/
+.env
+.env.darwin
+.env.linux
 {{ end }}

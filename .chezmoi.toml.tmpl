@@ -3,13 +3,16 @@
 {{- if eq .chezmoi.os "linux" -}}
 {{-   $wmForceDisplayServer = promptStringOnce . "wmForceDisplayServer" "Force display server (leave blank for auto-detect, or type: x11/wayland)" -}}
 {{- end -}}
-{{- $disableBwSshAgent = promptBoolOnce . "disableBwSshAgent" "Disable Bitwarden SSH agent?" -}}
+{{- if ne .chezmoi.os "windows" -}}
+{{-   $disableBwSshAgent = promptBoolOnce . "disableBwSshAgent" "Disable Bitwarden SSH agent?" -}}
+{{- end -}}
 
 [data]
     wmForceDisplayServer = {{ $wmForceDisplayServer | quote }}
     disableBwSshAgent    = {{ $disableBwSshAgent }}
     isMac                = {{ eq .chezmoi.os "darwin" }}
     isLinux              = {{ eq .chezmoi.os "linux" }}
+    isWindows            = {{ eq .chezmoi.os "windows" }}
     isUbuntu             = {{ and (eq .chezmoi.os "linux") (eq (get .chezmoi.osRelease "id" | default "") "ubuntu") }}
     isArch               = {{ and (eq .chezmoi.os "linux") (eq (get .chezmoi.osRelease "id" | default "") "arch") }}
     isX11                = {{ and (eq .chezmoi.os "linux") (or (eq $wmForceDisplayServer "x11") (and (eq $wmForceDisplayServer "") (eq (env "XDG_SESSION_TYPE" | default "") "x11"))) }}
