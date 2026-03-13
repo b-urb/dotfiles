@@ -7,6 +7,11 @@ local function is_darwin()
 	return triple:find("darwin", 1, true) ~= nil
 end
 
+local function is_windows()
+	local triple = wezterm.target_triple or ""
+	return triple:find("windows", 1, true) ~= nil
+end
+
 local function parse_bool(value)
 	if value == nil then
 		return nil
@@ -25,6 +30,12 @@ local function detect_bitwarden_ssh_sock()
 	local disable_bw = parse_bool(os.getenv("DOTFILES_DISABLE_BITWARDEN_SSH_AGENT"))
 	if disable_bw == true then
 		return nil
+	end
+
+	-- Windows: Bitwarden Desktop exposes a named pipe for SSH agent.
+	-- WezTerm treats \\.\pipe\... paths as SSH agent sockets on Windows.
+	if is_windows() then
+		return "\\\\.\\pipe\\openssh-ssh-agent"
 	end
 
 	if is_darwin() then
@@ -51,6 +62,17 @@ local function detect_bitwarden_ssh_sock()
 	end
 
 	return nil
+end
+
+-- Resolve the WSL distribution to use as the default domain.
+-- Returns nil on non-Windows, which leaves WezTerm's default intact.
+local function wsl_default_domain()
+	if not is_windows() then
+		return nil
+	end
+	-- "WSL:Ubuntu" matches whatever distro is set as default in wsl --list.
+	-- Change this to "WSL:Arch" or another name if your default differs.
+	return "WSL:Ubuntu"
 end
 
 function M.build()
@@ -118,6 +140,14 @@ function M.build()
 		},
 		status_update_interval = 500,
 	}
+
+	-- Windows: open WSL by default instead of cmd/PowerShell
+	local wsl_domain = wsl_default_domain()
+	if wsl_domain ~= nil then
+		config.default_domain = wsl_domain
+		-- Keep native Windows shells accessible via the launcher menu
+		config.wsl_domains = wezterm.default_wsl_domains()
+	end
 
 	local bw_sock = detect_bitwarden_ssh_sock()
 	if bw_sock ~= nil then
