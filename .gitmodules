@@ -1,8 +1,0 @@
-[submodule "dotbot"]
-	path = dotbot
-	url = https://github.com/anishathalye/dotbot
-	ignore = dirty
-
-[submodule "wezterm/wezterm-session-manager"]
-	path = wezterm/wezterm-session-manager
-	url = https://github.com/danielcopper/wezterm-session-manager.git

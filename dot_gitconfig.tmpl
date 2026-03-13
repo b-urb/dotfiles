@@ -1,0 +1,14 @@
+[user]
+	name = Björn Urban
+	email = {{ (bitwarden "item" "git-email").login.password }}
+[credential]
+	helper = cache --timeout=3600
+[core]
+	editor = vim
+	autocrlf = input
+	excludeFiles = ~/.config/.gitignore
+[http]
+	sslverify = false
+	proxy =
+[url "git@ssh.dev.azure.com:v3"]
+	insteadof = https://dev.azure.com

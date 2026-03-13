@@ -1,0 +1,12 @@
+# chezmoi external dependencies
+# These are downloaded/cloned by `chezmoi apply` and placed in $HOME.
+# Replaces git submodules.
+
+# ─── wezterm session manager ─────────────────────────────────────────────────
+# Replaces: wezterm/wezterm-session-manager (former git submodule)
+[".config/wezterm/wezterm-session-manager"]
+    type            = "archive"
+    url             = "https://github.com/danielcopper/wezterm-session-manager/archive/HEAD.tar.gz"
+    exact           = true
+    stripComponents = 1
+    refreshPeriod   = "168h"
