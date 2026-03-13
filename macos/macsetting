@@ -1,2 +1,0 @@
-defaults write -g NSAutomaticWindowAnimationsEnabled -bool false                                                                                                                                                                                ⛵ urban-dev()
-defaults write -g NSWindowShouldDragOnGesture -bool true

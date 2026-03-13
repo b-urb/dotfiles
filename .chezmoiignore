@@ -1,0 +1,72 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# chezmoi ignore file — patterns match TARGET paths (relative to $HOME)
+# This file is a Go template; use if/end blocks for conditional ignores.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Repo-level files that should never be placed in $HOME
+README.md
+docs/
+Brewfile
+Brewfile.lock.json
+ubuntu/
+arch/
+macos/
+scripts/
+templates/
+options/
+zsh/
+kube/
+elgato-scripts/
+other/
+newsboat/
+chrome-extensions.json
+install_cargo.sh
+install_extensions.sh
+init.sh
+install.conf.yaml
+dotbot/
+.gitmodules
+.checksums
+config.yaml
+wezterm/wezterm-session-manager/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VSCode runtime data — never manage these with chezmoi
+# ─────────────────────────────────────────────────────────────────────────────
+.config/vscode/User/globalStorage/
+.config/vscode/User/workspaceStorage/
+.config/vscode/User/History/
+.config/vscode/User/chatEditingSessions/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# macOS-only configs — ignore on Linux
+# ─────────────────────────────────────────────────────────────────────────────
+{{ if ne .chezmoi.os "darwin" }}
+.config/sketchybar/
+.config/yabai/
+.config/skhd/
+.config/spacebar/
+.aerospace.toml
+{{ end }}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Linux-only configs — ignore on macOS
+# ─────────────────────────────────────────────────────────────────────────────
+{{ if ne .chezmoi.os "linux" }}
+.config/i3/
+.config/sway/
+.config/waybar/
+{{ end }}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Linux display-server-specific — ignore based on wmForceDisplayServer or prompt
+# ─────────────────────────────────────────────────────────────────────────────
+{{ if .isLinux }}
+{{ if not .isX11 }}
+.config/i3/
+{{ end }}
+{{ if not .isWayland }}
+.config/sway/
+.config/waybar/
+{{ end }}
+{{ end }}

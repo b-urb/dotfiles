@@ -1,0 +1,8 @@
+# macOS-specific Environment Variables
+# Managed by chezmoi — do not edit directly, edit the source template
+
+# Azure Configuration
+export AZURE_TENANT_ID={{ (bitwarden "item" "azure-tenant-id").login.password }}
+export AZURE_APP_ID_URI={{ (bitwarden "item" "azure-app-id-uri").login.password }}
+export AZURE_DEFAULT_USERNAME={{ (bitwarden "item" "azure-username").login.password }}
+export AZURE_DEFAULT_DURATION_HOURS={{ (bitwarden "item" "azure-default-duration-hours").login.password }}

@@ -1,0 +1,9 @@
+# Early environment options (before plugins)
+# Feature flags are managed via chezmoi data (see ~/.config/chezmoi/chezmoi.toml)
+# Local overrides: edit chezmoi.toml [data] section and run `chezmoi apply`
+{{ if .disableBwSshAgent -}}
+export DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1
+{{ end -}}
+{{ if .wmForceDisplayServer -}}
+export WM_FORCE_DISPLAY_SERVER={{ .wmForceDisplayServer | quote }}
+{{ end -}}

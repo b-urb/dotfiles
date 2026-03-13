@@ -1,0 +1,10 @@
+# Shared feature flags (committed to git, apply to all machines)
+# Machine-local overrides go in ~/.config/chezmoi/chezmoi.toml [data] section
+
+[features]
+    enableZinit    = true
+    enableAtuin    = true
+    enableStarship = true
+    enableK8s      = true
+    enableFzf      = true
+    enableZoxide   = true

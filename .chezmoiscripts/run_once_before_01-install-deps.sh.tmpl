@@ -1,0 +1,40 @@
+#!/bin/bash
+# Install core dependencies before dotfiles are applied.
+# This script runs once per machine (tracked by content hash).
+
+set -e
+
+{{ if eq .chezmoi.os "darwin" -}}
+# ─── macOS: Install Homebrew ────────────────────────────────────────────────
+if ! command -v brew &>/dev/null; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Ensure brew is on PATH for Apple Silicon
+if [ -f /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Install Bitwarden CLI if missing (needed for chezmoi secrets)
+if ! command -v bw &>/dev/null; then
+    echo "Installing Bitwarden CLI..."
+    brew install bitwarden-cli
+fi
+
+{{ else if eq .chezmoi.os "linux" -}}
+# ─── Linux: Install Bitwarden CLI if missing ────────────────────────────────
+if ! command -v bw &>/dev/null; then
+    echo "Installing Bitwarden CLI via npm..."
+    if command -v npm &>/dev/null; then
+        npm install -g @bitwarden/cli
+    elif command -v snap &>/dev/null; then
+        sudo snap install bw
+    else
+        echo "WARNING: Could not install Bitwarden CLI automatically."
+        echo "Please install it manually: https://bitwarden.com/help/cli/"
+    fi
+fi
+{{ end -}}
+
+echo "✓ Dependencies ready"

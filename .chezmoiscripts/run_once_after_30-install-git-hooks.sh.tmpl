@@ -1,0 +1,33 @@
+#!/bin/bash
+# Install the pre-commit hook into the dotfiles repo's .git/hooks/ directory.
+# This enables automatic Bitwarden sync of kubeconfigs and SSH keys on commit.
+# Runs once — if you need to re-run, delete the chezmoi script state:
+#   chezmoi state delete-bucket --bucket=scriptState && chezmoi apply
+
+set -e
+
+DOTFILES_DIR="{{ .chezmoi.sourceDir }}"
+HOOKS_DIR="$DOTFILES_DIR/.git/hooks"
+
+if [ ! -d "$HOOKS_DIR" ]; then
+    echo "WARNING: .git/hooks directory not found at $HOOKS_DIR"
+    exit 0
+fi
+
+PRE_COMMIT_HOOK="$HOOKS_DIR/pre-commit"
+PRE_COMMIT_SCRIPT="$DOTFILES_DIR/scripts/pre-commit.sh"
+
+if [ ! -f "$PRE_COMMIT_SCRIPT" ]; then
+    echo "WARNING: scripts/pre-commit.sh not found — hook not installed"
+    exit 0
+fi
+
+# Write the hook wrapper
+cat > "$PRE_COMMIT_HOOK" << 'HOOK'
+#!/bin/bash
+# Auto-installed by chezmoi run_once_after_30-install-git-hooks.sh
+exec "$(git rev-parse --show-toplevel)/scripts/pre-commit.sh"
+HOOK
+
+chmod +x "$PRE_COMMIT_HOOK"
+echo "✓ Pre-commit hook installed at $PRE_COMMIT_HOOK"
