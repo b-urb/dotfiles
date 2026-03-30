@@ -35,3 +35,6 @@ sync.yaml
 zshrc
 gradle.properties
 ubuntu/keyring.deb
+/dot_config/vscode/User/History
+/dot_config/vscode/User/globalStorage
+/dot_config/vscode/User/workspaceStorage
