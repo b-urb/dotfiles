@@ -47,9 +47,11 @@ if (-not $bwDesktop) {
     Write-Host "NOTE: Open Bitwarden Desktop, enable Settings > App Settings > Enable SSH Agent, then re-run chezmoi apply."
 }
 
-# --- WSL (must come before Bitwarden CLI — scoop's bitwarden-cli depends on it) ---
-$wslState = wsl --status 2>&1
-if ($LASTEXITCODE -ne 0 -or $wslState -match "not installed") {
+# --- WSL --------------------------------------------------------------------
+# wsl --status exits non-zero when WSL isn't installed; use -ErrorAction SilentlyContinue
+# to prevent $ErrorActionPreference = "Stop" from killing the script here
+$wslState = & wsl --status 2>&1
+if ($LASTEXITCODE -ne 0 -or "$wslState" -match "not installed") {
     Write-Host "Installing WSL with Ubuntu..."
     wsl --install -d Ubuntu
     Write-Host "WSL installed. A reboot is required before continuing."
@@ -59,11 +61,13 @@ if ($LASTEXITCODE -ne 0 -or $wslState -match "not installed") {
     Write-Host "WSL already installed."
 }
 
-# --- Bitwarden CLI (requires WSL to be present) -----------------------------
+# --- Bitwarden CLI ----------------------------------------------------------
+# Install via winget — the Scoop extras package is currently broken (download URL fails)
 if (-not (Has-Command "bw")) {
     Write-Host "Installing Bitwarden CLI..."
-    scoop bucket add extras
-    scoop install bitwarden-cli
+    winget install --id Bitwarden.CLI -e --source winget --accept-package-agreements --accept-source-agreements
+    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
+                [System.Environment]::GetEnvironmentVariable("PATH", "User")
 }
 
 # --- Core CLI tools via Scoop -----------------------------------------------
