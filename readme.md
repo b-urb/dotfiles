@@ -7,7 +7,7 @@ Personal dotfiles for macOS, Linux (Arch/Ubuntu), and Windows, managed with [che
 **macOS / Linux**
 
 ```bash
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:B-urb/dotfiles.git
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/B-urb/dotfiles.git
 ```
 
 **Windows** (PowerShell, run as Administrator)

@@ -1,3 +1,4 @@
+{{- if eq .chezmoi.os "windows" }}# Not Unix — skip{{ else -}}
 #!/bin/bash
 # Install core dependencies before dotfiles are applied.
 # This script runs once per machine (tracked by content hash).
@@ -38,3 +39,4 @@ fi
 {{ end -}}
 
 echo "✓ Dependencies ready"
+{{- end }}
