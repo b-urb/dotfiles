@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dotfiles Cheatsheet</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+
+:root {
+  --bg: #0f1117; --surface: #1e2130; --surface-alt: #161b27;
+  --border: #2d3148; --border-dim: #1e2433;
+  --fg: #e2e8f0; --fg-muted: #94a3b8; --fg-dim: #64748b;
+  --code-bg: #111827; --code-fg: #93c5fd;
+  --mono: 'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace;
+  --wezterm: #58a6ff; --neovim: #79c0ff; --zsh: #56d364;
+  --aerospace: #e3b341; --lazygit: #f78166; --kubectl: #bc8cff;
+}
+
+/* Header */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px 14px; border-bottom: 1px solid var(--border);
+  background: var(--surface-alt); position: sticky; top: 0; z-index: 100;
+}
+.header-left h1 { font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: -.01em; }
+.header-left .subtitle { font-size: 0.75rem; color: var(--fg-dim); margin-top: 2px; }
+.search-wrap { position: relative; display: flex; align-items: center; }
+.search-icon { position: absolute; left: 10px; color: var(--fg-dim); pointer-events: none; width: 14px; height: 14px; }
+#search {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--fg); font-size: 0.875rem; padding: 7px 40px 7px 32px;
+  width: 280px; outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit;
+}
+#search:focus { border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88,166,255,.15); }
+#search::placeholder { color: var(--fg-dim); }
+.search-hint {
+  position: absolute; right: 10px; font-size: 0.65rem; color: var(--fg-dim);
+  background: var(--border); border-radius: 3px; padding: 1px 5px;
+  pointer-events: none; font-family: var(--mono); letter-spacing: 0;
+}
+#search:not(:placeholder-shown) ~ .search-hint,
+#search:focus ~ .search-hint { opacity: 0; }
+
+/* Tabs */
+#tabs {
+  display: flex; gap: 2px; padding: 0 20px;
+  background: var(--surface-alt); border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+}
+#tabs::-webkit-scrollbar { display: none; }
+.tab {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--fg-muted); cursor: pointer; padding: 9px 14px 8px;
+  font-size: 0.82rem; font-weight: 500; white-space: nowrap;
+  transition: color .12s; font-family: inherit; display: flex; align-items: center; gap: 6px;
+}
+.tab:hover { color: var(--fg); }
+.tab.active { color: var(--fg); }
+.tab[data-tab="all"].active      { border-bottom-color: var(--fg); }
+.tab[data-tab="wezterm"].active  { border-bottom-color: var(--wezterm);   color: var(--wezterm); }
+.tab[data-tab="neovim"].active   { border-bottom-color: var(--neovim);    color: var(--neovim); }
+.tab[data-tab="zsh"].active      { border-bottom-color: var(--zsh);       color: var(--zsh); }
+.tab[data-tab="aerospace"].active{ border-bottom-color: var(--aerospace); color: var(--aerospace); }
+.tab[data-tab="lazygit"].active  { border-bottom-color: var(--lazygit);   color: var(--lazygit); }
+.tab[data-tab="kubectl"].active  { border-bottom-color: var(--kubectl);   color: var(--kubectl); }
+.badge {
+  font-size: 0.67rem; font-weight: 600; background: var(--border); color: var(--fg-dim);
+  border-radius: 20px; padding: 1px 7px; min-width: 22px; text-align: center; font-family: var(--mono);
+}
+
+/* Content */
+section[data-tool] { padding: 20px 20px 4px; }
+section[data-tool].hidden { display: none; }
+.section-title {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--fg-dim); margin-bottom: 12px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--border-dim);
+}
+body.single-tool .section-title { display: none; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-bottom: 16px; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.card.all-hidden { display: none; }
+.card-header {
+  padding: 9px 14px; font-size: 0.7rem; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; gap: 8px;
+}
+[data-tool="wezterm"]   .card-header { color: var(--wezterm);   background: #101c2e; }
+[data-tool="neovim"]    .card-header { color: var(--neovim);    background: #111d2e; }
+[data-tool="zsh"]       .card-header { color: var(--zsh);       background: #101e14; }
+[data-tool="aerospace"] .card-header { color: var(--aerospace); background: #1e1b0e; }
+[data-tool="lazygit"]   .card-header { color: var(--lazygit);   background: #1e130e; }
+[data-tool="kubectl"]   .card-header { color: var(--kubectl);   background: #14101e; }
+.mode-key { font-size: 0.63rem; font-weight: 400; opacity: 0.55; font-family: var(--mono); text-transform: none; letter-spacing: 0; }
+
+/* Rows */
+.row { display: flex; align-items: baseline; gap: 10px; padding: 5px 14px; border-bottom: 1px solid var(--border-dim); }
+.row:last-child { border-bottom: none; }
+.row.hidden { display: none; }
+.row code {
+  font-family: var(--mono); font-size: 0.75rem; background: var(--code-bg);
+  color: var(--code-fg); padding: 2px 6px; border-radius: 4px;
+  white-space: nowrap; flex-shrink: 0; min-width: 140px;
+}
+.row .desc { font-size: 0.8rem; color: var(--fg-muted); line-height: 1.4; flex: 1; }
+
+/* Highlight */
+mark.hl { background: rgba(255,210,0,.22); color: inherit; border-radius: 2px; padding: 0 1px; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 14px; }
+  #search { width: 100%; }
+  .card-grid { grid-template-columns: 1fr; }
+  section[data-tool] { padding: 12px 12px 4px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>⌨ Dotfiles Cheatsheet</h1>
+    <p class="subtitle">WezTerm · Neovim · Zsh · AeroSpace · Lazygit · Kubectl</p>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5L14 14"/>
+    </svg>
+    <input id="search" type="search" placeholder="Search… (/ or Ctrl+K)" autocomplete="off" spellcheck="false">
+    <span class="search-hint">/</span>
+  </div>
+</header>
+
+<nav id="tabs">
+  <button class="tab active" data-tab="all">All</button>
+  <button class="tab" data-tab="wezterm">WezTerm <span class="badge">0</span></button>
+  <button class="tab" data-tab="neovim">Neovim <span class="badge">0</span></button>
+  <button class="tab" data-tab="zsh">Zsh <span class="badge">0</span></button>
+  <button class="tab" data-tab="aerospace">AeroSpace <span class="badge">0</span></button>
+  <button class="tab" data-tab="lazygit">Lazygit <span class="badge">0</span></button>
+  <button class="tab" data-tab="kubectl">Kubectl <span class="badge">0</span></button>
+</nav>
+
+<main id="content">
+
+  <!-- ══════════════════════════════════════════════════════ WEZTERM -->
+  <section data-tool="wezterm">
+    <h2 class="section-title">WezTerm — Leader: Ctrl+Space (1500ms)</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-header">Pane Navigation</div>
+        <div class="row"><code>Ctrl+h/j/k/l</code><span class="desc">Move focus between panes (passes Ctrl+hjkl to Neovim)</span></div>
+        <div class="row"><code>Alt+←/↓/↑/→</code><span class="desc">Alternative pane navigation</span></div>
+        <div class="row"><code>Ctrl+h / Ctrl+l</code><span class="desc">Cycle to prev/next tab when at edge</span></div>
+        <div class="row"><code>Ctrl+/</code><span class="desc">Toggle Neovim bottom terminal</span></div>
+        <div class="row"><code>Ctrl+b</code><span class="desc">Enter copy mode</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Pane Resize</div>
+        <div class="row"><code>Alt+h</code><span class="desc">Resize pane left (3 units)</span></div>
+        <div class="row"><code>Alt+j</code><span class="desc">Resize pane down (2 units)</span></div>
+        <div class="row"><code>Alt+k</code><span class="desc">Resize pane up (2 units)</span></div>
+        <div class="row"><code>Alt+l</code><span class="desc">Resize pane right (3 units)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Tabs &amp; Splits</div>
+        <div class="row"><code>Alt+[</code><span class="desc">Previous tab</span></div>
+        <div class="row"><code>Alt+]</code><span class="desc">Next tab</span></div>
+        <div class="row"><code>Alt+i</code><span class="desc">Move tab left</span></div>
+        <div class="row"><code>Alt+o</code><span class="desc">Move tab right</span></div>
+        <div class="row"><code>Alt+n</code><span class="desc">Split pane horizontally</span></div>
+        <div class="row"><code>Alt+f</code><span class="desc">Toggle pane zoom</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Clipboard</div>
+        <div class="row"><code>Ctrl+Shift+c</code><span class="desc">Copy to clipboard</span></div>
+        <div class="row"><code>Ctrl+Shift+v</code><span class="desc">Paste from clipboard</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Pane Mode <span class="mode-key">Leader+p</span></div>
+        <div class="row"><code>h/j/k/l</code><span class="desc">Focus pane direction</span></div>
+        <div class="row"><code>H/J/K/L</code><span class="desc">Resize pane (left 5, down/up 3, right 5)</span></div>
+        <div class="row"><code>d</code><span class="desc">Split vertical</span></div>
+        <div class="row"><code>r / n</code><span class="desc">Split horizontal</span></div>
+        <div class="row"><code>f</code><span class="desc">Zoom toggle</span></div>
+        <div class="row"><code>p</code><span class="desc">Next pane</span></div>
+        <div class="row"><code>x</code><span class="desc">Close pane</span></div>
+        <div class="row"><code>b</code><span class="desc">Move pane to new tab</span></div>
+        <div class="row"><code>Esc / q / Enter</code><span class="desc">Exit mode</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Tab Mode <span class="mode-key">Leader+t</span></div>
+        <div class="row"><code>h / k / p</code><span class="desc">Previous tab</span></div>
+        <div class="row"><code>l / j</code><span class="desc">Next tab</span></div>
+        <div class="row"><code>Tab</code><span class="desc">Last active tab</span></div>
+        <div class="row"><code>c / n</code><span class="desc">New tab</span></div>
+        <div class="row"><code>x</code><span class="desc">Close tab</span></div>
+        <div class="row"><code>H / L</code><span class="desc">Move tab left/right</span></div>
+        <div class="row"><code>r</code><span class="desc">Rename tab (prompt)</span></div>
+        <div class="row"><code>b</code><span class="desc">Move current pane to new tab</span></div>
+        <div class="row"><code>1–9</code><span class="desc">Jump to tab by number</span></div>
+        <div class="row"><code>Esc / q / Enter</code><span class="desc">Exit mode</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Session Mode <span class="mode-key">Leader+o</span></div>
+        <div class="row"><code>f / w</code><span class="desc">Fuzzy find workspace</span></div>
+        <div class="row"><code>l</code><span class="desc">List tabs &amp; workspaces</span></div>
+        <div class="row"><code>c</code><span class="desc">Command palette</span></div>
+        <div class="row"><code>n</code><span class="desc">New workspace (prompt)</span></div>
+        <div class="row"><code>s</code><span class="desc">Switch workspace (prompt)</span></div>
+        <div class="row"><code>r</code><span class="desc">Rename workspace (prompt)</span></div>
+        <div class="row"><code>Esc / q / Enter</code><span class="desc">Exit mode</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Resize Mode <span class="mode-key">Leader+n</span></div>
+        <div class="row"><code>h / j / k / l</code><span class="desc">Adjust pane size (2 units each)</span></div>
+        <div class="row"><code>Esc / q / Enter</code><span class="desc">Exit mode</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ NEOVIM -->
+  <section data-tool="neovim">
+    <h2 class="section-title">Neovim — LazyVim · Leader: Space</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-header">Splits (smart-splits)</div>
+        <div class="row"><code>Ctrl+h/j/k/l</code><span class="desc">Move cursor to split (or WezTerm pane/tab at edge)</span></div>
+        <div class="row"><code>Ctrl+\</code><span class="desc">Move to previous split</span></div>
+        <div class="row"><code>Alt+h/j/k/l</code><span class="desc">Resize split (passes through to WezTerm if at edge)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">GitHub (Snacks + Octo)</div>
+        <div class="row"><code>&lt;leader&gt;gi</code><span class="desc">GitHub issues (open)</span></div>
+        <div class="row"><code>&lt;leader&gt;gI</code><span class="desc">GitHub issues (all)</span></div>
+        <div class="row"><code>&lt;leader&gt;gp</code><span class="desc">GitHub pull requests (open)</span></div>
+        <div class="row"><code>&lt;leader&gt;gP</code><span class="desc">GitHub pull requests (all)</span></div>
+        <div class="row"><code>&lt;leader&gt;go</code><span class="desc">Open Octo command prompt</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">GitLab</div>
+        <div class="row"><code>&lt;leader&gt;gO</code><span class="desc">GitLab menu</span></div>
+        <div class="row"><code>  → Choose MR</code><span class="desc">Choose merge request</span></div>
+        <div class="row"><code>  → Review</code><span class="desc">Review current branch MR</span></div>
+        <div class="row"><code>  → Summary</code><span class="desc">Show MR summary</span></div>
+        <div class="row"><code>  → Create MR</code><span class="desc">Create merge request</span></div>
+        <div class="row"><code>  → Pipeline</code><span class="desc">Show pipeline status</span></div>
+        <div class="row"><code>  → Open in Browser</code><span class="desc">Open MR in browser</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Copilot</div>
+        <div class="row"><code>Ctrl+;</code><span class="desc">Accept suggestion (auto-trigger enabled)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Find &amp; Files (LazyVim)</div>
+        <div class="row"><code>&lt;leader&gt;ff</code><span class="desc">Find files</span></div>
+        <div class="row"><code>&lt;leader&gt;fg</code><span class="desc">Live grep</span></div>
+        <div class="row"><code>&lt;leader&gt;fb</code><span class="desc">Buffers</span></div>
+        <div class="row"><code>&lt;leader&gt;fr</code><span class="desc">Recent files</span></div>
+        <div class="row"><code>&lt;leader&gt;e</code><span class="desc">File explorer (neo-tree)</span></div>
+        <div class="row"><code>&lt;leader&gt;gg</code><span class="desc">Lazygit</span></div>
+        <div class="row"><code>&lt;leader&gt;bd</code><span class="desc">Delete buffer</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">LSP (LazyVim)</div>
+        <div class="row"><code>gd</code><span class="desc">Go to definition</span></div>
+        <div class="row"><code>gD</code><span class="desc">Go to declaration</span></div>
+        <div class="row"><code>gr</code><span class="desc">References</span></div>
+        <div class="row"><code>K</code><span class="desc">Hover documentation</span></div>
+        <div class="row"><code>&lt;leader&gt;ca</code><span class="desc">Code action</span></div>
+        <div class="row"><code>&lt;leader&gt;cr</code><span class="desc">Rename symbol</span></div>
+        <div class="row"><code>&lt;leader&gt;cd</code><span class="desc">Line diagnostics</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ ZSH -->
+  <section data-tool="zsh">
+    <h2 class="section-title">Zsh — Zinit · Starship</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-header">Tool Replacements</div>
+        <div class="row"><code>ls</code><span class="desc">→ eza (modern ls with icons)</span></div>
+        <div class="row"><code>cat</code><span class="desc">→ bat (syntax highlighted cat)</span></div>
+        <div class="row"><code>vim</code><span class="desc">→ nvim</span></div>
+        <div class="row"><code>htop</code><span class="desc">→ bpytop</span></div>
+        <div class="row"><code>ping</code><span class="desc">→ gping (visual graph ping)</span></div>
+        <div class="row"><code>du</code><span class="desc">→ dua (disk usage analyzer)</span></div>
+        <div class="row"><code>dig</code><span class="desc">→ dog (colorful DNS lookup)</span></div>
+        <div class="row"><code>python</code><span class="desc">→ python3</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Quick Shortcuts</div>
+        <div class="row"><code>lg</code><span class="desc">lazygit</span></div>
+        <div class="row"><code>res</code><span class="desc">Reload shell (source ~/.zshrc)</span></div>
+        <div class="row"><code>j &lt;dir&gt;</code><span class="desc">Jump to directory (zoxide)</span></div>
+        <div class="row"><code>kb</code><span class="desc">kubectl</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Kubernetes</div>
+        <div class="row"><code>kctx</code><span class="desc">kubectx — switch context</span></div>
+        <div class="row"><code>kns</code><span class="desc">kubens — switch namespace</span></div>
+        <div class="row"><code>kb</code><span class="desc">kubectl shorthand</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Functions</div>
+        <div class="row"><code>fuzzy_search [n]</code><span class="desc">Pipe stdin to fzf with n context lines (default 5)</span></div>
+        <div class="row"><code>dklocal &lt;img&gt; &lt;cmd&gt;</code><span class="desc">docker run with $PWD mounted at /usr/workdir</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Active Plugins</div>
+        <div class="row"><code>fzf</code><span class="desc">Fuzzy finder — Ctrl+R history, Ctrl+T files, Alt+C dirs</span></div>
+        <div class="row"><code>fzf-tab</code><span class="desc">Tab completion with fzf preview</span></div>
+        <div class="row"><code>atuin</code><span class="desc">Shell history search (global filter, Enter to execute)</span></div>
+        <div class="row"><code>zsh-vi-mode</code><span class="desc">Vi keybindings (normal/insert/visual)</span></div>
+        <div class="row"><code>fast-syntax-highlight</code><span class="desc">Real-time command syntax highlighting</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ AEROSPACE -->
+  <section data-tool="aerospace">
+    <h2 class="section-title">AeroSpace — via SKHD · Modifier: Alt</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-header">Window Focus</div>
+        <div class="row"><code>Alt+h</code><span class="desc">Focus window left</span></div>
+        <div class="row"><code>Alt+j</code><span class="desc">Focus window down</span></div>
+        <div class="row"><code>Alt+k</code><span class="desc">Focus window up</span></div>
+        <div class="row"><code>Alt+l</code><span class="desc">Focus window right</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Window Move / Join</div>
+        <div class="row"><code>Alt+Shift+h</code><span class="desc">Join window with left</span></div>
+        <div class="row"><code>Alt+Shift+j</code><span class="desc">Join window with down</span></div>
+        <div class="row"><code>Alt+Shift+k</code><span class="desc">Join window with up</span></div>
+        <div class="row"><code>Alt+Shift+l</code><span class="desc">Join window with right</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Layout</div>
+        <div class="row"><code>Alt+f</code><span class="desc">Fullscreen</span></div>
+        <div class="row"><code>Alt+e</code><span class="desc">Tiles layout (horizontal + vertical)</span></div>
+        <div class="row"><code>Alt+/</code><span class="desc">Toggle tiles (horiz ↔ vert)</span></div>
+        <div class="row"><code>Alt+,</code><span class="desc">Toggle accordion (horiz ↔ vert)</span></div>
+        <div class="row"><code>Alt+w</code><span class="desc">Vertical accordion</span></div>
+        <div class="row"><code>Alt+t</code><span class="desc">Horizontal accordion</span></div>
+        <div class="row"><code>Alt+Shift+Space</code><span class="desc">Toggle floating / tiling</span></div>
+        <div class="row"><code>Alt+Shift+q</code><span class="desc">Close window</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Workspace Switch</div>
+        <div class="row"><code>Alt+1–9</code><span class="desc">Switch to workspace 1–9</span></div>
+        <div class="row"><code>Alt+x</code><span class="desc">Switch to workspace X</span></div>
+        <div class="row"><code>Alt+z</code><span class="desc">Switch to workspace Z</span></div>
+        <div class="row"><code>Alt+Return</code><span class="desc">Focus WezTerm (launch if closed)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Move to Workspace</div>
+        <div class="row"><code>Alt+Shift+1–9</code><span class="desc">Move window to workspace 1–9</span></div>
+        <div class="row"><code>Alt+Shift+x</code><span class="desc">Move window to workspace X</span></div>
+        <div class="row"><code>Alt+Shift+z</code><span class="desc">Move window to workspace Z</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Resize</div>
+        <div class="row"><code>Alt+Shift+-</code><span class="desc">Resize smart −50</span></div>
+        <div class="row"><code>Alt+Shift+=</code><span class="desc">Resize smart +50</span></div>
+        <div class="row"><code>Alt+Shift+,</code><span class="desc">Move workspace to next monitor</span></div>
+        <div class="row"><code>Alt+Shift+.</code><span class="desc">Move workspace to next monitor</span></div>
+        <div class="row"><code>Alt+Shift+c</code><span class="desc">Reload AeroSpace config</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Resize Mode <span class="mode-key">Alt+r → Esc to exit</span></div>
+        <div class="row"><code>h</code><span class="desc">Resize width −50</span></div>
+        <div class="row"><code>j</code><span class="desc">Resize height +50</span></div>
+        <div class="row"><code>k</code><span class="desc">Resize height −50</span></div>
+        <div class="row"><code>l</code><span class="desc">Resize width +50</span></div>
+        <div class="row"><code>Esc / Return</code><span class="desc">Exit resize mode</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Service Mode <span class="mode-key">Alt+Shift+; → Ctrl+g to exit</span></div>
+        <div class="row"><code>r</code><span class="desc">Flatten workspace tree</span></div>
+        <div class="row"><code>f</code><span class="desc">Toggle floating / tiling</span></div>
+        <div class="row"><code>x</code><span class="desc">Restart AeroSpace</span></div>
+        <div class="row"><code>Delete</code><span class="desc">Close all windows except current</span></div>
+        <div class="row"><code>Esc</code><span class="desc">Reload config &amp; exit</span></div>
+        <div class="row"><code>Ctrl+g</code><span class="desc">Exit service mode</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ LAZYGIT -->
+  <section data-tool="lazygit">
+    <h2 class="section-title">Lazygit — Git TUI</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-header">Navigation</div>
+        <div class="row"><code>h / l</code><span class="desc">Previous / next panel</span></div>
+        <div class="row"><code>j / k</code><span class="desc">Move down / up in list</span></div>
+        <div class="row"><code>Tab</code><span class="desc">Next panel</span></div>
+        <div class="row"><code>[ / ]</code><span class="desc">Previous / next tab</span></div>
+        <div class="row"><code>?</code><span class="desc">Show keybindings</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Staging &amp; Files</div>
+        <div class="row"><code>Space</code><span class="desc">Stage / unstage file or hunk</span></div>
+        <div class="row"><code>a</code><span class="desc">Stage / unstage all files</span></div>
+        <div class="row"><code>d</code><span class="desc">Discard changes</span></div>
+        <div class="row"><code>Enter</code><span class="desc">View file diff / stage hunks</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Commits</div>
+        <div class="row"><code>c</code><span class="desc">Commit staged changes</span></div>
+        <div class="row"><code>A</code><span class="desc">Amend last commit</span></div>
+        <div class="row"><code>r</code><span class="desc">Reword commit message</span></div>
+        <div class="row"><code>Ctrl+v</code><span class="desc">Conventional commit wizard (type/scope/breaking/message)</span></div>
+        <div class="row"><code>C</code><span class="desc">Commitizen commit (git cz)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Branches</div>
+        <div class="row"><code>n</code><span class="desc">New branch</span></div>
+        <div class="row"><code>Space</code><span class="desc">Checkout branch</span></div>
+        <div class="row"><code>M</code><span class="desc">Merge branch into current</span></div>
+        <div class="row"><code>r</code><span class="desc">Rebase current onto branch</span></div>
+        <div class="row"><code>G</code><span class="desc">Open MR in GitLab (custom)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Push &amp; Pull</div>
+        <div class="row"><code>P</code><span class="desc">Push</span></div>
+        <div class="row"><code>p</code><span class="desc">Pull</span></div>
+        <div class="row"><code>f</code><span class="desc">Fetch</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Custom Commands</div>
+        <div class="row"><code>Ctrl+v</code><span class="desc">Conventional commit — prompts type, scope, breaking flag, message</span></div>
+        <div class="row"><code>G</code><span class="desc">Open current branch MR in GitLab browser (branches panel)</span></div>
+        <div class="row"><code>Ctrl+r</code><span class="desc">Create GitHub PR (gh pr create --fill --web)</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ KUBECTL -->
+  <section data-tool="kubectl">
+    <h2 class="section-title">Kubectl — 800+ aliases from kubectl_aliases</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-header">Core Aliases</div>
+        <div class="row"><code>k</code><span class="desc">kubectl</span></div>
+        <div class="row"><code>ksys</code><span class="desc">kubectl --namespace=kube-system</span></div>
+        <div class="row"><code>ka</code><span class="desc">kubectl apply --recursive -f</span></div>
+        <div class="row"><code>kak</code><span class="desc">kubectl apply -k (kustomize)</span></div>
+        <div class="row"><code>kk</code><span class="desc">kubectl kustomize</span></div>
+        <div class="row"><code>kex</code><span class="desc">kubectl exec -i -t</span></div>
+        <div class="row"><code>klo</code><span class="desc">kubectl logs -f</span></div>
+        <div class="row"><code>klop</code><span class="desc">kubectl logs -f -p (previous container)</span></div>
+        <div class="row"><code>kpf</code><span class="desc">kubectl port-forward</span></div>
+        <div class="row"><code>krun</code><span class="desc">kubectl run --rm --restart=Never -i -t (ephemeral pod)</span></div>
+        <div class="row"><code>kp</code><span class="desc">kubectl proxy</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Get Resources</div>
+        <div class="row"><code>kgpo</code><span class="desc">kubectl get pods</span></div>
+        <div class="row"><code>kgdep</code><span class="desc">kubectl get deployment</span></div>
+        <div class="row"><code>kgsts</code><span class="desc">kubectl get statefulset</span></div>
+        <div class="row"><code>kgsvc</code><span class="desc">kubectl get service</span></div>
+        <div class="row"><code>kging</code><span class="desc">kubectl get ingress</span></div>
+        <div class="row"><code>kgcm</code><span class="desc">kubectl get configmap</span></div>
+        <div class="row"><code>kgsec</code><span class="desc">kubectl get secret</span></div>
+        <div class="row"><code>kgno</code><span class="desc">kubectl get nodes</span></div>
+        <div class="row"><code>kg</code><span class="desc">kubectl get (generic)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Describe Resources</div>
+        <div class="row"><code>kdpo</code><span class="desc">kubectl describe pods</span></div>
+        <div class="row"><code>kddep</code><span class="desc">kubectl describe deployment</span></div>
+        <div class="row"><code>kdsts</code><span class="desc">kubectl describe statefulset</span></div>
+        <div class="row"><code>kdsvc</code><span class="desc">kubectl describe service</span></div>
+        <div class="row"><code>kding</code><span class="desc">kubectl describe ingress</span></div>
+        <div class="row"><code>kdcm</code><span class="desc">kubectl describe configmap</span></div>
+        <div class="row"><code>kdsec</code><span class="desc">kubectl describe secret</span></div>
+        <div class="row"><code>kd</code><span class="desc">kubectl describe (generic)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Delete Resources</div>
+        <div class="row"><code>krmpo</code><span class="desc">kubectl delete pods</span></div>
+        <div class="row"><code>krmdep</code><span class="desc">kubectl delete deployment</span></div>
+        <div class="row"><code>krmsts</code><span class="desc">kubectl delete statefulset</span></div>
+        <div class="row"><code>krmsvc</code><span class="desc">kubectl delete service</span></div>
+        <div class="row"><code>krming</code><span class="desc">kubectl delete ingress</span></div>
+        <div class="row"><code>krmcm</code><span class="desc">kubectl delete configmap</span></div>
+        <div class="row"><code>krmsec</code><span class="desc">kubectl delete secret</span></div>
+        <div class="row"><code>krm</code><span class="desc">kubectl delete (generic)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Kube-system Namespace <span class="mode-key">ksys* prefix</span></div>
+        <div class="row"><code>ksysgpo</code><span class="desc">get pods in kube-system</span></div>
+        <div class="row"><code>ksysgdep</code><span class="desc">get deployments in kube-system</span></div>
+        <div class="row"><code>ksysgsvc</code><span class="desc">get services in kube-system</span></div>
+        <div class="row"><code>ksysex</code><span class="desc">exec in kube-system</span></div>
+        <div class="row"><code>ksyslo</code><span class="desc">logs in kube-system</span></div>
+        <div class="row"><code>ksys &lt;any cmd&gt;</code><span class="desc">Add --namespace=kube-system to any kubectl command</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Context &amp; Namespace</div>
+        <div class="row"><code>kctx</code><span class="desc">kubectx — list/switch contexts</span></div>
+        <div class="row"><code>kns</code><span class="desc">kubens — list/switch namespaces</span></div>
+        <div class="row"><code>k config get-contexts</code><span class="desc">List all contexts</span></div>
+        <div class="row"><code>k config current-context</code><span class="desc">Show active context</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Output Flag Patterns</div>
+        <div class="row"><code>kgpoyaml</code><span class="desc">get pods -o yaml (append "yaml" to most kg* aliases)</span></div>
+        <div class="row"><code>kgpowide</code><span class="desc">get pods -o wide</span></div>
+        <div class="row"><code>kgpojson</code><span class="desc">get pods -o json</span></div>
+        <div class="row"><code>-n &lt;namespace&gt;</code><span class="desc">Override namespace on any k* command</span></div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var searchEl  = document.getElementById('search');
+  var tabBtns   = document.querySelectorAll('.tab');
+  var sections  = document.querySelectorAll('section[data-tool]');
+  var body      = document.body;
+  var activeTab = 'all';
+  var searchTimer;
+
+  // ── Badge init (count rows per section) ──────────────────────────────
+  tabBtns.forEach(function (btn) {
+    var id = btn.dataset.tab;
+    if (id === 'all') return;
+    var sec = document.querySelector('section[data-tool="' + id + '"]');
+    if (!sec) return;
+    var badge = btn.querySelector('.badge');
+    if (badge) badge.dataset.total = sec.querySelectorAll('.row').length;
+    updateBadge(btn, sec);
+  });
+
+  function updateBadge(btn, sec) {
+    var badge = btn.querySelector('.badge');
+    if (!badge) return;
+    var visible = sec.querySelectorAll('.row:not(.hidden)').length;
+    badge.textContent = visible;
+  }
+
+  function updateAllBadges() {
+    tabBtns.forEach(function (btn) {
+      var id = btn.dataset.tab;
+      if (id === 'all') return;
+      var sec = document.querySelector('section[data-tool="' + id + '"]');
+      if (sec) updateBadge(btn, sec);
+    });
+  }
+
+  // ── Tab switching ─────────────────────────────────────────────────────
+  function activateTab(id) {
+    activeTab = id || 'all';
+    tabBtns.forEach(function (b) { b.classList.toggle('active', b.dataset.tab === activeTab); });
+    sections.forEach(function (s) {
+      s.classList.toggle('hidden', activeTab !== 'all' && s.dataset.tool !== activeTab);
+    });
+    body.classList.toggle('single-tool', activeTab !== 'all');
+    history.replaceState(null, '', activeTab === 'all' ? location.pathname : '#' + activeTab);
+  }
+
+  tabBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      searchEl.value = '';
+      clearHighlights();
+      resetVisibility();
+      activateTab(btn.dataset.tab);
+    });
+  });
+
+  // ── Hash routing ──────────────────────────────────────────────────────
+  var VALID_TABS = ['all','wezterm','neovim','zsh','aerospace','lazygit','kubectl'];
+  function readHash() {
+    var h = location.hash.replace('#', '').trim();
+    return VALID_TABS.indexOf(h) !== -1 ? h : 'all';
+  }
+  window.addEventListener('popstate', function () { activateTab(readHash()); });
+
+  // ── Search ────────────────────────────────────────────────────────────
+  function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  function clearHighlights() {
+    document.querySelectorAll('mark.hl').forEach(function (m) {
+      m.parentNode.replaceChild(document.createTextNode(m.textContent), m);
+    });
+    // Normalize adjacent text nodes after replacement
+    document.querySelectorAll('.row').forEach(function (r) { r.normalize(); });
+  }
+
+  function highlightNode(el, re) {
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    var nodes = [];
+    var n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(function (tn) {
+      var text = tn.textContent;
+      if (!re.test(text)) { re.lastIndex = 0; return; }
+      re.lastIndex = 0;
+      var frag = document.createDocumentFragment();
+      var last = 0, m;
+      while ((m = re.exec(text)) !== null) {
+        frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+        var mark = document.createElement('mark');
+        mark.className = 'hl';
+        mark.textContent = m[0];
+        frag.appendChild(mark);
+        last = re.lastIndex;
+      }
+      frag.appendChild(document.createTextNode(text.slice(last)));
+      tn.parentNode.replaceChild(frag, tn);
+    });
+  }
+
+  function resetVisibility() {
+    document.querySelectorAll('.row.hidden').forEach(function (r) { r.classList.remove('hidden'); });
+    document.querySelectorAll('.card.all-hidden').forEach(function (c) { c.classList.remove('all-hidden'); });
+    sections.forEach(function (s) {
+      if (activeTab === 'all') s.classList.remove('hidden');
+    });
+    updateAllBadges();
+  }
+
+  function applySearch(query) {
+    clearHighlights();
+    resetVisibility();
+    var q = query.trim();
+    if (!q) return;
+
+    var re = new RegExp(escRe(q), 'gi');
+
+    sections.forEach(function (sec) {
+      if (activeTab !== 'all' && sec.dataset.tool !== activeTab) return;
+      var secMatch = false;
+      sec.querySelectorAll('.card').forEach(function (card) {
+        var cardMatch = false;
+        card.querySelectorAll('.row').forEach(function (row) {
+          re.lastIndex = 0;
+          if (re.test(row.textContent)) {
+            cardMatch = true;
+            secMatch = true;
+            highlightNode(row, new RegExp(escRe(q), 'gi'));
+          } else {
+            row.classList.add('hidden');
+          }
+        });
+        if (!cardMatch) card.classList.add('all-hidden');
+      });
+      if (activeTab === 'all' && !secMatch) sec.classList.add('hidden');
+    });
+
+    updateAllBadges();
+  }
+
+  // ── Keyboard shortcuts ────────────────────────────────────────────────
+  document.addEventListener('keydown', function (e) {
+    var tag = document.activeElement.tagName;
+    var inInput = tag === 'INPUT' || tag === 'TEXTAREA';
+    if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && !inInput) {
+      e.preventDefault();
+      searchEl.focus();
+      searchEl.select();
+    }
+    if (e.key === 'Escape' && document.activeElement === searchEl) {
+      searchEl.value = '';
+      applySearch('');
+      searchEl.blur();
+    }
+  });
+
+  searchEl.addEventListener('input', function (e) {
+    clearTimeout(searchTimer);
+    var val = e.target.value;
+    searchTimer = setTimeout(function () { applySearch(val); }, 180);
+  });
+
+  // ── Init ──────────────────────────────────────────────────────────────
+  activateTab(readHash());
+
+}());
+</script>
+</body>
+</html>
