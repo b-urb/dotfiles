@@ -13,8 +13,9 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/B-urb/do
 **Windows** (PowerShell, run as Administrator)
 
 ```powershell
-winget install twpayne.chezmoi
-chezmoi init --apply git@github.com:B-urb/dotfiles.git
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+winget install Git.Git twpayne.chezmoi
+chezmoi init --apply https://github.com/B-urb/dotfiles.git
 ```
 
 On Windows, chezmoi runs the `run_once_before_02` PowerShell script automatically to install Git, WezTerm, WSL, Scoop, and the Bitwarden CLI before placing any dotfiles.
