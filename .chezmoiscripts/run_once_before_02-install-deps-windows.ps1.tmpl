@@ -47,23 +47,23 @@ if (-not $bwDesktop) {
     Write-Host "NOTE: Open Bitwarden Desktop, enable Settings > App Settings > Enable SSH Agent, then re-run chezmoi apply."
 }
 
-# --- Bitwarden CLI -----------------------------------------------------------
-if (-not (Has-Command "bw")) {
-    Write-Host "Installing Bitwarden CLI..."
-    scoop bucket add extras
-    scoop install bitwarden-cli
-}
-
-# --- WSL --------------------------------------------------------------------
+# --- WSL (must come before Bitwarden CLI — scoop's bitwarden-cli depends on it) ---
 $wslState = wsl --status 2>&1
 if ($LASTEXITCODE -ne 0 -or $wslState -match "not installed") {
     Write-Host "Installing WSL with Ubuntu..."
     wsl --install -d Ubuntu
-    Write-Host "WSL installed. A reboot may be required before continuing."
+    Write-Host "WSL installed. A reboot is required before continuing."
     Write-Host "After reboot, run: chezmoi apply"
     exit 0
 } else {
     Write-Host "WSL already installed."
+}
+
+# --- Bitwarden CLI (requires WSL to be present) -----------------------------
+if (-not (Has-Command "bw")) {
+    Write-Host "Installing Bitwarden CLI..."
+    scoop bucket add extras
+    scoop install bitwarden-cli
 }
 
 # --- Core CLI tools via Scoop -----------------------------------------------
