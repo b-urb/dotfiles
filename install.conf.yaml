@@ -93,15 +93,15 @@
 # statements to only create symlinks on the appropriate operating system.
 
 - link:
-    ~/.profile: 
+    ~/.profile:
       path: profile
       force: true
       relink: true
-    ~/.bashrc: 
+    ~/.bashrc:
       path: bashrc
       force: true
       relink: true
-    ~/.bash_logout: 
+    ~/.bash_logout:
       path: bash_logout
       force: true
       relink: true
@@ -168,43 +168,51 @@
       create: true
 
     ~/.config/nvim:
-        path: config/nvim
-        create: true
-        relink: true
-        force: true
+      path: config/nvim
+      create: true
+      relink: true
+      force: true
     ~/.config/zellij:
-        path: config/zellij
-        create: true
-        relink: true
-        force: true
+      path: config/zellij
+      create: true
+      relink: true
+      force: true
     ~/.config/k9s:
-        path: config/k9s
-        create: true
-        relink: true
-        force: true
+      path: config/k9s
+      create: true
+      relink: true
+      force: true
     ~/.config/lazygit:
-        path: config/lazygit
-        create: true
+      path: config/lazygit
+      create: true
     ~/.codex/config.toml:
-        path: config/codex/config.toml
-        create: true
-        force: true
+      path: config/codex/config.toml
+      create: true
+      force: true
     ~/.config/opencode/opencode.jsonc:
-        path: config/opencode/opencode.jsonc
-        create: true
-        force: true
+      path: config/opencode/opencode.jsonc
+      create: true
+      force: true
+    ~/.config/opencode/oh-my-opencode-slim.jsonc:
+      path: config/opencode/oh-my-opencode-slim.jsonc
+      create: true
+      force: true
     ~/.config/opencode/tui.json:
-        path: config/opencode/tui.json
-        create: true
-        force: true
+      path: config/opencode/tui.json
+      create: true
+      force: true
     ~/.config/opencode/themes:
-        path: config/opencode/themes
-        create: true
-        relink: true
+      path: config/opencode/themes
+      create: true
+      relink: true
+    ~/.config/opencode/agents:
+      path: config/opencode/agents
+      create: true
+      relink: true
     ~/.config/helix:
-        path: config/helix
-        create: true
-        force: true
+      path: config/helix
+      create: true
+      force: true
     ~/.ideavimrc: ideavimrc
 
     "~/Library/Application Support/Code/User":
@@ -229,7 +237,7 @@
       create: true
       relink: true
 
-    ~/.gradle/gradle.properties: 
+    ~/.gradle/gradle.properties:
       path: gradle.properties
       create: true
 

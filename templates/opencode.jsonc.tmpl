@@ -13,30 +13,30 @@
       "type": "local",
       "command": ["npx", "-y", "next-devtools-mcp@latest"]
     },
-    "github": {
-      "type": "remote",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "headers": {
-        "Authorization": "Bearer {{GITHUB_PAT}}",
-        "X-MCP-Toolsets": "all"
-      }
-    },
-    "pulumi": {
-      "type": "remote",
-      "url": "https://mcp.ai.pulumi.com/mcp"
-    },
-    "storybook": {
-      "type": "remote",
-      "url": "http://localhost:6006/mcp"
-    },
-    "directus": {
-      "type": "remote",
-      "url": "https://cms.burbn.de/mcp/",
-      "headers": {
-        "Authorization": "Bearer {{DIRECTUS_TOKEN}}",
-        "X-MCP-Toolsets": "all"
-      }
-    },
+    // "github": {
+    //   "type": "remote",
+    //   "url": "https://api.githubcopilot.com/mcp/",
+    //   "headers": {
+    //     "Authorization": "Bearer {{GITHUB_PAT}}",
+    //     "X-MCP-Toolsets": "all"
+    //   }
+    // },
+    // "pulumi": {
+    //   "type": "remote",
+    //   "url": "https://mcp.ai.pulumi.com/mcp"
+    // },
+    // "storybook": {
+    //   "type": "remote",
+    //   "url": "http://localhost:6006/mcp"
+    // },
+    // "directus": {
+    //   "type": "remote",
+    //   "url": "https://cms.burbn.de/mcp/",
+    //   "headers": {
+    //     "Authorization": "Bearer {{DIRECTUS_TOKEN}}",
+    //     "X-MCP-Toolsets": "all"
+    //   }
+    // },
     "kubernetes-readonly": {
       "type": "local",
       "command": ["npx", "mcp-server-kubernetes"],
@@ -45,5 +45,16 @@
       }
     }
   },
-  "autoupdate": true
+  "autoupdate": true,
+  "plugin": [
+    "oh-my-opencode-slim"
+  ],
+  "agent": {
+    "explore": {
+      "disable": true
+    },
+    "general": {
+      "disable": true
+    }
+  }
 }
