@@ -1,8 +1,10 @@
+{{- if eq .chezmoi.os "windows" }}{{ else -}}
 #!/bin/bash
 # Provision software on this machine via Ansible.
 # Triggered automatically whenever any file under ansible/ changes.
 #
 # ansible dir hash:
+# ansible.cfg:     {{ include (joinPath .chezmoi.sourceDir "ansible/ansible.cfg") | sha256sum }}
 # local.yml:       {{ include (joinPath .chezmoi.sourceDir "ansible/local.yml") | sha256sum }}
 # group_vars:      {{ include (joinPath .chezmoi.sourceDir "ansible/group_vars/all.yml") | sha256sum }}
 # common:          {{ include (joinPath .chezmoi.sourceDir "ansible/roles/common/tasks/main.yml") | sha256sum }}
@@ -16,10 +18,6 @@
 # fonts:           {{ include (joinPath .chezmoi.sourceDir "ansible/roles/fonts/tasks/main.yml") | sha256sum }}
 # rust:            {{ include (joinPath .chezmoi.sourceDir "ansible/roles/rust/tasks/main.yml") | sha256sum }}
 # vscode:          {{ include (joinPath .chezmoi.sourceDir "ansible/roles/vscode_extensions/tasks/main.yml") | sha256sum }}
-{{ if eq .chezmoi.os "windows" -}}
-# Windows not supported by this script — software is installed by the PowerShell script.
-exit 0
-{{ end -}}
 
 set -e
 
@@ -47,3 +45,4 @@ ansible-playbook "$PLAYBOOK" \
     --extra-vars "wm_display_server=${WM_DS}" \
     --extra-vars "enable_k8s=${ENABLE_K8S}" \
     -v
+{{- end }}
