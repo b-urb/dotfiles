@@ -48,12 +48,12 @@ if (-not $bwDesktop) {
 }
 
 # --- WSL --------------------------------------------------------------------
-# wsl --status exits non-zero when WSL isn't installed; use -ErrorAction SilentlyContinue
-# to prevent $ErrorActionPreference = "Stop" from killing the script here
-$wslState = & wsl --status 2>&1
+# Use full path — wsl.exe is always at System32 regardless of PATH state
+$wslExe = "$env:SystemRoot\System32\wsl.exe"
+$wslState = & $wslExe --status 2>&1
 if ($LASTEXITCODE -ne 0 -or "$wslState" -match "not installed") {
     Write-Host "Installing WSL with Ubuntu..."
-    wsl --install -d Ubuntu
+    & $wslExe --install -d Ubuntu
     Write-Host "WSL installed. A reboot is required before continuing."
     Write-Host "After reboot, run: chezmoi apply"
     exit 0
