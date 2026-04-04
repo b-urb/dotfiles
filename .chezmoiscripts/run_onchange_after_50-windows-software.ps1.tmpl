@@ -38,7 +38,9 @@ $installed = scoop list 2>$null | ForEach-Object { $_.Name }
 foreach ($pkg in $scoopPackages) {
     if ($installed -notcontains $pkg) {
         Write-Host "Installing $pkg via Scoop..."
+        $ErrorActionPreference = "Continue"
         scoop install $pkg
+        $ErrorActionPreference = "Stop"
     }
 }
 
@@ -47,7 +49,9 @@ $scoopFonts = @({{ range $i, $v := .windows.scoop_fonts }}{{ if $i }}, {{ end }}
 foreach ($font in $scoopFonts) {
     if ($installed -notcontains $font) {
         Write-Host "Installing font $font via Scoop..."
+        $ErrorActionPreference = "Continue"
         scoop install $font
+        $ErrorActionPreference = "Stop"
     }
 }
 
@@ -67,10 +71,14 @@ if (-not (Test-Path $weztermExe) -and -not (Has-Command "wezterm")) {
 # ─── Winget packages ───────────────────────────────────────────────────────
 $wingetPackages = @({{ range $i, $v := .windows.winget_packages }}{{ if $i }}, {{ end }}{{ $v | quote }}{{ end }})
 foreach ($pkg in $wingetPackages) {
+    $ErrorActionPreference = "Continue"
     $check = winget list --id $pkg --exact --source winget 2>$null
+    $ErrorActionPreference = "Stop"
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Installing $pkg via winget..."
+        $ErrorActionPreference = "Continue"
         winget install --id $pkg -e --source winget --accept-package-agreements --accept-source-agreements
+        $ErrorActionPreference = "Stop"
     }
 }
 Reload-Path
@@ -108,7 +116,9 @@ if (Has-Command "code") {
     foreach ($ext in $extensions) {
         if ($installedExts -notcontains $ext) {
             Write-Host "Installing VS Code extension: $ext"
-            code --install-extension $ext --force 2>$null
+            $ErrorActionPreference = "Continue"
+            code --install-extension $ext --force 2>&1 | Out-Null
+            $ErrorActionPreference = "Stop"
         }
     }
 }

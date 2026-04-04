@@ -89,12 +89,10 @@ vscode_extensions = [
     ]
     scoop_packages = [
         # Dev tools
-        "git",
         "gh",
         "lazygit",
         "neovim",
         "helix",
-        "vim",
         # CLI tools
         "bat",
         "eza",
@@ -109,7 +107,6 @@ vscode_extensions = [
         "just",
         "aria2",
         "dos2unix",
-        "htop",
         "curl",
         "wget",
         "7zip",
@@ -117,8 +114,8 @@ vscode_extensions = [
         "atuin",
         "yazi",
         "zellij",
-        "carapace",
-        "nushell",
+        "carapace-bin",
+        "nu",
         # Kubernetes
         "kubectl",
         "helm",
