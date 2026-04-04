@@ -106,7 +106,14 @@ if (-not $fontInstalled) {
     $tmp = Join-Path $env:TEMP "monaspace"
     New-Item -ItemType Directory -Force -Path $tmp | Out-Null
     $zip = Join-Path $tmp "monaspace.zip"
-    Invoke-WebRequest -Uri "https://github.com/githubnext/monaspace/releases/latest/download/monaspace-v1.400.zip" -OutFile $zip
+    # Resolve latest release asset URL via GitHub API
+    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/githubnext/monaspace/releases/latest"
+    $asset = $release.assets | Where-Object { $_.name -match "^monaspace-v.*\.zip$" -and $_.name -notmatch "nerd|web|woff" } | Select-Object -First 1
+    if (-not $asset) {
+        Write-Error "Could not find Monaspace release asset."
+        exit 1
+    }
+    Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip
     Expand-Archive -Path $zip -DestinationPath $tmp -Force
     $fonts = Get-ChildItem -Path $tmp -Recurse -Include "*.otf","*.ttf"
     $fontsFolder = (New-Object -ComObject Shell.Application).Namespace(0x14)
