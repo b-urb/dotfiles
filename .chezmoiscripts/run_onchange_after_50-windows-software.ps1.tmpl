@@ -23,7 +23,7 @@ function Reload-Path {
 }
 
 # ─── Scoop buckets ──────────────────────────────────────────────────────────
-$buckets = @({{ range .windows.scoop_buckets }}{{ . | quote }}, {{ end }})
+$buckets = @({{ range $i, $v := .windows.scoop_buckets }}{{ if $i }}, {{ end }}{{ $v | quote }}{{ end }})
 $existingBuckets = scoop bucket list 2>$null | ForEach-Object { $_.Name }
 foreach ($bucket in $buckets) {
     if ($existingBuckets -notcontains $bucket) {
@@ -33,7 +33,7 @@ foreach ($bucket in $buckets) {
 }
 
 # ─── Scoop packages ────────────────────────────────────────────────────────
-$scoopPackages = @({{ range .windows.scoop_packages }}{{ . | quote }}, {{ end }})
+$scoopPackages = @({{ range $i, $v := .windows.scoop_packages }}{{ if $i }}, {{ end }}{{ $v | quote }}{{ end }})
 $installed = scoop list 2>$null | ForEach-Object { $_.Name }
 foreach ($pkg in $scoopPackages) {
     if ($installed -notcontains $pkg) {
@@ -43,7 +43,7 @@ foreach ($pkg in $scoopPackages) {
 }
 
 # ─── Scoop fonts (from nerd-fonts bucket) ───────────────────────────────────
-$scoopFonts = @({{ range .windows.scoop_fonts }}{{ . | quote }}, {{ end }})
+$scoopFonts = @({{ range $i, $v := .windows.scoop_fonts }}{{ if $i }}, {{ end }}{{ $v | quote }}{{ end }})
 foreach ($font in $scoopFonts) {
     if ($installed -notcontains $font) {
         Write-Host "Installing font $font via Scoop..."
@@ -65,7 +65,7 @@ if (-not (Test-Path $weztermExe) -and -not (Has-Command "wezterm")) {
 }
 
 # ─── Winget packages ───────────────────────────────────────────────────────
-$wingetPackages = @({{ range .windows.winget_packages }}{{ . | quote }}, {{ end }})
+$wingetPackages = @({{ range $i, $v := .windows.winget_packages }}{{ if $i }}, {{ end }}{{ $v | quote }}{{ end }})
 foreach ($pkg in $wingetPackages) {
     $check = winget list --id $pkg --exact --source winget 2>$null
     if ($LASTEXITCODE -ne 0) {
@@ -104,7 +104,7 @@ if (Has-Command "code") {
         New-Item -ItemType Directory -Force -Path $codeUserDir | Out-Null
     }
     $installedExts = code --list-extensions 2>$null
-    $extensions = @({{ range .vscode_extensions }}{{ . | quote }}, {{ end }})
+    $extensions = @({{ range $i, $v := .vscode_extensions }}{{ if $i }}, {{ end }}{{ $v | quote }}{{ end }})
     foreach ($ext in $extensions) {
         if ($installedExts -notcontains $ext) {
             Write-Host "Installing VS Code extension: $ext"
