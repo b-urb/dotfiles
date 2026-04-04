@@ -10,15 +10,18 @@ Personal dotfiles for macOS, Linux (Arch/Ubuntu), and Windows, managed with [che
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/B-urb/dotfiles.git
 ```
 
-**Windows** (PowerShell, run as Administrator)
+**Windows** (PowerShell as Administrator for the first run)
+
+The first run needs an elevated shell because enabling WSL and the Virtual Machine Platform are admin-only operations. After the initial setup, `chezmoi apply` and `chezmoi update` can be run from a normal PowerShell.
 
 ```powershell
+# Run as Administrator
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 winget install Git.Git twpayne.chezmoi
 chezmoi init --apply https://github.com/B-urb/dotfiles.git
 ```
 
-The init script will install WSL and exit asking for a reboot. After rebooting, open PowerShell again and run:
+The init script enables the Virtual Machine Platform and WSL Windows features, installs Ubuntu, and exits asking for a reboot. After rebooting, open a normal PowerShell and run:
 
 ```powershell
 $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH", "User")
