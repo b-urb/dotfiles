@@ -142,25 +142,10 @@ function M.build()
 	}
 
 	-- Windows: open WSL by default instead of cmd/PowerShell.
-	-- Only set default_domain if the target distro is actually present in
-	-- the list returned by wezterm.default_wsl_domains(); otherwise WezTerm
-	-- errors with "desired default domain WSL:Ubuntu was not found in mux".
 	local wsl_domain = wsl_default_domain()
 	if wsl_domain ~= nil then
-		local wsl_domains = wezterm.default_wsl_domains()
-		config.wsl_domains = wsl_domains
-		local found = false
-		for _, d in ipairs(wsl_domains) do
-			if d.name == wsl_domain then
-				found = true
-				break
-			end
-		end
-		if found then
-			config.default_domain = wsl_domain
-		else
-			wezterm.log_warn("WSL domain " .. wsl_domain .. " not found; falling back to default shell")
-		end
+		config.wsl_domains = wezterm.default_wsl_domains()
+		config.default_domain = wsl_domain
 	end
 
 	local bw_sock = detect_bitwarden_ssh_sock()
