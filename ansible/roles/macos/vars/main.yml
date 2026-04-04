@@ -124,8 +124,6 @@ brew_formulae:
   - cabextract
   - wimlib
   - rm-improved
-  - carapace
-  - nushell
   - pass
   - mcp-proxy
   # Media / images
@@ -220,7 +218,6 @@ brew_casks:
   - discord
   - displaylink
   - elgato-stream-deck
-  - figma
   - firefox
   - firefox@developer-edition
   - font-hack-nerd-font
