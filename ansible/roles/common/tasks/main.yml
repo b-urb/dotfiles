@@ -23,4 +23,5 @@
       - eza
       - git-lfs
     state: present
-  become: true
+  become: "{{ ansible_system == 'Linux' }}"
+  when: ansible_system == "Linux"
