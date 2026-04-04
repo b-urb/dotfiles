@@ -1,13 +1,5 @@
-# Shared feature flags (committed to git, apply to all machines)
-# Machine-local overrides go in ~/.config/chezmoi/chezmoi.toml [data] section
-
-[features]
-    enableZinit    = true
-    enableAtuin    = true
-    enableStarship = true
-    enableK8s      = true
-    enableFzf      = true
-    enableZoxide   = true
+# Shared data (committed to git, applies to all machines).
+# Machine-local overrides go in ~/.config/chezmoi/chezmoi.toml [data] section.
 
 # VS Code extensions installed on all platforms.
 # Also duplicated in ansible/group_vars/all.yml for Ansible-managed hosts.
@@ -76,6 +68,15 @@ vscode_extensions = [
     "vscodevim.vim",
     "zerotaskx.rust-extension-pack",
 ]
+
+# ─── Feature flags ──────────────────────────────────────────────────────────
+[features]
+    enableZinit    = true
+    enableAtuin    = true
+    enableStarship = true
+    enableK8s      = true
+    enableFzf      = true
+    enableZoxide   = true
 
 # ─── Windows host packages ──────────────────────────────────────────────────
 # Scoop packages installed on Windows host (CLI tools, dev tools).
