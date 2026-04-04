@@ -158,12 +158,7 @@ function M.build()
 
 	local bw_sock = detect_bitwarden_ssh_sock()
 	if bw_sock ~= nil then
-		-- default_ssh_auth_sock is a nightly-only field and is not valid on Windows.
-		-- On all platforms SSH_AUTH_SOCK covers the use case; on non-Windows we
-		-- additionally set default_ssh_auth_sock for programs that bypass the env.
-		if not is_windows() then
-			config.default_ssh_auth_sock = bw_sock
-		end
+		config.default_ssh_auth_sock = bw_sock
 		config.set_environment_variables = {
 			SSH_AUTH_SOCK = bw_sock,
 		}

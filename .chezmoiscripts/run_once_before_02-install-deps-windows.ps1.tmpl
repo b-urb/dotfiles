@@ -33,10 +33,20 @@ if (-not (Has-Command "git")) {
                 [System.Environment]::GetEnvironmentVariable("PATH", "User")
 }
 
-# --- WezTerm ----------------------------------------------------------------
-if (-not (Has-Command "wezterm")) {
-    Write-Host "Installing WezTerm..."
-    winget install --id wez.wezterm -e --source winget --accept-package-agreements --accept-source-agreements
+# --- WezTerm Nightly --------------------------------------------------------
+# winget nightly package (wez.wezterm.nightly) has persistent hash-mismatch
+# issues in the winget-pkgs manifest, so we install directly from the nightly
+# GitHub release URL instead.
+$weztermExe = "$env:LOCALAPPDATA\Programs\WezTerm\wezterm.exe"
+if (-not (Test-Path $weztermExe) -and -not (Has-Command "wezterm")) {
+    Write-Host "Installing WezTerm nightly..."
+    $weztermInstaller = Join-Path $env:TEMP "WezTerm-nightly-setup.exe"
+    Invoke-WebRequest -Uri "https://github.com/wezterm/wezterm/releases/download/nightly/WezTerm-nightly-setup.exe" -OutFile $weztermInstaller
+    Start-Process -FilePath $weztermInstaller -ArgumentList "/VERYSILENT", "/NORESTART", "/SUPPRESSMSGBOXES" -Wait
+    Remove-Item $weztermInstaller -Force
+    # Reload PATH so wezterm is available immediately
+    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
+                [System.Environment]::GetEnvironmentVariable("PATH", "User")
 }
 
 # --- Bitwarden Desktop (includes SSH agent) ---------------------------------
