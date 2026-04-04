@@ -8,7 +8,9 @@
 {{-   $disableBwSshAgent = promptBoolOnce . "disableBwSshAgent" "Disable Bitwarden SSH agent?" -}}
 {{- end -}}
 
-sourceDir = "{{ joinPath .chezmoi.homeDir ".dotfiles" | replace "\\" "/" }}"
+{{- if ne .chezmoi.os "windows" }}
+sourceDir = "{{ joinPath .chezmoi.homeDir ".dotfiles" }}"
+{{- end }}
 
 [data]
     wmForceDisplayServer = {{ $wmForceDisplayServer | quote }}
