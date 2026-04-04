@@ -142,18 +142,25 @@ function M.build()
 	}
 
 	-- Windows: open WSL by default instead of cmd/PowerShell.
-	-- Wrapped in pcall so a missing or uninitialized WSL distro does not
-	-- crash WezTerm with "was not found in mux".
+	-- Only set default_domain if the target distro is actually present in
+	-- the list returned by wezterm.default_wsl_domains(); otherwise WezTerm
+	-- errors with "desired default domain WSL:Ubuntu was not found in mux".
 	local wsl_domain = wsl_default_domain()
 	if wsl_domain ~= nil then
-		local ok, err = pcall(function()
-			config.default_domain = wsl_domain
-		end)
-		if not ok then
-			wezterm.log_warn("WezTerm: could not set default_domain to " .. wsl_domain .. ": " .. tostring(err))
+		local wsl_domains = wezterm.default_wsl_domains()
+		config.wsl_domains = wsl_domains
+		local found = false
+		for _, d in ipairs(wsl_domains) do
+			if d.name == wsl_domain then
+				found = true
+				break
+			end
 		end
-		-- Keep native Windows shells accessible via the launcher menu
-		config.wsl_domains = wezterm.default_wsl_domains()
+		if found then
+			config.default_domain = wsl_domain
+		else
+			wezterm.log_warn("WSL domain " .. wsl_domain .. " not found; falling back to default shell")
+		end
 	end
 
 	local bw_sock = detect_bitwarden_ssh_sock()
