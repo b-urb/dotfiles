@@ -160,7 +160,6 @@ brew_formulae:
   - ifstat
   - mosquitto
   - snapcast
-  - mailhog
   - mkcert
   - ngrok
   - aria2
