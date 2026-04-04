@@ -141,17 +141,29 @@ function M.build()
 		status_update_interval = 500,
 	}
 
-	-- Windows: open WSL by default instead of cmd/PowerShell
+	-- Windows: open WSL by default instead of cmd/PowerShell.
+	-- Wrapped in pcall so a missing or uninitialized WSL distro does not
+	-- crash WezTerm with "was not found in mux".
 	local wsl_domain = wsl_default_domain()
 	if wsl_domain ~= nil then
-		config.default_domain = wsl_domain
+		local ok, err = pcall(function()
+			config.default_domain = wsl_domain
+		end)
+		if not ok then
+			wezterm.log_warn("WezTerm: could not set default_domain to " .. wsl_domain .. ": " .. tostring(err))
+		end
 		-- Keep native Windows shells accessible via the launcher menu
 		config.wsl_domains = wezterm.default_wsl_domains()
 	end
 
 	local bw_sock = detect_bitwarden_ssh_sock()
 	if bw_sock ~= nil then
-		config.default_ssh_auth_sock = bw_sock
+		-- default_ssh_auth_sock is a nightly-only field and is not valid on Windows.
+		-- On all platforms SSH_AUTH_SOCK covers the use case; on non-Windows we
+		-- additionally set default_ssh_auth_sock for programs that bypass the env.
+		if not is_windows() then
+			config.default_ssh_auth_sock = bw_sock
+		end
 		config.set_environment_variables = {
 			SSH_AUTH_SOCK = bw_sock,
 		}
