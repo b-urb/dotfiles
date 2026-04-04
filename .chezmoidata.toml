@@ -114,8 +114,6 @@ vscode_extensions = [
         "atuin",
         "yazi",
         "zellij",
-        "carapace-bin",
-        "nu",
         # Kubernetes
         "kubectl",
         "helm",
@@ -158,7 +156,6 @@ vscode_extensions = [
         "Bitwarden.CLI",
         "Microsoft.VisualStudioCode",
         "Discord.Discord",
-        "Figma.Figma",
         "Mozilla.Firefox",
         "Mozilla.Firefox.DeveloperEdition",
         "BraveSoftware.BraveBrowser",
