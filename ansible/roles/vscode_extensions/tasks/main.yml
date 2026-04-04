@@ -10,6 +10,24 @@
     msg: "VS Code not found on PATH — skipping extension install"
   when: code_which.rc != 0
 
+- name: ensure VS Code User directory exists (macOS)
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/Library/Application Support/Code/User"
+    state: directory
+    mode: "0755"
+  when:
+    - code_which.rc == 0
+    - ansible_os_family == "Darwin"
+
+- name: ensure VS Code User directory exists (Linux)
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/Code/User"
+    state: directory
+    mode: "0755"
+  when:
+    - code_which.rc == 0
+    - ansible_system == "Linux"
+
 - name: install VS Code extensions
   ansible.builtin.command:
     cmd: "code --install-extension {{ item }} --force"
