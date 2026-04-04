@@ -76,8 +76,12 @@ if (-not (Has-Command "bw")) {
 
 # --- Bitwarden server URL ---------------------------------------------------
 {{- if .bwServerUrl }}
-Write-Host "Configuring Bitwarden server URL..."
-bw config server {{ .bwServerUrl | quote }}
+$currentServer = (bw config server 2>$null)
+if ($currentServer -ne {{ .bwServerUrl | quote }}) {
+    Write-Host "Configuring Bitwarden server URL..."
+    bw logout 2>$null
+    bw config server {{ .bwServerUrl | quote }}
+}
 {{- end }}
 
 # --- Core CLI tools via Scoop -----------------------------------------------
