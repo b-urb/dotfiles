@@ -74,6 +74,12 @@ if (-not (Has-Command "bw")) {
                 [System.Environment]::GetEnvironmentVariable("PATH", "User")
 }
 
+# --- Bitwarden server URL ---------------------------------------------------
+{{- if .bwServerUrl }}
+Write-Host "Configuring Bitwarden server URL..."
+bw config server {{ .bwServerUrl | quote }}
+{{- end }}
+
 # --- Core CLI tools via Scoop -----------------------------------------------
 $scoopTools = @(
     "neovim",

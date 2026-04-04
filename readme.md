@@ -18,6 +18,15 @@ winget install Git.Git twpayne.chezmoi
 chezmoi init --apply https://github.com/B-urb/dotfiles.git
 ```
 
+The init script will install WSL and exit asking for a reboot. After rebooting, open PowerShell again and run:
+
+```powershell
+$env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH", "User")
+bw login
+$env:BW_SESSION = $(bw unlock --raw)
+chezmoi apply
+```
+
 On Windows, chezmoi runs the `run_once_before_02` PowerShell script automatically to install Git, WezTerm, WSL, Scoop, and the Bitwarden CLI before placing any dotfiles.
 
 chezmoi will prompt for a Bitwarden unlock and for a few machine-local settings (display server on Linux, whether to disable the Bitwarden SSH agent). It then renders all templates and places files.
