@@ -38,5 +38,11 @@ if ! command -v bw &>/dev/null; then
 fi
 {{ end -}}
 
+{{- if .bwServerUrl }}
+# ─── Bitwarden server URL ───────────────────────────────────────────────────
+echo "Configuring Bitwarden server URL..."
+bw config server {{ .bwServerUrl | quote }}
+{{ end -}}
+
 echo "✓ Dependencies ready"
 {{- end }}
