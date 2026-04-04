@@ -40,8 +40,12 @@ fi
 
 {{- if .bwServerUrl }}
 # ─── Bitwarden server URL ───────────────────────────────────────────────────
-echo "Configuring Bitwarden server URL..."
-bw config server {{ .bwServerUrl | quote }}
+current_server=$(bw config server 2>/dev/null || true)
+if [ "$current_server" != {{ .bwServerUrl | quote }} ]; then
+    echo "Configuring Bitwarden server URL..."
+    bw logout 2>/dev/null || true
+    bw config server {{ .bwServerUrl | quote }}
+fi
 {{ end -}}
 
 echo "✓ Dependencies ready"
