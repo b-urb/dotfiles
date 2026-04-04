@@ -102,9 +102,19 @@ foreach ($tool in $scoopTools) {
 # --- Monaspace font (used by WezTerm config) --------------------------------
 $fontInstalled = Get-Item "C:\Windows\Fonts\MonaspaceArgon*" -ErrorAction SilentlyContinue
 if (-not $fontInstalled) {
-    Write-Host "Installing Monaspace font via Scoop..."
-    scoop bucket add nerd-fonts
-    scoop install Monaspace
+    Write-Host "Installing Monaspace font..."
+    $tmp = Join-Path $env:TEMP "monaspace"
+    New-Item -ItemType Directory -Force -Path $tmp | Out-Null
+    $zip = Join-Path $tmp "monaspace.zip"
+    Invoke-WebRequest -Uri "https://github.com/githubnext/monaspace/releases/latest/download/monaspace-v1.400.zip" -OutFile $zip
+    Expand-Archive -Path $zip -DestinationPath $tmp -Force
+    $fonts = Get-ChildItem -Path $tmp -Recurse -Include "*.otf","*.ttf"
+    $fontsFolder = (New-Object -ComObject Shell.Application).Namespace(0x14)
+    foreach ($font in $fonts) {
+        $fontsFolder.CopyHere($font.FullName, 0x10)
+    }
+    Remove-Item -Recurse -Force $tmp
+    Write-Host "Monaspace installed."
 }
 
 Write-Host "Windows dependencies ready."
