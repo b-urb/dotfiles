@@ -22,8 +22,11 @@
 set -e
 
 PLAYBOOK="{{ joinPath .chezmoi.sourceDir "ansible/local.yml" }}"
+ANSIBLE_DIR="{{ joinPath .chezmoi.sourceDir "ansible" }}"
 WM_DS="{{ .wmForceDisplayServer | default "" }}"
 ENABLE_K8S="{{ .features.enableK8s }}"
+
+export ANSIBLE_CONFIG="${ANSIBLE_DIR}/ansible.cfg"
 
 # Install Ansible if missing
 if ! command -v ansible-playbook &>/dev/null; then
