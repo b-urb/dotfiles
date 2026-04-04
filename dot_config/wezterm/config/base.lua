@@ -78,7 +78,7 @@ end
 function M.build()
 	local config = {
 		font_size = 15.0,
-		font = wezterm.font("Monaspace Argon", { weight = "Bold", italic = false }),
+		font = wezterm.font("Monaspace Argon"),
 		-- color_scheme = "One Dark (Gogh)",
 		color_scheme_dirs = { wezterm.config_dir .. "/colors" },
 		color_scheme = "github_dark_colorblind",
