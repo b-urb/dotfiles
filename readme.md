@@ -21,16 +21,21 @@ winget install Git.Git twpayne.chezmoi
 chezmoi init --apply https://github.com/B-urb/dotfiles.git
 ```
 
-The init script enables the Virtual Machine Platform and WSL Windows features, installs Ubuntu, and exits asking for a reboot. After rebooting, open a normal PowerShell and run:
+The init script enables the Virtual Machine Platform and WSL Windows features, installs Ubuntu, and exits asking for a reboot. Ensure virtualization is enabled in BIOS (SVM Mode on AMD, VT-x on Intel) before rebooting. After rebooting:
+
+1. Open Ubuntu from the Start Menu to complete first-run setup (username/password).
+2. Open a normal PowerShell and run:
 
 ```powershell
 $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH", "User")
-bw login
-$env:BW_SESSION = $(bw unlock --raw)
 chezmoi apply
 ```
 
-Then open WSL and bootstrap the Linux environment inside it:
+This triggers the Windows software provisioning script, which installs all Scoop packages, winget apps (VS Code, Bitwarden, browsers, etc.), WezTerm nightly, fonts, Rust, and VS Code extensions. Package lists live in `.chezmoidata.toml` and changes are picked up automatically on the next `chezmoi apply`.
+
+After Bitwarden Desktop is installed, enable **Settings > App Settings > Enable SSH Agent**.
+
+3. Open WSL and bootstrap the Linux environment:
 
 ```bash
 wsl
@@ -39,8 +44,6 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/B-urb/do
 ```
 
 This runs the `wsl_ubuntu` Ansible role, which installs CLI tools, dev libraries, Rust, and shell configs inside WSL. GUI apps (WezTerm, Bitwarden Desktop), window managers, fonts, and Docker are skipped since they run on the Windows host.
-
-On Windows, chezmoi runs the `run_once_before_02` PowerShell script automatically to install Git, WezTerm nightly, WSL, Scoop, and the Bitwarden CLI before placing any dotfiles.
 
 chezmoi will prompt for a Bitwarden unlock and for a few machine-local settings (display server on Linux, whether to disable the Bitwarden SSH agent). It then renders all templates and places files.
 
@@ -95,7 +98,7 @@ The playbook uses Ansible's fact-gathering to detect the OS and runs only the re
 
 Package lists live in `ansible/roles/<role>/vars/main.yml`. Cargo crates and VS Code extensions are in `ansible/group_vars/all.yml` (shared across all platforms).
 
-**Windows** — provisioned by the `run_once_before_02` PowerShell script (winget + Scoop). Installs WezTerm nightly (direct GitHub release download — winget nightly package is broken upstream), Git, WSL + Ubuntu, Bitwarden Desktop + CLI, core CLI tools, and Monaspace font. After it runs, enable **Settings > App Settings > Enable SSH Agent** in Bitwarden Desktop. The Linux environment inside WSL is provisioned separately via `chezmoi init --apply` run from within WSL (see Bootstrap section above).
+**Windows** — provisioned by a data-driven PowerShell script (`run_onchange_after_50-windows-software.ps1.tmpl`) that reads package lists from `.chezmoidata.toml`. It installs Scoop packages, winget apps (VS Code, Bitwarden, browsers, etc.), WezTerm nightly (direct GitHub download — winget nightly package is broken upstream, wezterm#7623), Nerd Fonts via Scoop, Rust toolchain, and VS Code extensions. A separate bootstrap script (`run_once_before_02`) handles the one-time admin tasks: Git, Scoop, and WSL feature enablement. The Linux environment inside WSL is provisioned separately via `chezmoi init --apply` run from within WSL (see Bootstrap section above).
 
 ## Bitwarden structure
 
@@ -126,9 +129,10 @@ On Windows only WezTerm and the codex/opencode configs are placed. Shell configs
 ## Structure
 
 ```
+.chezmoidata.toml        shared feature flags, VS Code extensions, Windows package lists
 .chezmoitemplates/zsh/   zshrc partials (00-env through 90-completions, os-darwin, os-linux, distro-*)
-.chezmoiscripts/         run_once and run_onchange scripts (deps, ansible, kubeconfig merge)
-ansible/                 Ansible playbook and roles for software provisioning
+.chezmoiscripts/         run_once and run_onchange scripts (deps, ansible, kubeconfig merge, Windows provisioning)
+ansible/                 Ansible playbook and roles for software provisioning (macOS/Linux/WSL)
   local.yml              top-level playbook
   group_vars/all.yml     cargo crates and vscode extensions (all platforms)
   roles/macos/           homebrew formulae and casks
