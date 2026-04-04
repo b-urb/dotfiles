@@ -16,6 +16,8 @@
 # linux_common:    {{ include (joinPath .chezmoi.sourceDir "ansible/roles/linux_common/tasks/main.yml") | sha256sum }}
 # wm_linux:        {{ include (joinPath .chezmoi.sourceDir "ansible/roles/wm_linux/tasks/main.yml") | sha256sum }}
 # fonts:           {{ include (joinPath .chezmoi.sourceDir "ansible/roles/fonts/tasks/main.yml") | sha256sum }}
+# wsl_ubuntu tasks: {{ include (joinPath .chezmoi.sourceDir "ansible/roles/wsl_ubuntu/tasks/main.yml") | sha256sum }}
+# wsl_ubuntu vars:  {{ include (joinPath .chezmoi.sourceDir "ansible/roles/wsl_ubuntu/vars/main.yml") | sha256sum }}
 # rust:            {{ include (joinPath .chezmoi.sourceDir "ansible/roles/rust/tasks/main.yml") | sha256sum }}
 # vscode:          {{ include (joinPath .chezmoi.sourceDir "ansible/roles/vscode_extensions/tasks/main.yml") | sha256sum }}
 
@@ -25,6 +27,7 @@ PLAYBOOK="{{ joinPath .chezmoi.sourceDir "ansible/local.yml" }}"
 ANSIBLE_DIR="{{ joinPath .chezmoi.sourceDir "ansible" }}"
 WM_DS="{{ .wmForceDisplayServer | default "" }}"
 ENABLE_K8S="{{ .features.enableK8s }}"
+IS_WSL="{{ .isWSL | default false }}"
 
 export ANSIBLE_CONFIG="${ANSIBLE_DIR}/ansible.cfg"
 
@@ -47,5 +50,6 @@ ansible-galaxy collection install community.general --upgrade
 ansible-playbook "$PLAYBOOK" \
     --extra-vars "wm_display_server=${WM_DS}" \
     --extra-vars "enable_k8s=${ENABLE_K8S}" \
+    --extra-vars "is_wsl=${IS_WSL}" \
     -v
 {{- end }}

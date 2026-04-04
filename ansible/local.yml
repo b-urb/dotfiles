@@ -3,26 +3,34 @@
   connection: local
   gather_facts: true
 
+  pre_tasks:
+    - name: detect WSL
+      ansible.builtin.set_fact:
+        is_wsl: "{{ is_wsl | default(false) | bool or (ansible_system == 'Linux' and (lookup('file', '/proc/version', errors='ignore') | default('')) is search('(?i)(microsoft|wsl)')) }}"
+
   roles:
     - common
 
     - role: macos
       when: ansible_os_family == "Darwin"
 
+    - role: wsl_ubuntu
+      when: ansible_distribution in ["Ubuntu", "Debian"] and is_wsl | bool
+
     - role: ubuntu
-      when: ansible_distribution in ["Ubuntu", "Debian"]
+      when: ansible_distribution in ["Ubuntu", "Debian"] and not (is_wsl | bool)
 
     - role: arch
       when: ansible_distribution == "Archlinux"
 
     - role: linux_common
-      when: ansible_system == "Linux"
+      when: ansible_system == "Linux" and not (is_wsl | bool)
 
     - role: wm_linux
-      when: ansible_system == "Linux"
+      when: ansible_system == "Linux" and not (is_wsl | bool)
 
     - role: fonts
-      when: ansible_system == "Linux"
+      when: ansible_system == "Linux" and not (is_wsl | bool)
 
     - role: rust
 

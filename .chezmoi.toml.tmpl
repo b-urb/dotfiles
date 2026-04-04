@@ -21,6 +21,7 @@ sourceDir = "{{ joinPath .chezmoi.homeDir ".dotfiles" }}"
     isWindows            = {{ eq .chezmoi.os "windows" }}
     isUbuntu             = {{ and (eq .chezmoi.os "linux") (eq (get .chezmoi.osRelease "id" | default "") "ubuntu") }}
     isArch               = {{ and (eq .chezmoi.os "linux") (eq (get .chezmoi.osRelease "id" | default "") "arch") }}
+    isWSL                = {{ and (eq .chezmoi.os "linux") (lookPath "wslpath" | not | not) }}
     isX11                = {{ and (eq .chezmoi.os "linux") (or (eq $wmForceDisplayServer "x11") (and (eq $wmForceDisplayServer "") (eq (env "XDG_SESSION_TYPE" | default "") "x11"))) }}
     isWayland            = {{ and (eq .chezmoi.os "linux") (or (eq $wmForceDisplayServer "wayland") (and (eq $wmForceDisplayServer "") (eq (env "XDG_SESSION_TYPE" | default "") "wayland"))) }}
 

@@ -27,6 +27,16 @@ $env:BW_SESSION = $(bw unlock --raw)
 chezmoi apply
 ```
 
+Then open WSL and bootstrap the Linux environment inside it:
+
+```bash
+wsl
+# inside WSL:
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/B-urb/dotfiles.git
+```
+
+This runs the `wsl_ubuntu` Ansible role, which installs CLI tools, dev libraries, Rust, and shell configs inside WSL. GUI apps (WezTerm, Bitwarden Desktop), window managers, fonts, and Docker are skipped since they run on the Windows host.
+
 On Windows, chezmoi runs the `run_once_before_02` PowerShell script automatically to install Git, WezTerm nightly, WSL, Scoop, and the Bitwarden CLI before placing any dotfiles.
 
 chezmoi will prompt for a Bitwarden unlock and for a few machine-local settings (display server on Linux, whether to disable the Bitwarden SSH agent). It then renders all templates and places files.
@@ -78,10 +88,11 @@ The playbook uses Ansible's fact-gathering to detect the OS and runs only the re
 | macOS | common, macos (homebrew formulae + casks), rust, vscode_extensions |
 | Ubuntu/Debian | common, ubuntu (apt repos + packages + flatpak), linux_common (docker), wm_linux, fonts, rust, vscode_extensions |
 | Arch | common, arch (pacman + yay + AUR), linux_common (docker), wm_linux, fonts, rust, vscode_extensions |
+| WSL (Ubuntu) | common, wsl_ubuntu (apt repos + CLI packages, no GUI/docker/fonts), rust, vscode_extensions |
 
 Package lists live in `ansible/roles/<role>/vars/main.yml`. Cargo crates and VS Code extensions are in `ansible/group_vars/all.yml` (shared across all platforms).
 
-**Windows** — provisioned by the `run_once_before_02` PowerShell script (winget + Scoop). Installs WezTerm nightly (direct GitHub release download — winget nightly package is broken upstream), Git, WSL + Ubuntu, Bitwarden Desktop + CLI, core CLI tools, and Monaspace font. After it runs, enable **Settings > App Settings > Enable SSH Agent** in Bitwarden Desktop.
+**Windows** — provisioned by the `run_once_before_02` PowerShell script (winget + Scoop). Installs WezTerm nightly (direct GitHub release download — winget nightly package is broken upstream), Git, WSL + Ubuntu, Bitwarden Desktop + CLI, core CLI tools, and Monaspace font. After it runs, enable **Settings > App Settings > Enable SSH Agent** in Bitwarden Desktop. The Linux environment inside WSL is provisioned separately via `chezmoi init --apply` run from within WSL (see Bootstrap section above).
 
 ## Bitwarden structure
 
@@ -119,6 +130,7 @@ ansible/                 Ansible playbook and roles for software provisioning
   group_vars/all.yml     cargo crates and vscode extensions (all platforms)
   roles/macos/           homebrew formulae and casks
   roles/ubuntu/          apt repos, packages, flatpak
+  roles/wsl_ubuntu/      WSL-specific: CLI packages only, no GUI/docker/fonts
   roles/arch/            pacman, yay bootstrap, AUR packages
   roles/linux_common/    docker install and service setup
   roles/wm_linux/        i3 (x11) or sway (wayland) conditional install
