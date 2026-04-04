@@ -1,0 +1,117 @@
+{{- if ne .chezmoi.os "windows" }}# Not Windows — skip{{ else -}}
+# Provision software on Windows via Scoop and winget.
+# This is the Windows equivalent of the Ansible playbook.
+# Triggered automatically whenever package lists in .chezmoidata.toml change.
+#
+# data hash: {{ include (joinPath .chezmoi.sourceDir ".chezmoidata.toml") | sha256sum }}
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+function Has-Command($name) {
+    return [bool](Get-Command $name -ErrorAction SilentlyContinue)
+}
+
+function Reload-Path {
+    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
+                [System.Environment]::GetEnvironmentVariable("PATH", "User")
+    # Also pick up Scoop shims
+    $scoopShims = Join-Path $env:USERPROFILE "scoop\shims"
+    if (Test-Path $scoopShims) {
+        $env:PATH = "$scoopShims;$env:PATH"
+    }
+}
+
+# ─── Scoop buckets ──────────────────────────────────────────────────────────
+$buckets = @({{ range .windows.scoop_buckets }}{{ . | quote }}, {{ end }})
+$existingBuckets = scoop bucket list 2>$null | ForEach-Object { $_.Name }
+foreach ($bucket in $buckets) {
+    if ($existingBuckets -notcontains $bucket) {
+        Write-Host "Adding Scoop bucket: $bucket"
+        scoop bucket add $bucket
+    }
+}
+
+# ─── Scoop packages ────────────────────────────────────────────────────────
+$scoopPackages = @({{ range .windows.scoop_packages }}{{ . | quote }}, {{ end }})
+$installed = scoop list 2>$null | ForEach-Object { $_.Name }
+foreach ($pkg in $scoopPackages) {
+    if ($installed -notcontains $pkg) {
+        Write-Host "Installing $pkg via Scoop..."
+        scoop install $pkg
+    }
+}
+
+# ─── Scoop fonts (from nerd-fonts bucket) ───────────────────────────────────
+$scoopFonts = @({{ range .windows.scoop_fonts }}{{ . | quote }}, {{ end }})
+foreach ($font in $scoopFonts) {
+    if ($installed -notcontains $font) {
+        Write-Host "Installing font $font via Scoop..."
+        scoop install $font
+    }
+}
+
+# ─── WezTerm Nightly ────────────────────────────────────────────────────────
+# winget nightly package is broken upstream (hash mismatch, wezterm#7623).
+# Install directly from GitHub nightly release.
+$weztermExe = "$env:LOCALAPPDATA\Programs\WezTerm\wezterm.exe"
+if (-not (Test-Path $weztermExe) -and -not (Has-Command "wezterm")) {
+    Write-Host "Installing WezTerm nightly..."
+    $installer = Join-Path $env:TEMP "WezTerm-nightly-setup.exe"
+    Invoke-WebRequest -Uri "https://github.com/wezterm/wezterm/releases/download/nightly/WezTerm-nightly-setup.exe" -OutFile $installer
+    Start-Process -FilePath $installer -ArgumentList "/VERYSILENT", "/NORESTART", "/SUPPRESSMSGBOXES" -Wait
+    Remove-Item $installer -Force
+    Reload-Path
+}
+
+# ─── Winget packages ───────────────────────────────────────────────────────
+$wingetPackages = @({{ range .windows.winget_packages }}{{ . | quote }}, {{ end }})
+foreach ($pkg in $wingetPackages) {
+    $check = winget list --id $pkg --exact --source winget 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Installing $pkg via winget..."
+        winget install --id $pkg -e --source winget --accept-package-agreements --accept-source-agreements
+    }
+}
+Reload-Path
+
+# ─── Bitwarden server URL ──────────────────────────────────────────────────
+{{- if .bwServerUrl }}
+if (Has-Command "bw") {
+    $currentServer = (bw config server 2>$null)
+    if ($currentServer -ne {{ .bwServerUrl | quote }}) {
+        Write-Host "Configuring Bitwarden server URL..."
+        bw logout 2>$null
+        bw config server {{ .bwServerUrl | quote }}
+    }
+}
+{{- end }}
+
+# ─── Rust toolchain ────────────────────────────────────────────────────────
+if (Has-Command "rustup") {
+    $toolchains = rustup toolchain list 2>$null
+    if ("$toolchains" -notmatch "stable") {
+        Write-Host "Installing Rust stable toolchain..."
+        rustup default stable
+    }
+}
+
+# ─── VS Code extensions ────────────────────────────────────────────────────
+if (Has-Command "code") {
+    # Ensure VS Code User dir exists
+    $codeUserDir = Join-Path $env:APPDATA "Code\User"
+    if (-not (Test-Path $codeUserDir)) {
+        New-Item -ItemType Directory -Force -Path $codeUserDir | Out-Null
+    }
+    $installedExts = code --list-extensions 2>$null
+    $extensions = @({{ range .vscode_extensions }}{{ . | quote }}, {{ end }})
+    foreach ($ext in $extensions) {
+        if ($installedExts -notcontains $ext) {
+            Write-Host "Installing VS Code extension: $ext"
+            code --install-extension $ext --force 2>$null
+        }
+    }
+}
+
+Write-Host "Windows software provisioning complete."
+{{- end }}

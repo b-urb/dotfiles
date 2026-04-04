@@ -1,8 +1,7 @@
 {{- if ne .chezmoi.os "windows" }}# Not Windows — skip{{ else -}}
-# Install core dependencies on Windows.
-# Runs once per machine (tracked by content hash).
-# Requires PowerShell 5+ and an internet connection.
-# Run PowerShell as Administrator for the first-time setup.
+# Bootstrap bare minimum on Windows so chezmoi can run.
+# Runs once per machine. Must be run as Administrator (WSL features need admin).
+# Everything else is handled by the run_onchange_after software provisioning script.
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
@@ -28,39 +27,12 @@ if (-not (Has-Command "scoop")) {
 if (-not (Has-Command "git")) {
     Write-Host "Installing Git..."
     winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
-    # Reload PATH so git is available immediately
     $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
                 [System.Environment]::GetEnvironmentVariable("PATH", "User")
-}
-
-# --- WezTerm Nightly --------------------------------------------------------
-# winget nightly package (wez.wezterm.nightly) has persistent hash-mismatch
-# issues in the winget-pkgs manifest, so we install directly from the nightly
-# GitHub release URL instead.
-$weztermExe = "$env:LOCALAPPDATA\Programs\WezTerm\wezterm.exe"
-if (-not (Test-Path $weztermExe) -and -not (Has-Command "wezterm")) {
-    Write-Host "Installing WezTerm nightly..."
-    $weztermInstaller = Join-Path $env:TEMP "WezTerm-nightly-setup.exe"
-    Invoke-WebRequest -Uri "https://github.com/wezterm/wezterm/releases/download/nightly/WezTerm-nightly-setup.exe" -OutFile $weztermInstaller
-    Start-Process -FilePath $weztermInstaller -ArgumentList "/VERYSILENT", "/NORESTART", "/SUPPRESSMSGBOXES" -Wait
-    Remove-Item $weztermInstaller -Force
-    # Reload PATH so wezterm is available immediately
-    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
-                [System.Environment]::GetEnvironmentVariable("PATH", "User")
-}
-
-# --- Bitwarden Desktop (includes SSH agent) ---------------------------------
-$bwDesktop = Get-AppxPackage -Name "8bitSolutionsLLC.bitwardendesktop" -ErrorAction SilentlyContinue
-if (-not $bwDesktop) {
-    Write-Host "Installing Bitwarden Desktop..."
-    winget install --id Bitwarden.Bitwarden -e --source winget --accept-package-agreements --accept-source-agreements
-    Write-Host "NOTE: Open Bitwarden Desktop, enable Settings > App Settings > Enable SSH Agent, then re-run chezmoi apply."
 }
 
 # --- WSL --------------------------------------------------------------------
-# WSL2 requires the "Virtual Machine Platform" optional feature and
-# hardware virtualization enabled in BIOS. Enable the feature first,
-# then install WSL + Ubuntu.
+# WSL2 requires the Virtual Machine Platform feature and virtualization in BIOS.
 $wslExe = "$env:SystemRoot\System32\wsl.exe"
 $ErrorActionPreference = "Continue"
 $wslState = & $wslExe --status 2>&1
@@ -68,7 +40,7 @@ $wslExit = $LASTEXITCODE
 $ErrorActionPreference = "Stop"
 
 if ($wslExit -ne 0 -or "$wslState" -match "not installed") {
-    # Enable required Windows features (needs admin, triggers reboot requirement)
+    # Enable required Windows features (needs admin)
     $vmPlatform = Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
     if ($vmPlatform.State -ne "Enabled") {
         Write-Host "Enabling Virtual Machine Platform..."
@@ -80,13 +52,12 @@ if ($wslExit -ne 0 -or "$wslState" -match "not installed") {
         Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart -WarningAction SilentlyContinue
     }
 
-    # If features were just enabled, a reboot is needed before wsl --install works
     if ($vmPlatform.State -ne "Enabled" -or $wslFeature.State -ne "Enabled") {
         Write-Host ""
         Write-Host "Windows features enabled. A REBOOT is required before WSL can be installed."
         Write-Host "After reboot, run: chezmoi apply"
         Write-Host ""
-        Write-Host "If virtualization is not enabled in your BIOS, enable it before rebooting."
+        Write-Host "If virtualization is not enabled in your BIOS (SVM Mode on AMD, VT-x on Intel), enable it before rebooting."
         exit 0
     }
 
@@ -109,68 +80,5 @@ if ($wslExit -ne 0 -or "$wslState" -match "not installed") {
     }
 }
 
-# --- Bitwarden CLI ----------------------------------------------------------
-# Install via winget — the Scoop extras package is currently broken (download URL fails)
-if (-not (Has-Command "bw")) {
-    Write-Host "Installing Bitwarden CLI..."
-    winget install --id Bitwarden.CLI -e --source winget --accept-package-agreements --accept-source-agreements
-    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
-                [System.Environment]::GetEnvironmentVariable("PATH", "User")
-}
-
-# --- Bitwarden server URL ---------------------------------------------------
-{{- if .bwServerUrl }}
-$currentServer = (bw config server 2>$null)
-if ($currentServer -ne {{ .bwServerUrl | quote }}) {
-    Write-Host "Configuring Bitwarden server URL..."
-    bw logout 2>$null
-    bw config server {{ .bwServerUrl | quote }}
-}
-{{- end }}
-
-# --- Core CLI tools via Scoop -----------------------------------------------
-$scoopTools = @(
-    "neovim",
-    "ripgrep",
-    "fzf",
-    "jq",
-    "starship",
-    "lazygit",
-    "kubectl",
-    "helm"
-)
-
-foreach ($tool in $scoopTools) {
-    if (-not (Has-Command $tool)) {
-        Write-Host "Installing $tool via Scoop..."
-        scoop install $tool
-    }
-}
-
-# --- Monaspace font (used by WezTerm config) --------------------------------
-$fontInstalled = Get-Item "C:\Windows\Fonts\MonaspaceArgon*" -ErrorAction SilentlyContinue
-if (-not $fontInstalled) {
-    Write-Host "Installing Monaspace font..."
-    $tmp = Join-Path $env:TEMP "monaspace"
-    New-Item -ItemType Directory -Force -Path $tmp | Out-Null
-    $zip = Join-Path $tmp "monaspace.zip"
-    # Resolve latest release asset URL via GitHub API
-    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/githubnext/monaspace/releases/latest"
-    $asset = $release.assets | Where-Object { $_.name -match "^monaspace-v.*\.zip$" -and $_.name -notmatch "nerd|web|woff" } | Select-Object -First 1
-    if (-not $asset) {
-        Write-Error "Could not find Monaspace release asset."
-        exit 1
-    }
-    Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip
-    Expand-Archive -Path $zip -DestinationPath $tmp -Force
-    $fonts = Get-ChildItem -Path $tmp -Recurse -Include "*.otf","*.ttf"
-    $fontsFolder = (New-Object -ComObject Shell.Application).Namespace(0x14)
-    foreach ($font in $fonts) {
-        $fontsFolder.CopyHere($font.FullName, 0x10)
-    }
-    Remove-Item -Recurse -Force $tmp
-    Write-Host "Monaspace installed."
-}
-
-Write-Host "Windows dependencies ready."
+Write-Host "Windows bootstrap complete. Software will be installed by the provisioning script."
 {{- end }}
