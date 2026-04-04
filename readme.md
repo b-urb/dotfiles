@@ -27,7 +27,7 @@ $env:BW_SESSION = $(bw unlock --raw)
 chezmoi apply
 ```
 
-On Windows, chezmoi runs the `run_once_before_02` PowerShell script automatically to install Git, WezTerm, WSL, Scoop, and the Bitwarden CLI before placing any dotfiles.
+On Windows, chezmoi runs the `run_once_before_02` PowerShell script automatically to install Git, WezTerm nightly, WSL, Scoop, and the Bitwarden CLI before placing any dotfiles.
 
 chezmoi will prompt for a Bitwarden unlock and for a few machine-local settings (display server on Linux, whether to disable the Bitwarden SSH agent). It then renders all templates and places files.
 
@@ -81,7 +81,7 @@ The playbook uses Ansible's fact-gathering to detect the OS and runs only the re
 
 Package lists live in `ansible/roles/<role>/vars/main.yml`. Cargo crates and VS Code extensions are in `ansible/group_vars/all.yml` (shared across all platforms).
 
-**Windows** — provisioned by the `run_once_before_02` PowerShell script (winget + Scoop). Installs WezTerm, Git, WSL + Ubuntu, Bitwarden Desktop + CLI, core CLI tools, and Monaspace font. After it runs, enable **Settings > App Settings > Enable SSH Agent** in Bitwarden Desktop.
+**Windows** — provisioned by the `run_once_before_02` PowerShell script (winget + Scoop). Installs WezTerm nightly (direct GitHub release download — winget nightly package is broken upstream), Git, WSL + Ubuntu, Bitwarden Desktop + CLI, core CLI tools, and Monaspace font. After it runs, enable **Settings > App Settings > Enable SSH Agent** in Bitwarden Desktop.
 
 ## Bitwarden structure
 
