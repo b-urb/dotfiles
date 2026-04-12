@@ -1,0 +1,36 @@
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/bash
+# Symlink VS Code config files from chezmoi staging dir to the real VS Code User dir.
+# chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/settings.json" | sha256sum }}
+# chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/keybindings.json" | sha256sum }}
+# chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/mcp.json" | sha256sum }}
+# chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/prompts/tools.toolsets.jsonc" | sha256sum }}
+set -euo pipefail
+
+STAGING="${HOME}/.config/vscode-dotfiles"
+
+case "$(uname -s)" in
+    Darwin) VSCODE_USER="${HOME}/Library/Application Support/Code/User" ;;
+    *)      VSCODE_USER="${HOME}/.config/Code/User" ;;
+esac
+
+mkdir -p "${VSCODE_USER}/prompts"
+mkdir -p "${VSCODE_USER}/snippets"
+
+for f in settings.json keybindings.json mcp.json; do
+    src="${STAGING}/${f}"
+    dest="${VSCODE_USER}/${f}"
+    if [ -f "${src}" ]; then
+        ln -sf "${src}" "${dest}"
+        echo "Linked ${dest} -> ${src}"
+    fi
+done
+
+# prompts subdirectory
+if [ -f "${STAGING}/prompts/tools.toolsets.jsonc" ]; then
+    ln -sf "${STAGING}/prompts/tools.toolsets.jsonc" "${VSCODE_USER}/prompts/tools.toolsets.jsonc"
+    echo "Linked prompts/tools.toolsets.jsonc"
+fi
+
+echo "VS Code config symlinks updated."
+{{- end }}

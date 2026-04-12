@@ -29,12 +29,9 @@ config.yaml
 wezterm/wezterm-session-manager/
 
 # ─────────────────────────────────────────────────────────────────────────────
-# VSCode runtime data — never manage these with chezmoi
+# VSCode staging dir — config files symlinked to real VS Code path by scripts
+# (no runtime state is managed; only settings/keybindings/mcp/prompts/snippets)
 # ─────────────────────────────────────────────────────────────────────────────
-.config/vscode/User/globalStorage/
-.config/vscode/User/workspaceStorage/
-.config/vscode/User/History/
-.config/vscode/User/chatEditingSessions/
 
 # ─────────────────────────────────────────────────────────────────────────────
 # macOS-only configs
@@ -70,7 +67,7 @@ wezterm/wezterm-session-manager/
 {{ end }}
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Windows-only: exclude everything except wezterm and codex/opencode configs
+# Windows-only: exclude everything except wezterm, vscode-dotfiles, and codex/opencode configs
 # ─────────────────────────────────────────────────────────────────────────────
 {{ if .isWindows }}
 .config/sketchybar/
@@ -89,7 +86,6 @@ wezterm/wezterm-session-manager/
 .config/nvim/
 .config/zellij/
 .config/yazi/
-.config/vscode/
 .bash_logout
 .profile
 .bashrc

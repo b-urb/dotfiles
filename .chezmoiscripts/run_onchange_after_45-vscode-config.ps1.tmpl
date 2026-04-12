@@ -1,0 +1,34 @@
+{{- if eq .chezmoi.os "windows" }}
+# Symlink VS Code config files from chezmoi staging dir to the real VS Code User dir.
+# chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/settings.json" | sha256sum }}
+# chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/keybindings.json" | sha256sum }}
+# chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/mcp.json" | sha256sum }}
+# chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/prompts/tools.toolsets.jsonc" | sha256sum }}
+
+$ErrorActionPreference = "Stop"
+
+$staging = Join-Path $env:USERPROFILE ".config\vscode-dotfiles"
+$vscodeUser = Join-Path $env:APPDATA "Code\User"
+
+New-Item -ItemType Directory -Force -Path $vscodeUser | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $vscodeUser "prompts") | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $vscodeUser "snippets") | Out-Null
+
+foreach ($f in @("settings.json", "keybindings.json", "mcp.json")) {
+    $src = Join-Path $staging $f
+    $dest = Join-Path $vscodeUser $f
+    if (Test-Path $src) {
+        Copy-Item -Path $src -Destination $dest -Force
+        Write-Host "Copied $dest <- $src"
+    }
+}
+
+$promptsSrc = Join-Path $staging "prompts\tools.toolsets.jsonc"
+$promptsDest = Join-Path $vscodeUser "prompts\tools.toolsets.jsonc"
+if (Test-Path $promptsSrc) {
+    Copy-Item -Path $promptsSrc -Destination $promptsDest -Force
+    Write-Host "Copied prompts/tools.toolsets.jsonc"
+}
+
+Write-Host "VS Code config updated."
+{{- end }}
