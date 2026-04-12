@@ -23,7 +23,6 @@ cargo_crates:
 # VS Code extensions (full list from Brewfile).
 # Installed via `code --install-extension` when VS Code is present.
 vscode_extensions:
-  - 2gua.rainbow-brackets
   - aaron-bond.better-comments
   - alefragnani.bookmarks
   - ardenivanov.svelte-intellisense
@@ -37,12 +36,12 @@ vscode_extensions:
   - fill-labs.dependi
   - formulahendry.auto-close-tag
   - formulahendry.auto-rename-tag
-  - github.copilot
   - github.copilot-chat
   - github.github-vscode-theme
   - golang.go
   - grafana.vscode-jsonnet
   - gruntfuggly.todo-tree
+  - hashicorp.terraform
   - hbenl.vscode-test-explorer
   - ibrahimcesar.ibrahimcesar-nextjs-developer-pack
   - jimmyzjx.leaderkey
@@ -60,13 +59,13 @@ vscode_extensions:
   - ms-vscode-remote.remote-containers
   - ms-vscode.makefile-tools
   - ms-vscode.test-adapter-converter
-  - ms-vscode.vscode-typescript-tslint-plugin
   - ms-vsliveshare.vsliveshare
   - naumovs.color-highlight
   - oderwat.indent-rainbow
   - openai.chatgpt
   - orta.vscode-jest
   - panicbit.cargo
+  - pjmiravalle.terraform-advanced-syntax-highlighting
   - pkief.material-icon-theme
   - pulkitgangwar.nextjs-snippets
   - quicktype.quicktype
@@ -74,11 +73,11 @@ vscode_extensions:
   - redhat.vscode-yaml
   - richie5um2.vscode-sort-json
   - rust-lang.rust-analyzer
-  - serayuzgur.crates
   - shadowndacorner.vscode-easymotion
   - shardulm94.trailing-spaces
   - shd101wyy.markdown-preview-enhanced
   - sleistner.vscode-fileutils
+  - sst-dev.opencode
   - sst-dev.opencode-v2
   - streetsidesoftware.code-spell-checker
   - svelte.svelte-vscode
@@ -87,8 +86,6 @@ vscode_extensions:
   - tauri-apps.tauri-vscode
   - usernamehw.errorlens
   - vadimcn.vscode-lldb
-  - visualstudioexptteam.intellicode-api-usage-examples
-  - visualstudioexptteam.vscodeintellicode
   - vivaxy.vscode-conventional-commits
   - vscodevim.vim
   - zerotaskx.rust-extension-pack
