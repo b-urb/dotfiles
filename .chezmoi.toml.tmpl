@@ -10,6 +10,7 @@
 
 {{- if ne .chezmoi.os "windows" }}
 sourceDir = "{{ joinPath .chezmoi.homeDir ".dotfiles" }}"
+mode = "symlink"
 {{- end }}
 
 [data]
