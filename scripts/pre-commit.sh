@@ -19,6 +19,13 @@ NC='\033[0m'
 # Source checksum utilities
 source "$DOTFILES_DIR/scripts/checksum-utils.sh"
 
+echo -e "${GREEN}=== Pre-commit hook: Checking sync-back drift ===${NC}"
+if ! python3 "$DOTFILES_DIR/scripts/sync-back.py" --check; then
+  echo -e "${RED}ERROR: sync-back drift detected${NC}" >&2
+  echo -e "${YELLOW}Run: just sync-back-apply${NC}" >&2
+  exit 1
+fi
+
 echo -e "${GREEN}=== Pre-commit hook: Syncing to Bitwarden ===${NC}"
 
 # STRICT: Require BW_SESSION or FAIL
