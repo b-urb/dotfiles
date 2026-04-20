@@ -4,21 +4,19 @@
 # Cargo crates installed after Rust/rustup is set up.
 # Flags like --locked are appended inline.
 cargo_crates:
-  - cargo-update
-  - cargo-edit
-  - eza
   - atac --locked
-  - rainfrog
-  - zoxide --locked
-  - atuin
-  - spotify-tui
-  - zellij --locked
-  - just
-  - starship --locked
+  - cargo-edit
+  - cargo-update
   - create-tauri-app
+  - doclytics
+  - eza
+  - just
+  - spotify-tui
+  - starship --locked
   - tauri-cli
   - trunk
-  - doclytics
+  - zellij --locked
+  - zoxide --locked
 
 # VS Code extensions (full list from Brewfile).
 # Installed via `code --install-extension` when VS Code is present.

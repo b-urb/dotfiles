@@ -13,10 +13,12 @@ brew_taps:
   - kardolus/chatgpt-cli
   - keith/formulae
   - koekeishiya/formulae
+  - lencx/chatgpt
   - nikitabobko/tap
   - notwadegrimridge/brew
   - osx-cross/arm
   - osx-cross/avr
+  - oven-sh/bun
   - qmk/qmk
   - sachaos/todoist
   - shopify/shopify
@@ -24,201 +26,182 @@ brew_taps:
   - ynqa/tap
 
 brew_formulae:
-  # Build tools
   - act
-  - glib
-  - harfbuzz
+  - anomalyco/tap/opencode
+  - ansible
   - ant
-  - boost
-  - libusb
-  - eigen
-  - gcc
-  - suite-sparse
-  - tbb
-  - ceres-solver
-  - pkgconf
-  - cmake
-  - gradle
-  - maven
-  - kotlin
-  - ktlint
-  - node
-  - yarn
-  - pnpm
-  - python@3.11
-  - python@3.10
-  - python@3.9
-  - pipx
-  - sbcl
-  # Cloud / infra
+  - aria2
+  - atuin
   - awscli
   - azure-cli
-  - opentofu
-  - pulumi
-  - sops
-  - hcloud
-  - openstackclient
-  # Kubernetes
-  - kubernetes-cli
-  - helm
-  - k9s
-  - k3d
-  - kind
-  - minikube
-  - kubebuilder
-  - kube-bench
   - azure/kubelogin/kubelogin
-  - derailed/popeye/popeye
-  # Dev tools
-  - git
-  - git-filter-repo
-  - gh
-  - glab
-  - lazygit
-  - gitui
-  - commitizen
-  - talisman
-  - delve
-  - gopls
-  - golangci-lint
-  - golangci-lint-langserver
-  - gomplate
-  - marksman
-  - prettier
-  - yaml-language-server
-  - helix
-  - neovim
-  - vim
-  # CLI tools
+  - bandwhich
   - bat
+  - bitwarden-cli
+  - bpytop
+  - cabextract
+  - carapace
+  - chezmoi
+  - cjsaylor/tap/jrnl
+  - cmake
+  - commitizen
+  - coreutils
+  - ctop
+  - cypher-shell
+  - delve
+  - derailed/popeye/popeye
+  - dive
+  - docker-compose
+  - dog
+  - dos2unix
+  - dua-cli
+  - duf
+  - exiftool
   - eza
   - fd
-  - fzf
-  - ripgrep
-  - zoxide
-  - lsd
-  - duf
-  - dua-cli
-  - dog
-  - gping
-  - aria2
-  - dos2unix
-  - htop
-  - glances
-  - ncdu
-  - bandwhich
-  - ctop
-  - dive
-  - navi
-  - thefuck
-  - jq
-  - yq
-  - just
-  - coreutils
-  - gnu-sed
-  - grep
-  - curl
-  - wget
-  - sevenzip
-  - unar
-  - cabextract
-  - wimlib
-  - rm-improved
-  - pass
-  - mcp-proxy
-  # Media / images
-  - ffmpeg
-  - ffmpeg@4
-  - ffmpegthumbnailer
-  - imagemagick
-  - ghostscript
-  - poppler
-  - pillow
-  - hdf5
-  - netcdf
-  - numpy
-  - jpeg-xl
-  - webp
-  - aom
-  - libheif
-  - libraw
-  - openjpeg
-  - leptonica
-  - libarchive
-  - libass
-  - libbluray
-  - pango
-  - libpq
-  # Networking / services
-  - sshuttle
-  - s3cmd
-  - tailscale
-  - putty
-  - telnet
-  - ifstat
-  - mosquitto
-  - snapcast
-  - mkcert
-  - ngrok
-  - aria2
-  # Databases / messaging
-  - cypher-shell
-  - kafka
-  - kafkactl
-  - groonga
-  - pgloader
-  - surrealdb/tap/surreal
-  # Media / creative
-  - librespot
-  - nowplaying-cli
-  - switchaudio-osx
-  # Misc
-  - hugo
-  - watson
-  - newsboat
-  - rustup
-  - docker-compose
-  - llvm
-  - lua
-  - ollama
-  - gemini-cli
-  - atuin
-  - starship
-  - yazi
-  - zellij
-  - pint
-  # tap-specific formulae
-  - anomalyco/tap/opencode
-  - cjsaylor/tap/jrnl
   - felixkratz/formulae/borders
   - felixkratz/formulae/sketchybar
   - felixkratz/formulae/svim
+  - ffmpeg@4
+  - ffmpegthumbnailer
+  - gemini-cli
+  - gh
+  - ghostscript
+  - git-filter-repo
+  - git-lfs
+  - gitui
+  - glab
+  - glances
+  - gnu-sed
+  - gobject-introspection
+  - golangci-lint
+  - golangci-lint-langserver
+  - gomplate
+  - gopls
+  - gping
+  - gradle
+  - grep
+  - groonga
   - hashicorp/tap/terraform
   - hashicorp/tap/terraform-ls
   - hashicorp/tap/vault
+  - hcloud
+  - helix
+  - helmfile
+  - htop
+  - hugo
+  - ifstat
+  - imagemagick
+  - jj
+  - jq
+  - jsonnet
+  - just
+  - k3d
+  - k9s
+  - kafka
+  - kafkactl
   - kardolus/chatgpt-cli/chatgpt-cli
   - keith/formulae/reminders-cli
+  - kind
   - koekeishiya/formulae/skhd
   - koekeishiya/formulae/yabai
+  - kotlin
+  - ktlint
+  - kube-bench
+  - kubebuilder
+  - lastpass-cli
+  - lazygit
+  - libraw
+  - librealsense
+  - librespot
+  - llvm
+  - lsd
+  - luarocks
+  - marksman
+  - maven
+  - mcp-proxy
+  - meson
+  - minikube
+  - mkcert
+  - molten-vk
+  - mosquitto
+  - navi
+  - ncdu
+  - neovim
+  - newsboat
+  - nowplaying-cli
+  - nushell
+  - ollama
+  - openconnect
+  - opencv
+  - openjdk@11
+  - openjdk@17
+  - openshift-cli
+  - openstackclient
+  - opentofu
+  - oven-sh/bun/bun
+  - pass
+  - pgloader
+  - pint
+  - pipx
+  - pnpm
+  - poppler
+  - powershell
+  - prettier
+  - pulumi
+  - putty
+  - python@3.11
+  - python@3.9
   - qmk/qmk/qmk
+  - qt@5
+  - rainfrog
+  - rm-improved
+  - rustup
+  - s3cmd
   - sachaos/todoist/todoist
+  - sevenzip
   - shopify/shopify/shopify-cli
+  - snapcast
+  - sops
+  - sshuttle
+  - starship
+  - surrealdb/tap/surreal
+  - switchaudio-osx
+  - sysdig
+  - tailscale
+  - talisman
+  - telnet
+  - thefuck
+  - unar
+  - vim
+  - watson
+  - wget
+  - wimlib
+  - yaml-language-server
+  - yarn
+  - yazi
   - ynqa/tap/jnv
+  - yq
+  - zellij
+  - zoxide
 
 brew_casks:
-  - nikitabobko/tap/aerospace
+  - aerospace
   - anaconda
   - bambu-studio
   - bluetility
   - brave-browser
   - chatgpt
   - claude-code
+  - cmake
   - cmake-app
   - codex
   - discord
   - displaylink
   - elgato-stream-deck
+  - figma
   - firefox
+  - firefox-developer-edition
   - firefox@developer-edition
   - font-hack-nerd-font
   - font-jetbrains-mono
@@ -226,7 +209,7 @@ brew_casks:
   - font-sf-mono
   - font-sf-pro
   - font-symbols-only-nerd-font
-  - graalvm/tap/graalvm-community-jdk21
+  - graalvm-community-jdk21
   - homerow
   - jetbrains-toolbox
   - keystore-explorer
@@ -238,10 +221,11 @@ brew_casks:
   - microsoft-teams
   - ngrok
   - obsidian
-  - notwadegrimridge/brew/pingplace
+  - pingplace
   - postman
   - powershell
   - proton-mail-bridge
+  - protonmail-bridge
   - raycast
   - rustdesk
   - sf-symbols
@@ -251,6 +235,7 @@ brew_casks:
   - spotify
   - tailscale-app
   - teamviewer
+  - todoist
   - todoist-app
   - tunnelblick
   - visual-studio-code
@@ -260,5 +245,7 @@ brew_casks:
   - yubico-yubikey-manager
   - zoom
   - zulu
+  - zulu17
+  - zulu21
   - zulu@17
   - zulu@21
