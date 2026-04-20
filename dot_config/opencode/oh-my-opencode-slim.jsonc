@@ -3,7 +3,7 @@
   "presets": {
     "copilot": {
       "orchestrator": {
-        "model": "github-copilot/claude-opus-4.6",
+        "model": "github-copilot/claude-sonnet-4.6",
         "variant": "high",
         "skills": [
           "*"
@@ -13,7 +13,7 @@
         ]
       },
       "oracle": {
-        "model": "github-copilot/claude-opus-4.6",
+        "model": "github-copilot/claude-sonnet-4.6",
         "variant": "high",
         "skills": [],
         "mcps": []

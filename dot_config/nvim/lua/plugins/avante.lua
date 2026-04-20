@@ -1,8 +1,7 @@
 return {
   {
     "yetone/avante.nvim",
-    build = vim.fn.has("win32") ~= 0
-        and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
+    build = vim.fn.has("win32") ~= 0 and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
       or "make",
     event = "VeryLazy",
     version = false,
@@ -16,10 +15,10 @@ return {
       },
       providers = {
         copilot = {
-          model = "gpt-5.1-codex-mini",
+          model = "gpt-5.4-codex-mini",
           use_response_api = function(provider_opts)
             local model = provider_opts and provider_opts.model
-            return type(model) == "string" and model:match("gpt%-5[%w%.%-]*%-codex") ~= nil
+            return type(model) == "string" and model:match("gpt%-5") ~= nil
           end,
         },
       },
