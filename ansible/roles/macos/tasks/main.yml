@@ -19,3 +19,10 @@
   # casks can fail if the app is already installed outside of Homebrew;
   # greedy=true updates to the latest version if already present
   ignore_errors: true
+
+- name: install Mac App Store apps
+  community.general.mas:
+    id: "{{ item.id }}"
+    state: present
+  loop: "{{ mas_apps | default([]) }}"
+  when: (mas_apps | default([])) | length > 0

@@ -30,7 +30,7 @@ BOLD = "\033[1m"
 RESET = "\033[0m"
 
 SECTIONS_BY_OS: dict[str, list[str]] = {
-    "macos": ["brew", "vscode", "cargo"],
+    "macos": ["brew", "mas", "vscode", "cargo"],
     "ubuntu": ["apt", "vscode", "cargo"],
     "wsl": ["apt", "vscode", "cargo"],
     "arch": ["pacman", "vscode", "cargo"],
@@ -134,6 +134,26 @@ def list_brew_casks() -> Optional[list[str]]:
     if not shutil.which("brew"):
         return None
     return run_lines(["brew", "list", "--cask", "-1"])
+
+
+def list_mas_apps() -> Optional[list[dict]]:
+    """Return list of {id, name} dicts from `mas list`, sorted by name."""
+
+    if not shutil.which("mas"):
+        return None
+    proc = run_cmd(["mas", "list"])
+    if not proc or proc.returncode != 0:
+        return None
+    apps: list[dict] = []
+    for line in proc.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        # Format: <id>  <name>  (<version>)
+        m = re.match(r"^(\d+)\s+(.+?)\s*\(\d[^)]*\)\s*$", line)
+        if m:
+            apps.append({"id": int(m.group(1)), "name": m.group(2).strip()})
+    return sorted(apps, key=lambda x: x["name"].lower()) if apps else None
 
 
 def list_code_extensions() -> Optional[list[str]]:
@@ -328,6 +348,48 @@ def _replace_yaml_list(text: str, key: str, items: list[str]) -> str:
     return text[:start] + header + body + text[end:]
 
 
+def _parse_yaml_mas_list(text: str) -> Optional[tuple[list[dict], int, int]]:
+    """Parse mas_apps YAML block. Returns (items, start, end)."""
+
+    # Non-empty: mas_apps:\n  - { id: N, name: "..." }\n...
+    pat = re.compile(
+        r"^(mas_apps:\s*\n)((?:  - \{ id: \d+, name: \"[^\"]*\" \}\n)*)",
+        re.MULTILINE,
+    )
+    m = pat.search(text)
+    if m:
+        body = m.group(2)
+        items: list[dict] = []
+        for em in re.finditer(r'\{ id: (\d+), name: "([^"]+)" \}', body):
+            items.append({"id": int(em.group(1)), "name": em.group(2)})
+        return items, m.start(), m.end()
+    # Empty: mas_apps: []
+    pat_empty = re.compile(r"^mas_apps:\s*\[\]\s*\n?", re.MULTILINE)
+    me = pat_empty.search(text)
+    if me:
+        return [], me.start(), me.end()
+    return None
+
+
+def _replace_yaml_mas_list(text: str, items: list[dict]) -> str:
+    """Replace mas_apps block with sorted items."""
+
+    parsed = _parse_yaml_mas_list(text)
+    if parsed is None:
+        return text
+    _, start, end = parsed
+    if items:
+        sorted_items = sorted(items, key=lambda x: x["name"].lower())
+        body = "\n".join(
+            f'  - {{ id: {item["id"]}, name: "{item["name"]}" }}'
+            for item in sorted_items
+        ) + "\n"
+        replacement = f"mas_apps:\n{body}"
+    else:
+        replacement = "mas_apps: []\n"
+    return text[:start] + replacement + text[end:]
+
+
 # ─── Sync logic per section ──────────────────────────────────────────────────
 
 def _diff_lists(old: list[str], new: list[str]) -> tuple[int, int]:
@@ -379,6 +441,41 @@ def sync_brew(results: list[SectionResult]) -> None:
                 break
 
     results.extend(sub_results)
+
+
+def sync_mas(results: list[SectionResult]) -> None:
+    """Sync Mac App Store apps to ansible/roles/macos/vars/main.yml."""
+
+    path = DOTFILES_DIR / "ansible" / "roles" / "macos" / "vars" / "main.yml"
+    if not path.exists():
+        results.append(SectionResult("mas_apps", report=f"Missing: {path}"))
+        return
+
+    text = path.read_text()
+    parsed = _parse_yaml_mas_list(text)
+    if parsed is None:
+        results.append(SectionResult("mas_apps", report="Key 'mas_apps' not found"))
+        return
+
+    current_items, _, _ = parsed
+    installed = list_mas_apps()
+    if installed is None:
+        results.append(SectionResult(
+            "mas_apps",
+            report="mas not available — install via brew or sign in to App Store",
+        ))
+        return
+
+    current_ids = {item["id"] for item in current_items}
+    installed_ids = {item["id"] for item in installed}
+    added = len(installed_ids - current_ids)
+    removed = len(current_ids - installed_ids)
+    new_text = _replace_yaml_mas_list(text, installed)
+    results.append(SectionResult(
+        "mas_apps",
+        added=added, removed=removed, total=len(installed),
+        edits=[FileEdit(path, text, new_text)] if new_text != text else [],
+    ))
 
 
 def sync_vscode(results: list[SectionResult]) -> None:
@@ -664,7 +761,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--section",
-        help="Sync only a specific section (e.g. brew, vscode, cargo, scoop, winget, apt, pacman)",
+        help="Sync only a specific section (e.g. brew, mas, vscode, cargo, scoop, winget, apt, pacman)",
     )
     args = parser.parse_args()
 
@@ -688,6 +785,8 @@ def main() -> int:
     try:
         if "brew" in requested:
             sync_brew(results)
+        if "mas" in requested:
+            sync_mas(results)
         if "vscode" in requested:
             sync_vscode(results)
         if "cargo" in requested:

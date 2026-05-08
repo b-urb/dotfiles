@@ -36,6 +36,7 @@ arch_packages:
   - bpytop
   - glances
   - atuin
+  - ghostty
 
   # Networking
   - aria2

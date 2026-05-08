@@ -1,4 +1,4 @@
-{{- if eq .chezmoi.os "windows" }}{{ else -}}
+{{- if and (ne .chezmoi.os "windows") (not (.features.skipAnsible | default false)) -}}
 #!/bin/bash
 # Provision software on this machine via Ansible.
 # Triggered automatically whenever any file under ansible/ changes.

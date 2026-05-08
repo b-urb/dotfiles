@@ -43,6 +43,7 @@ brew_formulae:
   - carapace
   - chezmoi
   - cjsaylor/tap/jrnl
+  - clusterctl
   - cmake
   - commitizen
   - coreutils
@@ -82,6 +83,7 @@ brew_formulae:
   - gradle
   - grep
   - groonga
+  - hashicorp/tap/packer
   - hashicorp/tap/terraform
   - hashicorp/tap/terraform-ls
   - hashicorp/tap/vault
@@ -118,6 +120,7 @@ brew_formulae:
   - lsd
   - luarocks
   - marksman
+  - mas
   - maven
   - mcp-proxy
   - meson
@@ -209,6 +212,7 @@ brew_casks:
   - font-sf-mono
   - font-sf-pro
   - font-symbols-only-nerd-font
+  - ghostty
   - graalvm-community-jdk21
   - homerow
   - jetbrains-toolbox
@@ -217,7 +221,6 @@ brew_casks:
   - meetingbar
   - microsoft-auto-update
   - microsoft-office
-  - microsoft-remote-desktop
   - microsoft-teams
   - ngrok
   - obsidian
@@ -242,10 +245,27 @@ brew_casks:
   - vlc
   - wezterm@nightly
   - whatsapp
-  - yubico-yubikey-manager
+  - windows-app
+  - yubico-authenticator
   - zoom
   - zulu
   - zulu17
   - zulu21
   - zulu@17
   - zulu@21
+
+mas_apps:
+  - { id: 948660805, name: "AusweisApp" }
+  - { id: 1352778147, name: "Bitwarden" }
+  - { id: 1193539993, name: "Brother iPrint&Scan" }
+  - { id: 682658836, name: "GarageBand" }
+  - { id: 409183694, name: "Keynote" }
+  - { id: 1274495053, name: "Microsoft To Do" }
+  - { id: 409203825, name: "Numbers" }
+  - { id: 409201541, name: "Pages" }
+  - { id: 1310584536, name: "Planner 5D" }
+  - { id: 669289700, name: "Sweet Home 3D" }
+  - { id: 425424353, name: "The Unarchiver" }
+  - { id: 1295203466, name: "Windows App 2" }
+  - { id: 1451685025, name: "WireGuard" }
+  - { id: 497799835, name: "Xcode" }

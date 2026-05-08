@@ -94,3 +94,4 @@ ubuntu_packages:
 
   # WezTerm (from fury repo added above)
   - wezterm-nightly
+  - ghostty

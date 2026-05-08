@@ -54,6 +54,10 @@ vscode_extensions:
   - ms-azuretools.vscode-containers
   - ms-azuretools.vscode-docker
   - ms-kubernetes-tools.vscode-kubernetes-tools
+  - ms-python.debugpy
+  - ms-python.python
+  - ms-python.vscode-pylance
+  - ms-python.vscode-python-envs
   - ms-vscode-remote.remote-containers
   - ms-vscode.makefile-tools
   - ms-vscode.test-adapter-converter
@@ -61,6 +65,7 @@ vscode_extensions:
   - naumovs.color-highlight
   - oderwat.indent-rainbow
   - openai.chatgpt
+  - opentofu.vscode-opentofu
   - orta.vscode-jest
   - panicbit.cargo
   - pjmiravalle.terraform-advanced-syntax-highlighting
@@ -68,6 +73,7 @@ vscode_extensions:
   - pulkitgangwar.nextjs-snippets
   - quicktype.quicktype
   - rangav.vscode-thunder-client
+  - redhat.ansible
   - redhat.vscode-yaml
   - richie5um2.vscode-sort-json
   - rust-lang.rust-analyzer
