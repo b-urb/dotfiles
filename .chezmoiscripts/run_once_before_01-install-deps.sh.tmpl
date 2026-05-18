@@ -43,6 +43,12 @@ if [ ! -x "$HOME/.local/bin/chezmoi" ]; then
     sh -c "$(curl -fsLS --http1.1 get.chezmoi.io)" -- -b "$HOME/.local/bin"
 fi
 
+# ─── Linux: Install jq (required by kubeconfig merge and other scripts) ─────
+if ! command -v jq &>/dev/null; then
+    echo "Installing jq..."
+    sudo apt-get install -y jq
+fi
+
 # ─── Linux: Install Bitwarden CLI if missing ────────────────────────────────
 if ! command -v bw &>/dev/null; then
     echo "Installing Bitwarden CLI via npm..."
