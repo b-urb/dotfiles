@@ -24,17 +24,29 @@ if ! command -v bw &>/dev/null; then
 fi
 
 {{ else if eq .chezmoi.os "linux" -}}
+# ─── Linux: Install nvm + Node.js (needed for bw and other npm tools) ───────
+export NVM_DIR="$HOME/.nvm"
+if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+    echo "Installing nvm..."
+    curl -fsSL --http1.1 https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+fi
+. "$NVM_DIR/nvm.sh"
+
+if ! command -v node &>/dev/null; then
+    echo "Installing Node.js LTS..."
+    nvm install --lts --default
+fi
+
+# ─── Linux: Install chezmoi to ~/.local/bin so it shadows chezmoi.exe ───────
+if [ ! -x "$HOME/.local/bin/chezmoi" ]; then
+    echo "Installing native chezmoi..."
+    sh -c "$(curl -fsLS --http1.1 get.chezmoi.io)" -- -b "$HOME/.local/bin"
+fi
+
 # ─── Linux: Install Bitwarden CLI if missing ────────────────────────────────
 if ! command -v bw &>/dev/null; then
     echo "Installing Bitwarden CLI via npm..."
-    if command -v npm &>/dev/null; then
-        npm install -g @bitwarden/cli
-    elif command -v snap &>/dev/null; then
-        sudo snap install bw
-    else
-        echo "WARNING: Could not install Bitwarden CLI automatically."
-        echo "Please install it manually: https://bitwarden.com/help/cli/"
-    fi
+    npm install -g @bitwarden/cli
 fi
 {{ end -}}
 

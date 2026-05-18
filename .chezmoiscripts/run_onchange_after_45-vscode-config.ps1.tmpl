@@ -1,4 +1,7 @@
-{{- if eq .chezmoi.os "windows" }}
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Windows only — skip
+{{- else }}
 # Symlink VS Code config files from chezmoi staging dir to the real VS Code User dir.
 # chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/settings.json" | sha256sum }}
 # chezmoi:template: hash of {{ include "dot_config/vscode-dotfiles/keybindings.json" | sha256sum }}
@@ -31,4 +34,4 @@ if (Test-Path $promptsSrc) {
 }
 
 Write-Host "VS Code config updated."
-{{- end }}
+{{- end -}}

@@ -1,3 +1,12 @@
+# ~/.local/bin must come before Windows PATH interop so native Linux tools
+# (chezmoi, bw, node) shadow any Windows .exe/.cmd equivalents on /mnt/c
+export PATH="$HOME/.local/bin:$PATH"
+
+# nvm — loaded early so npm/node/bw are available before Windows PATH entries
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+
 alias kb="kubectl"
 alias res="source ~/.bashrc"
 alias ls="lsd -A"

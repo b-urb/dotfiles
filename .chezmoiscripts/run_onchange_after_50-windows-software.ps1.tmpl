@@ -1,4 +1,7 @@
-{{- if ne .chezmoi.os "windows" }}# Not Windows — skip{{ else -}}
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Windows only — skip
+{{- else -}}
 # Provision software on Windows via Scoop and winget.
 # This is the Windows equivalent of the Ansible playbook.
 # Triggered automatically whenever package lists in .chezmoidata.toml change.
