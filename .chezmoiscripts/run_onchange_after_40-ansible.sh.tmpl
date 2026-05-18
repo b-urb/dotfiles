@@ -22,6 +22,7 @@
 # vscode:          {{ include (joinPath .chezmoi.sourceDir "ansible/roles/vscode_extensions/tasks/main.yml") | sha256sum }}
 
 set -e
+export PATH="$HOME/.local/bin:$PATH"
 
 PLAYBOOK="{{ joinPath .chezmoi.sourceDir "ansible/local.yml" }}"
 ANSIBLE_DIR="{{ joinPath .chezmoi.sourceDir "ansible" }}"
@@ -37,9 +38,12 @@ if ! command -v ansible-playbook &>/dev/null; then
     echo "Installing Ansible via Homebrew..."
     brew install ansible
 {{ else -}}
-    echo "Installing Ansible via pip3..."
-    pip3 install --user ansible
-    export PATH="$PATH:$HOME/.local/bin"
+    echo "Installing Ansible via pipx..."
+    if ! command -v pipx &>/dev/null; then
+        sudo apt-get install -y pipx
+        pipx ensurepath
+    fi
+    pipx install ansible-core
 {{ end -}}
 fi
 

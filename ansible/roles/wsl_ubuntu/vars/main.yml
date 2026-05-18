@@ -28,9 +28,6 @@ wsl_ubuntu_packages:
 
   # Languages and runtimes
   - golang-go
-  - nodejs
-  - npm
-  - yarn
   - openjdk-17-jdk
   - maven
   - gradle
@@ -60,6 +57,7 @@ wsl_ubuntu_packages:
   - bpytop
   - glances
   - s3cmd
+  - socat
   - sshuttle
   - ffmpeg
   - imagemagick

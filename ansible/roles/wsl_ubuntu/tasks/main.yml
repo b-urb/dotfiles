@@ -117,3 +117,9 @@
   when:
     - ansible_distribution == "Debian"
     - nvim_version_check.rc != 0
+
+- name: set zsh as default login shell
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: /bin/zsh
+  become: true

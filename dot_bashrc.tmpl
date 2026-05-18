@@ -7,6 +7,21 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
+# WSL: bridge Windows Bitwarden SSH agent to a Unix socket via npiperelay + socat
+# Requires: npiperelay.exe in Scoop, socat installed in WSL
+if grep -qi microsoft /proc/version 2>/dev/null; then
+    _NPIPERELAY=$(find /mnt/c/Users -maxdepth 4 -name "npiperelay.exe" 2>/dev/null | head -1)
+    _AGENT_SOCK="$HOME/.ssh/agent.sock"
+    if [[ -x "$_NPIPERELAY" ]] && command -v socat &>/dev/null; then
+        if [[ ! -S "$_AGENT_SOCK" ]]; then
+            rm -f "$_AGENT_SOCK"
+            (setsid socat UNIX-LISTEN:"$_AGENT_SOCK",fork \
+                EXEC:"$_NPIPERELAY -ei -s //./pipe/openssh-ssh-agent",nofork &)
+        fi
+        export SSH_AUTH_SOCK="$_AGENT_SOCK"
+    fi
+fi
+
 alias kb="kubectl"
 alias res="source ~/.bashrc"
 alias ls="lsd -A"

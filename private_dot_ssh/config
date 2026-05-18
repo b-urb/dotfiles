@@ -41,8 +41,3 @@ Host 192.168.178.*
     StrictHostKeyChecking no
 
 # Catch-all
-Host *
-    UseKeychain yes
-    AddKeysToAgent yes
-    IdentitiesOnly no
-    IdentityFile none

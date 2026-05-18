@@ -17,7 +17,7 @@
       - tmux
       - ripgrep
       - fzf
-      - fd
+      - "{{ 'fd-find' if ansible_os_family == 'Debian' else 'fd' }}"
       - bat
       - zoxide
       - eza

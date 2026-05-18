@@ -78,7 +78,12 @@ end
 function M.build()
 	local config = {
 		font_size = 15.0,
-		font = wezterm.font("Monaspace Argon"),
+		font = wezterm.font_with_fallback({
+			"Monaspace Argon",
+			"JetBrainsMono NF",
+			"Hack NF",
+			"monospace",
+		}),
 		-- color_scheme = "One Dark (Gogh)",
 		color_scheme_dirs = { wezterm.config_dir .. "/colors" },
 		color_scheme = "github_dark_colorblind",
@@ -146,14 +151,22 @@ function M.build()
 	if wsl_domain ~= nil then
 		config.wsl_domains = wezterm.default_wsl_domains()
 		config.default_domain = wsl_domain
+		-- Force zsh as the login shell for all WSL panes
+		for _, domain in ipairs(config.wsl_domains) do
+			domain.default_prog = { "zsh", "-l" }
+		end
 	end
 
 	local bw_sock = detect_bitwarden_ssh_sock()
 	if bw_sock ~= nil then
 		config.default_ssh_auth_sock = bw_sock
-		config.set_environment_variables = {
-			SSH_AUTH_SOCK = bw_sock,
-		}
+		-- On Windows the shell is WSL; SSH_AUTH_SOCK is bridged there via
+		-- npiperelay+socat in .bashrc/.zshrc. Don't override it here.
+		if not is_windows() then
+			config.set_environment_variables = {
+				SSH_AUTH_SOCK = bw_sock,
+			}
+		end
 	end
 
 	return config

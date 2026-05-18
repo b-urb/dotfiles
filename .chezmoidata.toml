@@ -124,6 +124,7 @@ vscode_extensions = [
         "dos2unix",
         "curl",
         "wget",
+        "npiperelay",
         "7zip",
         "starship",
         "atuin",

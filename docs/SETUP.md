@@ -17,7 +17,42 @@ This guide walks through the complete installation process for setting up these 
 
 - **macOS**: 12 (Monterey) or later
 - **Linux**: Ubuntu 20.04+, Arch Linux (current)
+- **Windows (WSL2)**: Ubuntu 22.04+ under WSL2 (Windows 11 recommended)
 - **Disk Space**: ~500MB for dependencies
+
+### WSL2 Prerequisites
+
+If you are running on **Windows Subsystem for Linux (WSL2)**, complete these two steps before running `chezmoi apply`:
+
+#### Passwordless sudo
+
+Ansible uses `become` (sudo) internally and cannot prompt for a password when running non-interactively via chezmoi.
+Enable passwordless sudo for your user **once**:
+
+```bash
+echo "$(whoami) ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$(whoami)
+sudo chmod 440 /etc/sudoers.d/$(whoami)
+```
+
+> **Why**: chezmoi executes Ansible in a non-interactive script. Without `NOPASSWD`, `sudo` blocks waiting for
+> a password that never arrives, and Ansible fails with:
+> `Premature end of stream waiting for become success`.
+
+#### Avoid Windows PATH shadowing
+
+WSL appends the Windows `PATH` to the Linux `PATH`. Tools installed via Scoop or winget on Windows
+(e.g. `chezmoi.exe`, `bw.cmd`, `node.exe`) shadow the native Linux equivalents — causing `chezmoi.os`
+to report `windows` and Bitwarden calls to fail.
+
+The `run_once_before_01-install-deps.sh` bootstrap installs native Linux versions of `chezmoi`, `bw`,
+and `node` into `~/.local/bin`, which `.bashrc` prepends to `PATH`. **Open a fresh WSL terminal** after
+first install, or run:
+
+```bash
+source ~/.bashrc
+```
+
+---
 
 ### Required Tools
 

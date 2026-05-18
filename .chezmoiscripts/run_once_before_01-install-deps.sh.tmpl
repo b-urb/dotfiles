@@ -42,11 +42,20 @@ if [ ! -x "$HOME/.local/bin/chezmoi" ]; then
     echo "Installing native chezmoi..."
     sh -c "$(curl -fsLS --http1.1 get.chezmoi.io)" -- -b "$HOME/.local/bin"
 fi
+# ─── Linux: Passwordless sudo (Ansible become needs it non-interactively) ────
+if ! sudo grep -q NOPASSWD /etc/sudoers.d/$(whoami) 2>/dev/null; then
+    echo "$(whoami) ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$(whoami) > /dev/null
+    sudo chmod 440 /etc/sudoers.d/$(whoami)
+fi
 
-# ─── Linux: Install jq (required by kubeconfig merge and other scripts) ─────
-if ! command -v jq &>/dev/null; then
-    echo "Installing jq..."
-    sudo apt-get install -y jq
+
+# ─── Linux: Install system prerequisites ────────────────────────────────────
+PKGS=()
+command -v jq &>/dev/null        || PKGS+=(jq)
+command -v pipx &>/dev/null       || PKGS+=(pipx)
+if [ ${#PKGS[@]} -gt 0 ]; then
+    echo "Installing system packages: ${PKGS[*]}..."
+    sudo apt-get install -y "${PKGS[@]}"
 fi
 
 # ─── Linux: Install Bitwarden CLI if missing ────────────────────────────────

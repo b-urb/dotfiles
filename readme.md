@@ -37,6 +37,19 @@ After Bitwarden Desktop is installed, enable **Settings > App Settings > Enable 
 
 3. Open WSL and bootstrap the Linux environment:
 
+> **Before running chezmoi in WSL, complete these two steps:**
+>
+> **a) Passwordless sudo** — Ansible runs non-interactively via chezmoi and cannot prompt for a password.
+> Enable it once:
+> ```bash
+> echo "$(whoami) ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$(whoami)
+> sudo chmod 440 /etc/sudoers.d/$(whoami)
+> ```
+>
+> **b) Open a fresh WSL terminal** (or run `source ~/.bashrc`) after the first `chezmoi apply` completes.
+> The bootstrap installs native Linux `chezmoi`, `bw`, and `node` into `~/.local/bin` — these must
+> shadow the Windows versions on `/mnt/c/...` or chezmoi will misdetect the OS as `windows`.
+
 ```bash
 wsl
 # inside WSL:
