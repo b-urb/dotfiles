@@ -1,0 +1,4 @@
+{{ if .isLinux -}}
+# Login shell PATH setup — sourced before .zshrc
+export PATH="$HOME/.cargo/bin:$PATH"
+{{- end }}
