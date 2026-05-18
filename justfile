@@ -26,7 +26,7 @@ sync-section-apply SECTION:
     python3 scripts/sync-back.py --apply --section {{SECTION}}
 
 # Run chezmoi apply (includes Ansible)
-apply:
+apply: merge-kubeconfigs
     chezmoi apply
 
 # Apply dotfiles skipping Ansible — toggles skipAnsible, applies, restores
@@ -41,3 +41,7 @@ apply-fast:
 # Run chezmoi diff to see pending changes
 diff:
     chezmoi diff
+
+# Merge local kubeconfig YAMLs from kube/clusters/ into ~/.kube/config
+merge-kubeconfigs:
+    bash kube/clusters/merge_clusters.sh

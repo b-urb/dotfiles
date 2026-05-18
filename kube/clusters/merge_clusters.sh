@@ -2,15 +2,11 @@
 
 CONFIGS=""
 SEPARATOR=":"
-OUTPUT_DIR=".." # directory where you want to save the merged config
-MERGE_SCRIPT_NAME="merge_clusters.sh" # script filename itself to exclude from merging
-OUTPUT_FILE_NAME="config" # name of the merged config file
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OUTPUT="$SCRIPT_DIR/../config"
 
-# Ensure output directory exists
-mkdir -p "$OUTPUT_DIR"
-
-# Find all .yaml files in the current directory except the script itself
-FILES=$(find . -maxdepth 1 -name "*.yaml" ! -name "$MERGE_SCRIPT_NAME")
+# Find all .yaml files in the clusters directory
+FILES=$(find "$SCRIPT_DIR" -maxdepth 1 -name "*.yaml")
 
 for f in $FILES
 do
@@ -26,7 +22,6 @@ echo $CONFIGS
 
 # Merge the kubeconfig files and save the output
 KUBECONFIG=$CONFIGS kubectl config view \
-    --merge --flatten > "${OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
-
-echo "The kubeconfig files have been merged into ${OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
+    --merge --flatten > "$OUTPUT"
+echo "The kubeconfig files have been merged into $OUTPUT"
 

@@ -2,6 +2,12 @@
 # Translated from WezTerm config (config/base.lua + keybinds/native.lua)
 
 ##############################################################################
+# SSH Agent (Bitwarden)
+##############################################################################
+
+env = SSH_AUTH_SOCK=/Users/bjornurban/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
+
+##############################################################################
 # Font
 ##############################################################################
 
@@ -111,15 +117,15 @@ keybind = alt+]=next_tab
 # Modal key tables (WezTerm leader = ctrl+space, timeout 1500ms)
 ##############################################################################
 
-keybind = ctrl+space>p=activate_key_table:pane_mode
-keybind = ctrl+space>t=activate_key_table:tab_mode
+keybind = ctrl+space>p=activate_key_table_once:pane_mode
+keybind = ctrl+space>t=activate_key_table_once:tab_mode
 keybind = ctrl+space>n=activate_key_table:resize_mode
-keybind = ctrl+space>o=activate_key_table:session_mode
+keybind = ctrl+space>o=activate_key_table_once:session_mode
 
 # --- pane_mode (LEADER p) ---
-keybind = pane_mode/escape=end_key_sequence
-keybind = pane_mode/q=end_key_sequence
-keybind = pane_mode/enter=end_key_sequence
+keybind = pane_mode/escape=deactivate_key_table
+keybind = pane_mode/q=deactivate_key_table
+keybind = pane_mode/enter=deactivate_key_table
 
 # focus
 keybind = pane_mode/h=goto_split:left
@@ -145,9 +151,9 @@ keybind = pane_mode/f=toggle_split_zoom
 keybind = pane_mode/x=close_surface
 
 # --- tab_mode (LEADER t) ---
-keybind = tab_mode/escape=end_key_sequence
-keybind = tab_mode/q=end_key_sequence
-keybind = tab_mode/enter=end_key_sequence
+keybind = tab_mode/escape=deactivate_key_table
+keybind = tab_mode/q=deactivate_key_table
+keybind = tab_mode/enter=deactivate_key_table
 
 # navigate
 keybind = tab_mode/h=previous_tab
@@ -178,9 +184,9 @@ keybind = tab_mode/8=goto_tab:8
 keybind = tab_mode/9=goto_tab:9
 
 # --- resize_mode (LEADER n) ---
-keybind = resize_mode/escape=end_key_sequence
-keybind = resize_mode/q=end_key_sequence
-keybind = resize_mode/enter=end_key_sequence
+keybind = resize_mode/escape=deactivate_key_table
+keybind = resize_mode/q=deactivate_key_table
+keybind = resize_mode/enter=deactivate_key_table
 
 keybind = resize_mode/h=resize_split:left,2
 keybind = resize_mode/j=resize_split:down,2
@@ -199,6 +205,6 @@ keybind = resize_mode/right=resize_split:right,2
 # --- session_mode (LEADER o) ---
 # WezTerm workspace switching has no direct Ghostty equivalent;
 # mode defined with exit keys only for completeness.
-keybind = session_mode/escape=end_key_sequence
-keybind = session_mode/q=end_key_sequence
-keybind = session_mode/enter=end_key_sequence
+keybind = session_mode/escape=deactivate_key_table
+keybind = session_mode/q=deactivate_key_table
+keybind = session_mode/enter=deactivate_key_table

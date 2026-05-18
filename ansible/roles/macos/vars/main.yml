@@ -2,10 +2,12 @@
 brew_taps:
   - anomalyco/tap
   - azure/kubelogin
+  - breuerfelix/tap
   - cjsaylor/tap
   - derailed/popeye
   - deviceinsight/packages
   - felixkratz/formulae
+  - fluxcd/tap
   - graalvm/tap
   - hashicorp/tap
   - homebrew/bundle
@@ -45,6 +47,7 @@ brew_formulae:
   - cjsaylor/tap/jrnl
   - clusterctl
   - cmake
+  - code-server
   - commitizen
   - coreutils
   - ctop
@@ -65,6 +68,7 @@ brew_formulae:
   - felixkratz/formulae/svim
   - ffmpeg@4
   - ffmpegthumbnailer
+  - fluxcd/tap/flux
   - gemini-cli
   - gh
   - ghostscript
@@ -236,6 +240,7 @@ brew_casks:
   - sketchup
   - slack
   - spotify
+  - spurwechsel
   - tailscale-app
   - teamviewer
   - todoist
