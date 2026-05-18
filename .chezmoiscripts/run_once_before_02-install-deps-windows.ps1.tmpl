@@ -1,4 +1,7 @@
-{{- if ne .chezmoi.os "windows" }}# Not Windows — skip{{ else -}}
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Windows only — skip
+{{- else -}}
 # Bootstrap bare minimum on Windows so chezmoi can run.
 # Runs once per machine. Must be run as Administrator (WSL features need admin).
 # Everything else is handled by the run_onchange_after software provisioning script.
