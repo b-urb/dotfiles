@@ -224,7 +224,6 @@ brew_casks:
   - maccy
   - meetingbar
   - microsoft-auto-update
-  - microsoft-office
   - microsoft-teams
   - ngrok
   - obsidian
@@ -267,6 +266,7 @@ mas_apps:
   - { id: 409183694, name: "Keynote" }
   - { id: 1274495053, name: "Microsoft To Do" }
   - { id: 409203825, name: "Numbers" }
+  - { id: 823766827, name: "OneDrive 2" }
   - { id: 409201541, name: "Pages" }
   - { id: 1310584536, name: "Planner 5D" }
   - { id: 669289700, name: "Sweet Home 3D" }

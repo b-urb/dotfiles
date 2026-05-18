@@ -58,10 +58,22 @@ if [ ${#PKGS[@]} -gt 0 ]; then
     sudo apt-get install -y "${PKGS[@]}"
 fi
 
-# ─── Linux: Install Bitwarden CLI if missing ────────────────────────────────
-if ! command -v bw &>/dev/null; then
+# ─── Linux: Install Bitwarden CLI if missing/broken ─────────────────────────
+# WSL can expose Windows/Scoop bw on PATH. It exists, but fails without native
+# node. Verify bw runs before accepting it.
+if ! bw --version &>/dev/null; then
     echo "Installing Bitwarden CLI via npm..."
-    npm install -g @bitwarden/cli
+    if command -v npm &>/dev/null; then
+        npm install -g @bitwarden/cli
+    elif command -v snap &>/dev/null; then
+        sudo snap install bw
+    else
+        echo "WARNING: Could not install Bitwarden CLI automatically."
+        echo "Please install it manually: https://bitwarden.com/help/cli/"
+    fi
+
+    hash -r
+    bw --version >/dev/null
 fi
 {{ end -}}
 
