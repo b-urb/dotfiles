@@ -49,6 +49,7 @@ vscode_extensions:
   - jscearcy.rust-doc-viewer
   - kahole.magit
   - leodevbro.blockman
+  - llvm-vs-code-extensions.lldb-dap
   - mariusalchimavicius.json-to-ts
   - meganrogge.template-string-converter
   - mhutchie.git-graph
@@ -88,6 +89,7 @@ vscode_extensions:
   - streetsidesoftware.code-spell-checker
   - svelte.svelte-vscode
   - swellaby.vscode-rust-test-adapter
+  - swiftlang.swift-vscode
   - tamasfe.even-better-toml
   - tauri-apps.tauri-vscode
   - usernamehw.errorlens
