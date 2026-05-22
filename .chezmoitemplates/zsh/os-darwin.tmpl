@@ -59,3 +59,8 @@ if [ -z "$DOTFILES_DISABLE_BITWARDEN_SSH_AGENT" ] && [ -n "$WEZTERM_PANE" ]; the
     fi
     unset __dotfiles_wezterm_bw_sock
 fi
+
+# Antigravity IDE
+if [ -d "$HOME/.antigravity-ide/antigravity-ide/bin" ]; then
+    export PATH="$HOME/.antigravity-ide/antigravity-ide/bin:$PATH"
+fi

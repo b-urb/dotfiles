@@ -14,9 +14,13 @@
       "command": ["npx", "-y", "@angular/cli", "mcp"],
       "enabled": true
     },
-    "monitoring-mcp-infra": {
-      "type": "remote",
-      "url": "https://monitoring-mcp.internal.infra-prod.k8s.rtlplus.tech/mcp"
+   "todoist": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-todoist"],
+      "environment": {
+        "TODOIST_API_TOKEN": "{env:TODOIST_API_TOKEN}"
+      },
+      "enabled": true
     },
 //    "next-devtools": {
 //      "type": "local",
@@ -57,15 +61,45 @@
   "instructions": ["~/.config/opencode/instructions.md"],
   "autoupdate": true,
   "plugin": [
-    "oh-my-opencode-slim",
     "notify"
   ],
+  "tools": {
+    "todoist_*": false
+  },
   "agent": {
     "explore": {
       "disable": true
     },
     "general": {
       "disable": true
+    },
+    "todoist-orchestrator": {
+      "mode": "primary",
+      "model": "anthropic/claude-haiku-4-20250514",
+      "description": "Fetches open Todoist tasks, creates git worktrees, delegates to todo-planner per task, collects results, closes completed tasks",
+      "prompt": "{file:~/.config/opencode/prompts/orchestrator.txt}",
+      "tools": {
+        "todoist_*": true,
+        "bash": true,
+        "question": true,
+        "write": false,
+        "edit": false
+      },
+      "permission": {
+        "edit": "deny",
+        "question": "allow",
+        "bash": {
+          "*": "ask",
+          "git worktree *": "allow",
+          "git checkout *": "allow",
+          "git branch *": "allow",
+          "mkdir *": "allow"
+        },
+        "task": {
+          "*": "deny",
+          "todo-planner": "allow"
+        }
+      }
     }
   }
 }

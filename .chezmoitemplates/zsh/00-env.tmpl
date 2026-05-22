@@ -7,3 +7,14 @@ export DOTFILES_DISABLE_BITWARDEN_SSH_AGENT=1
 {{ if .wmForceDisplayServer -}}
 export WM_FORCE_DISPLAY_SERVER={{ .wmForceDisplayServer | quote }}
 {{ end -}}
+{{ if .isMac -}}
+# Homebrew must be initialized before compinit so zsh sees brew completions.
+if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+elif [ -x /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+    fpath=(/usr/local/share/zsh/site-functions $fpath)
+fi
+typeset -U path fpath
+{{ end -}}

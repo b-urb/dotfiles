@@ -35,11 +35,40 @@ if [ -z "$BW_SESSION" ]; then
   exit 1
 fi
 
+if ! BW_STATUS_JSON=$(bw status --session "$BW_SESSION" 2>&1); then
+  echo -e "${RED}ERROR: Failed to check Bitwarden session status${NC}" >&2
+  echo "$BW_STATUS_JSON" >&2
+  exit 1
+fi
+if ! BW_STATUS=$(printf '%s' "$BW_STATUS_JSON" | jq -r '.status' 2>&1); then
+  echo -e "${RED}ERROR: Unexpected Bitwarden status response${NC}" >&2
+  echo "$BW_STATUS" >&2
+  echo "$BW_STATUS_JSON" >&2
+  exit 1
+fi
+if [ "$BW_STATUS" != "unlocked" ]; then
+  echo -e "${RED}ERROR: Bitwarden vault is $BW_STATUS${NC}" >&2
+  echo -e "${YELLOW}Run: export BW_SESSION=\$(bw unlock --raw)${NC}" >&2
+  exit 1
+fi
+
 # Get folder ID by name
 get_folder_id() {
   local folder_name="$1"
-  local folder_id=$(bw list folders --session "$BW_SESSION" 2>/dev/null |
-    jq -r ".[] | select(.name==\"$folder_name\") | .id")
+  local folders_json folder_id
+
+  if ! folders_json=$(bw list folders --session "$BW_SESSION" 2>&1); then
+    echo -e "${RED}ERROR: Failed to list Bitwarden folders${NC}" >&2
+    echo "$folders_json" >&2
+    exit 1
+  fi
+
+  if ! folder_id=$(printf '%s' "$folders_json" | jq -r --arg folder_name "$folder_name" '.[] | select(.name==$folder_name) | .id' 2>&1); then
+    echo -e "${RED}ERROR: Unexpected response while listing Bitwarden folders${NC}" >&2
+    echo "$folder_id" >&2
+    echo "$folders_json" >&2
+    exit 1
+  fi
 
   if [ -z "$folder_id" ] || [ "$folder_id" = "null" ]; then
     echo -e "${RED}ERROR: Folder '$folder_name' not found in Bitwarden${NC}" >&2
@@ -66,14 +95,42 @@ if [ ! -d "$KUBE_CLUSTERS_DIR" ]; then
 elif has_changed "kubeconfigs" "$CURRENT_KUBE_CHECKSUM"; then
   echo -e "${YELLOW}Kubeconfigs changed, syncing to Bitwarden...${NC}"
 
-  KUBE_ITEM_ID=$(bw list items --folderid "$KUBECONFIG_FOLDER_ID" --session "$BW_SESSION" 2>/dev/null |
-    jq -r '.[] | select(.name=="kubeconfigs") | .id')
+  if ! KUBE_ITEMS_JSON=$(bw list items --folderid "$KUBECONFIG_FOLDER_ID" --session "$BW_SESSION" 2>&1); then
+    echo -e "${RED}ERROR: Failed to list kubeconfig items from Bitwarden${NC}" >&2
+    echo "$KUBE_ITEMS_JSON" >&2
+    exit 1
+  fi
+
+  if ! KUBE_ITEM_ID=$(printf '%s' "$KUBE_ITEMS_JSON" | jq -r '.[] | select(.name=="kubeconfigs") | .id' 2>&1); then
+    echo -e "${RED}ERROR: Unexpected response while listing kubeconfig items${NC}" >&2
+    echo "$KUBE_ITEM_ID" >&2
+    echo "$KUBE_ITEMS_JSON" >&2
+    exit 1
+  fi
 
   if [ -z "$KUBE_ITEM_ID" ] || [ "$KUBE_ITEM_ID" = "null" ]; then
     echo -e "${YELLOW}Creating kubeconfigs item in Bitwarden...${NC}"
-    KUBE_ITEM_ID=$(bw get template item |
-      jq ".type = 2 | .secureNote.type = 0 | .name = \"kubeconfigs\" | .notes = \"Kubernetes cluster configurations\" | .folderId = \"$KUBECONFIG_FOLDER_ID\"" |
-      bw encode | bw create item | jq -r '.id')
+    if ! TEMPLATE_JSON=$(bw get template item --session "$BW_SESSION" 2>&1); then
+      echo -e "${RED}ERROR: Failed to get Bitwarden item template${NC}" >&2
+      echo "$TEMPLATE_JSON" >&2
+      exit 1
+    fi
+    if ! ITEM_PAYLOAD=$(printf '%s' "$TEMPLATE_JSON" | jq ".type = 2 | .secureNote.type = 0 | .name = \"kubeconfigs\" | .notes = \"Kubernetes cluster configurations\" | .folderId = \"$KUBECONFIG_FOLDER_ID\"" 2>&1); then
+      echo -e "${RED}ERROR: Failed to build kubeconfigs item payload${NC}" >&2
+      echo "$ITEM_PAYLOAD" >&2
+      exit 1
+    fi
+    if ! BW_OUTPUT=$(printf '%s' "$ITEM_PAYLOAD" | bw encode | bw create item --session "$BW_SESSION" 2>&1); then
+      echo -e "${RED}ERROR: Failed to create kubeconfigs item in Bitwarden${NC}" >&2
+      echo "$BW_OUTPUT" >&2
+      exit 1
+    fi
+    KUBE_ITEM_ID=$(printf '%s' "$BW_OUTPUT" | jq -r '.id')
+    if [ -z "$KUBE_ITEM_ID" ] || [ "$KUBE_ITEM_ID" = "null" ]; then
+      echo -e "${RED}ERROR: Created kubeconfigs item but could not read item id${NC}" >&2
+      echo "$BW_OUTPUT" >&2
+      exit 1
+    fi
   fi
 
   for config_file in "$KUBE_CLUSTERS_DIR"/*; do
@@ -83,17 +140,38 @@ elif has_changed "kubeconfigs" "$CURRENT_KUBE_CHECKSUM"; then
     [[ "$(basename "$config_file")" == ".DS_Store" ]] && continue
 
     filename=$(basename "$config_file")
-    ATTACHMENT_ID=$(bw get item "$KUBE_ITEM_ID" --session "$BW_SESSION" | \
-      jq -r ".attachments[]? | select(.fileName == \"$filename\") | .id")
+    if ! KUBE_ITEM_JSON=$(bw get item "$KUBE_ITEM_ID" --session "$BW_SESSION" 2>&1); then
+      echo -e "${RED}ERROR: Failed to fetch kubeconfigs item from Bitwarden${NC}" >&2
+      echo "$KUBE_ITEM_JSON" >&2
+      exit 1
+    fi
+    if ! ATTACHMENT_ID=$(printf '%s' "$KUBE_ITEM_JSON" | jq -r --arg filename "$filename" '.attachments[]? | select(.fileName == $filename) | .id' 2>&1); then
+      echo -e "${RED}ERROR: Unexpected kubeconfigs item response from Bitwarden${NC}" >&2
+      echo "$ATTACHMENT_ID" >&2
+      echo "$KUBE_ITEM_JSON" >&2
+      exit 1
+    fi
 
     if [ -n "$ATTACHMENT_ID" ] && [ "$ATTACHMENT_ID" != "null" ]; then
       echo -e "${YELLOW}  Updating: $filename${NC}"
-      bw delete attachment "$ATTACHMENT_ID" --itemid "$KUBE_ITEM_ID" --session "$BW_SESSION" >/dev/null 2>&1
+      if ! BW_OUTPUT=$(bw delete attachment "$ATTACHMENT_ID" --itemid "$KUBE_ITEM_ID" --session "$BW_SESSION" 2>&1); then
+        if [[ "$BW_OUTPUT" == *"Attachment doesn't exist"* ]]; then
+          echo -e "${YELLOW}  Existing attachment entry is stale; uploading fresh: $filename${NC}"
+        else
+          echo -e "${RED}ERROR: Failed to delete existing kubeconfig attachment '$filename'${NC}" >&2
+          echo "$BW_OUTPUT" >&2
+          exit 1
+        fi
+      fi
     else
       echo -e "${GREEN}  Adding: $filename${NC}"
     fi
 
-    bw create attachment --file "$config_file" --itemid "$KUBE_ITEM_ID" --session "$BW_SESSION" >/dev/null 2>&1
+    if ! BW_OUTPUT=$(bw create attachment --file "$config_file" --itemid "$KUBE_ITEM_ID" --session "$BW_SESSION" 2>&1); then
+      echo -e "${RED}ERROR: Failed to upload kubeconfig attachment '$filename'${NC}" >&2
+      echo "$BW_OUTPUT" >&2
+      exit 1
+    fi
   done
 
   update_checksum "kubeconfigs" "$CURRENT_KUBE_CHECKSUM"
@@ -202,7 +280,11 @@ fi
 
 # Sync with Bitwarden server
 echo -e "${GREEN}Syncing Bitwarden...${NC}"
-bw sync --session "$BW_SESSION" >/dev/null 2>&1
+if ! BW_OUTPUT=$(bw sync --session "$BW_SESSION" 2>&1); then
+  echo -e "${RED}ERROR: Failed to sync Bitwarden${NC}" >&2
+  echo "$BW_OUTPUT" >&2
+  exit 1
+fi
 
 echo -e "${GREEN}=== Pre-commit sync complete ===${NC}"
 exit 0
