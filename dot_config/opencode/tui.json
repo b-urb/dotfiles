@@ -1,5 +1,8 @@
 {
   "$schema": "https://opencode.ai/tui.json",
   // "theme": "one-dark",
-  "theme": "github_dark_colorblind"
+  "theme": "github_dark_colorblind",
+  "plugin": [
+    "@slkiser/opencode-quota"
+  ]
 }

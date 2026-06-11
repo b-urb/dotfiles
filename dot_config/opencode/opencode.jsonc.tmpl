@@ -5,21 +5,18 @@
   // "theme": "github_dark_colorblind",
 //  "model": "anthropic/claude-sonnet-4-5",
   "mcp": {
-    "playwright": {
-      "type": "local",
-      "command": ["npx", "-y", "@playwright/mcp", "--headless"]
-    },
+//    "playwright": {
+//      "type": "local",
+//      "command": ["npx", "-y", "@playwright/mcp", "--headless"]
+//    },
     "angular-cli": {
       "type": "local",
       "command": ["npx", "-y", "@angular/cli", "mcp"],
       "enabled": true
     },
-   "todoist": {
-      "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-todoist"],
-      "environment": {
-        "TODOIST_API_TOKEN": "{env:TODOIST_API_TOKEN}"
-      },
+    "todoist": {
+      "type": "remote",
+      "url": "https://ai.todoist.net/mcp",
       "enabled": true
     },
 //    "next-devtools": {
@@ -61,11 +58,9 @@
   "instructions": ["~/.config/opencode/instructions.md"],
   "autoupdate": true,
   "plugin": [
-    "notify"
+    "notify",
+    "@slkiser/opencode-quota"
   ],
-  "tools": {
-    "todoist_*": false
-  },
   "agent": {
     "explore": {
       "disable": true
@@ -75,7 +70,7 @@
     },
     "todoist-orchestrator": {
       "mode": "primary",
-      "model": "anthropic/claude-haiku-4-20250514",
+      "model": "openai/gpt-5.4-mini",
       "description": "Fetches open Todoist tasks, creates git worktrees, delegates to todo-planner per task, collects results, closes completed tasks",
       "prompt": "{file:~/.config/opencode/prompts/orchestrator.txt}",
       "tools": {

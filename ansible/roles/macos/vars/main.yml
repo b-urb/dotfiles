@@ -158,6 +158,7 @@ brew_formulae:
   - python@3.11
   - python@3.9
   - qmk/qmk/qmk
+  - qpdf
   - qt@5
   - rainfrog
   - rm-improved
@@ -264,6 +265,7 @@ mas_apps:
   - { id: 409183694, name: "Keynote" }
   - { id: 1274495053, name: "Microsoft To Do" }
   - { id: 409203825, name: "Numbers" }
+  - { id: 361304891, name: "Numbers" }
   - { id: 823766827, name: "OneDrive 2" }
   - { id: 409201541, name: "Pages" }
   - { id: 1310584536, name: "Planner 5D" }

@@ -17,7 +17,6 @@ vscode_extensions = [
     "fill-labs.dependi",
     "formulahendry.auto-close-tag",
     "formulahendry.auto-rename-tag",
-    "github.copilot-chat",
     "github.github-vscode-theme",
     "golang.go",
     "grafana.vscode-jsonnet",

@@ -2,7 +2,8 @@
 description: Receives a task description and worktree path. Explores the codebase and produces a concrete step-by-step implementation plan. Delegates to todo-worker.
 mode: subagent
 hidden: true
-model: anthropic/claude-sonnet-4-20250514
+model: openai/gpt-5.5
+variant: high
 permission:
   edit: deny
   question: allow

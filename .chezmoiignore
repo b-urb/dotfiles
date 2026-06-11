@@ -37,6 +37,7 @@ wezterm/wezterm-session-manager/
 # macOS-only configs
 # ─────────────────────────────────────────────────────────────────────────────
 {{ if ne .chezmoi.os "darwin" }}
+.cargo/bin/rustup
 .config/sketchybar/
 .config/yabai/
 .config/skhd/
