@@ -1,6 +1,7 @@
 ---
 brew_taps:
   - anomalyco/tap
+  - asmvik/formulae
   - azure/kubelogin
   - breuerfelix/tap
   - cjsaylor/tap
@@ -14,7 +15,6 @@ brew_taps:
   - homebrew/services
   - kardolus/chatgpt-cli
   - keith/formulae
-  - koekeishiya/formulae
   - lencx/chatgpt
   - nikitabobko/tap
   - notwadegrimridge/brew
@@ -33,16 +33,17 @@ brew_formulae:
   - ansible
   - ant
   - aria2
+  - avrdude
   - awscli
   - azure-cli
-  - azure/kubelogin/kubelogin
   - bandwhich
   - bitwarden-cli
+  - bootloadhid
   - bpytop
   - cabextract
   - carapace
   - chezmoi
-  - cjsaylor/tap/jrnl
+  - clang-format
   - clusterctl
   - cmake
   - code-server
@@ -51,7 +52,8 @@ brew_formulae:
   - ctop
   - cypher-shell
   - delve
-  - derailed/popeye/popeye
+  - dfu-programmer
+  - dfu-util
   - dive
   - docker-compose
   - dog
@@ -61,15 +63,13 @@ brew_formulae:
   - exiftool
   - eza
   - fd
-  - felixkratz/formulae/borders
   - felixkratz/formulae/sketchybar
-  - felixkratz/formulae/svim
   - ffmpeg@4
   - ffmpegthumbnailer
-  - fluxcd/tap/flux
   - gemini-cli
   - gh
   - ghostscript
+  - git
   - git-filter-repo
   - git-lfs
   - gitui
@@ -85,10 +85,6 @@ brew_formulae:
   - gradle
   - grep
   - groonga
-  - hashicorp/tap/packer
-  - hashicorp/tap/terraform
-  - hashicorp/tap/terraform-ls
-  - hashicorp/tap/vault
   - hcloud
   - helix
   - helmfile
@@ -104,11 +100,7 @@ brew_formulae:
   - k9s
   - kafka
   - kafkactl
-  - kardolus/chatgpt-cli/chatgpt-cli
-  - keith/formulae/reminders-cli
   - kind
-  - koekeishiya/formulae/skhd
-  - koekeishiya/formulae/yabai
   - kotlin
   - ktlint
   - kube-bench
@@ -121,6 +113,7 @@ brew_formulae:
   - llvm
   - lsd
   - luarocks
+  - make
   - marksman
   - mas
   - maven
@@ -144,9 +137,9 @@ brew_formulae:
   - openshift-cli
   - openstackclient
   - opentofu
-  - oven-sh/bun/bun
   - pass
   - pgloader
+  - pillow
   - pint
   - pipx
   - pnpm
@@ -157,25 +150,22 @@ brew_formulae:
   - putty
   - python@3.11
   - python@3.9
-  - qmk/qmk/qmk
   - qpdf
   - qt@5
   - rainfrog
   - rm-improved
   - rustup
   - s3cmd
-  - sachaos/todoist/todoist
   - sevenzip
-  - shopify/shopify/shopify-cli
   - snapcast
   - sops
   - sshuttle
   - starship
-  - surrealdb/tap/surreal
   - switchaudio-osx
   - sysdig
   - tailscale
   - talisman
+  - teensy_loader_cli
   - telnet
   - thefuck
   - unar
@@ -186,7 +176,6 @@ brew_formulae:
   - yaml-language-server
   - yarn
   - yazi
-  - ynqa/tap/jnv
   - yq
   - zellij
   - zoxide
@@ -198,7 +187,7 @@ brew_casks:
   - bluetility
   - brave-browser
   - chatgpt
-  - claude-code
+  - claude-code@latest
   - cmake
   - cmake-app
   - codex
