@@ -252,6 +252,7 @@ mas_apps:
   - { id: 1193539993, name: "Brother iPrint&Scan" }
   - { id: 682658836, name: "GarageBand" }
   - { id: 409183694, name: "Keynote" }
+  - { id: 361285480, name: "Keynote" }
   - { id: 1274495053, name: "Microsoft To Do" }
   - { id: 409203825, name: "Numbers" }
   - { id: 361304891, name: "Numbers" }
