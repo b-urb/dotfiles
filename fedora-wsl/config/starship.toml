@@ -1,0 +1,64 @@
+add_newline = false
+format = "$username$hostname $directory $git_branch$git_status $c$golang$java$nodejs$rust$character"
+right_format = "$cmd_duration$kubernetes"
+
+[username]
+show_always = true
+style_user = "bold #bc8cff"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "bold #58a6ff"
+format = "[@$hostname]($style)"
+
+[directory]
+style = "bold #c9d1d9"
+truncation_length = 4
+truncate_to_repo = true
+format = "[$path]($style)"
+
+[git_branch]
+symbol = "git:"
+style = "bold #58a6ff"
+format = "[$symbol$branch]($style)"
+
+[git_status]
+style = "bold #ec8e2c"
+format = "[($all_status$ahead_behind)]($style)"
+
+[character]
+success_symbol = "[>](bold #58a6ff)"
+error_symbol = "[>](bold #ec8e2c)"
+vimcmd_symbol = "[<](bold #bc8cff)"
+
+[cmd_duration]
+min_time = 500
+style = "bold #d29922"
+format = "[$duration]($style) "
+
+[kubernetes]
+disabled = false
+symbol = "k8s:"
+style = "#58a6ff"
+format = "[$symbol$context($namespace)]($style)"
+
+[c]
+symbol = "c:"
+format = "[$symbol$version ]($style)"
+
+[golang]
+symbol = "go:"
+format = "[$symbol$version ]($style)"
+
+[java]
+symbol = "java:"
+format = "[$symbol$version ]($style)"
+
+[nodejs]
+symbol = "node:"
+format = "[$symbol$version ]($style)"
+
+[rust]
+symbol = "rust:"
+format = "[$symbol$version ]($style)"

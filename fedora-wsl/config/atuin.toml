@@ -1,0 +1,20 @@
+# Company-safe local history. Remote synchronization stays disabled.
+auto_sync = false
+update_check = false
+filter_mode = "global"
+search_mode = "fuzzy"
+style = "compact"
+inline_height = 30
+show_preview = true
+secrets_filter = true
+enter_accept = true
+
+history_filter = [
+  "^export .*(_KEY|_PASSWORD|_SECRET|_TOKEN)=",
+  ".*--password[ =].*",
+  ".*--token[ =].*",
+]
+
+[daemon]
+enabled = false
+autostart = false
