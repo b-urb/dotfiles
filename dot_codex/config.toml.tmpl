@@ -14,6 +14,9 @@ web_search_request = true
 trust_level = "trusted"
 
 
+[shell_environment_policy]
+set = { HOMELAB_AGENT = "codex", KUBECONFIG = "{{ .chezmoi.homeDir }}/.kube/homelab-view.yaml" }
+
 [mcp_servers.playwright]
 command = "npx"
 args = ["-y", "@playwright/mcp", "--headless"]
@@ -45,3 +48,4 @@ args = ["mcp-server-kubernetes"]
 
 [mcp_servers.kubernetes-readonly.env]
 ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS = "true"
+KUBECONFIG = "{{ .chezmoi.homeDir }}/.kube/homelab-view.yaml"
