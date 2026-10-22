@@ -176,7 +176,19 @@ def list_code_extensions() -> Optional[list[str]]:
 def list_cargo_crates() -> Optional[list[str]]:
     """Return names of top-level cargo-installed crates."""
 
-    proc = run_cmd(["cargo", "install", "--list"])
+    cargo = shutil.which("cargo")
+    if not cargo:
+        rustup = shutil.which("rustup")
+        if rustup:
+            resolved = run_cmd([rustup, "which", "cargo"])
+            if resolved and resolved.returncode == 0:
+                candidate = resolved.stdout.strip()
+                if candidate and Path(candidate).is_file():
+                    cargo = candidate
+    if not cargo:
+        return None
+
+    proc = run_cmd([cargo, "install", "--list"])
     if not proc or proc.returncode != 0:
         return None
     crates: list[str] = []

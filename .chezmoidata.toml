@@ -6,6 +6,7 @@
 vscode_extensions = [
     "aaron-bond.better-comments",
     "alefragnani.bookmarks",
+    "anthropic.claude-code",
     "ardenivanov.svelte-intellisense",
     "britesnow.vscode-toggle-quotes",
     "christian-kohler.path-intellisense",
@@ -48,6 +49,7 @@ vscode_extensions = [
     "naumovs.color-highlight",
     "oderwat.indent-rainbow",
     "openai.chatgpt",
+    "openai.codex-audio",
     "opentofu.vscode-opentofu",
     "orta.vscode-jest",
     "panicbit.cargo",
@@ -64,8 +66,6 @@ vscode_extensions = [
     "shardulm94.trailing-spaces",
     "shd101wyy.markdown-preview-enhanced",
     "sleistner.vscode-fileutils",
-    "sst-dev.opencode",
-    "sst-dev.opencode-v2",
     "streetsidesoftware.code-spell-checker",
     "svelte.svelte-vscode",
     "swellaby.vscode-rust-test-adapter",
@@ -76,8 +76,10 @@ vscode_extensions = [
     "vadimcn.vscode-lldb",
     "vivaxy.vscode-conventional-commits",
     "vscodevim.vim",
+    "windmilleng.vscode-go-autotest",
     "zerotaskx.rust-extension-pack",
     "zhuangtongfa.material-theme",
+    "zoocodeorganization.zoo-code",
 ]
 
 # ─── Feature flags ──────────────────────────────────────────────────────────

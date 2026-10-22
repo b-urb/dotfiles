@@ -1,3 +1,9 @@
+local ok, generated_icons = pcall(require, "helpers.icon_map")
+if ok and type(generated_icons) == "table" then
+  generated_icons.default = generated_icons.Default or ":default:"
+  return generated_icons
+end
+
 return {
   ["Typora"] = ":text:",
   ["Orion"] = ":orion:",

@@ -33,11 +33,10 @@ Host my-dev
     User bjorn
     IdentitiesOnly no
 
-# Homelab — use only the proxmox agent key to avoid MaxAuthTries exhaustion
+# Homelab
 Host 192.168.178.*
-    User root
     IdentitiesOnly yes
     IdentityFile ~/.ssh/homelab.pub
-    StrictHostKeyChecking no
+    StrictHostKeyChecking accept-new
 
 # Catch-all

@@ -1,7 +1,11 @@
 require("items.apple")
 require("items.menus")
+{{- if eq (.skhdProfile | default "aerospace") "yabai" }}
+require("items.spaces")
+{{- else }}
 require("items.aerospace_mode")
 require("items.spaces_aerospace")
+{{- end }}
 require("items.front_app")
 require("items.calendar")
 require("items.widgets")

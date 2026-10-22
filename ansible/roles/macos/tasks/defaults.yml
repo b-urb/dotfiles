@@ -1,0 +1,38 @@
+---
+- name: Read macOS menu bar autohide setting
+  ansible.builtin.command:
+    cmd: /usr/bin/defaults read NSGlobalDomain _HIHideMenuBar
+  register: macos_menu_bar_autohide
+  changed_when: false
+  failed_when: false
+
+- name: Hide macOS menu bar automatically
+  ansible.builtin.command:
+    cmd: /usr/bin/defaults write NSGlobalDomain _HIHideMenuBar -bool true
+  when: macos_menu_bar_autohide.stdout | default('') != '1'
+  notify: Restart macOS SystemUIServer
+
+- name: Read macOS symbolic hotkey states
+  ansible.builtin.command:
+    cmd: >
+      /usr/bin/plutil -extract AppleSymbolicHotKeys.{{ item.id }}.enabled raw
+      {{ ansible_env.HOME }}/Library/Preferences/com.apple.symbolichotkeys.plist
+  loop: "{{ macos_disabled_symbolic_hotkeys }}"
+  register: macos_symbolic_hotkey_states
+  changed_when: false
+  failed_when: false
+
+- name: Disable macOS shortcuts reserved for terminal bindings
+  ansible.builtin.command:
+    cmd: >-
+      /bin/sh -c '
+      /usr/libexec/PlistBuddy -c "Add :AppleSymbolicHotKeys:{{ item.item.id }} dict"
+      "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" 2>/dev/null || true;
+      /usr/libexec/PlistBuddy -c "Delete :AppleSymbolicHotKeys:{{ item.item.id }}:enabled"
+      "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" 2>/dev/null || true;
+      /usr/libexec/PlistBuddy -c "Add :AppleSymbolicHotKeys:{{ item.item.id }}:enabled bool false"
+      "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist"
+      '
+  loop: "{{ macos_symbolic_hotkey_states.results }}"
+  when: item.stdout | default('') != 'false' and item.stdout | default('') != '0'
+  notify: Restart macOS preferences cache

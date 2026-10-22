@@ -1,4 +1,2 @@
-{{ if .isLinux -}}
 # Login shell PATH setup — sourced before .zshrc
-export PATH="$HOME/.cargo/bin:$PATH"
-{{- end }}
+{{ template "zsh/05-paths.tmpl" . }}
