@@ -103,6 +103,7 @@ wezterm/wezterm-session-manager/
 
 # APM sources and bookkeeping (see `just agents-sync`)
 apm/
+agents/
 .claude/apm-hooks.json
 .codex/apm-hooks.json
 Library/Caches/apm/
