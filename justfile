@@ -59,6 +59,7 @@ agents-sync:
     HOME="$root" CLAUDE_CONFIG_DIR="$root/dot_claude" apm install -g --target claude,codex
     rm -rf dot_claude/skills/apm-lsp && mv .claude/skills/apm-lsp dot_claude/skills/
     mv dot_claude/skills/apm-lsp/.claude-plugin dot_claude/skills/apm-lsp/dot_claude-plugin
+    find dot_claude dot_agents -path '*/skills/*' -type f -name 'run_*' | while read -r f; do mv -f "$f" "$(dirname "$f")/literal_$(basename "$f")"; done
     for d in claude codex; do
         perl -pi -e "s#\Q$root\E/(?:\.|dot_)$d/#$HOME/.$d/#g" dot_$d/*.json
     done
