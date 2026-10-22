@@ -1,0 +1,29 @@
+# Executable paths shared by login and interactive shells.
+{{ if .isMac -}}
+{{- if eq .chezmoi.arch "arm64" }}
+export JAVA_HOME="/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+{{- else }}
+export JAVA_HOME="/usr/local/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+{{- end }}
+{{- end }}
+typeset -U path
+path=(
+{{ if .isMac -}}
+    "$JAVA_HOME/bin"
+{{- if eq .chezmoi.arch "arm64" }}
+    /opt/homebrew/bin
+    /opt/homebrew/sbin
+    /opt/homebrew/opt/rustup/bin
+{{- else }}
+    /usr/local/bin
+    /usr/local/sbin
+    /usr/local/opt/rustup/bin
+{{- end }}
+{{- end }}
+    "$HOME/.local/bin"
+    "$HOME/.cargo/bin"
+    "$HOME/.pulumi/bin"
+    "$HOME/Tools"
+    $path
+)
+export PATH

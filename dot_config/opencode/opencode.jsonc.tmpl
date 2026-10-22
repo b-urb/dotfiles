@@ -14,11 +14,6 @@
       "command": ["npx", "-y", "@angular/cli", "mcp"],
       "enabled": true
     },
-    "todoist": {
-      "type": "remote",
-      "url": "https://ai.todoist.net/mcp",
-      "enabled": true
-    },
 //    "next-devtools": {
 //      "type": "local",
 //      "command": ["npx", "-y", "next-devtools-mcp@latest"]
@@ -67,34 +62,6 @@
     },
     "general": {
       "disable": true
-    },
-    "todoist-orchestrator": {
-      "mode": "primary",
-      "model": "openai/gpt-5.4-mini",
-      "description": "Fetches open Todoist tasks, creates git worktrees, delegates to todo-planner per task, collects results, closes completed tasks",
-      "prompt": "{file:~/.config/opencode/prompts/orchestrator.txt}",
-      "tools": {
-        "todoist_*": true,
-        "bash": true,
-        "question": true,
-        "write": false,
-        "edit": false
-      },
-      "permission": {
-        "edit": "deny",
-        "question": "allow",
-        "bash": {
-          "*": "ask",
-          "git worktree *": "allow",
-          "git checkout *": "allow",
-          "git branch *": "allow",
-          "mkdir *": "allow"
-        },
-        "task": {
-          "*": "deny",
-          "todo-planner": "allow"
-        }
-      }
     }
   }
 }

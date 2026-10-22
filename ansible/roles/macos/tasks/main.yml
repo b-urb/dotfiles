@@ -1,4 +1,15 @@
 ---
+- name: apply macOS defaults
+  ansible.builtin.include_tasks: defaults.yml
+
+- name: Trust Homebrew formulae
+  ansible.builtin.command:
+    cmd: "brew trust --tap {{ item }}"
+  loop: "{{ brew_taps }}"
+  register: trust
+  changed_when: "'Trusted' in trust.stdout"
+  failed_when: false
+
 - name: install homebrew taps
   community.general.homebrew_tap:
     name: "{{ item }}"
@@ -20,9 +31,54 @@
   # greedy=true updates to the latest version if already present
   ignore_errors: true
 
+- name: ensure user font directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/Library/Fonts"
+    state: directory
+    mode: "0755"
+
+- name: install SketchyBar app icon font
+  ansible.builtin.get_url:
+    url: https://github.com/kvndrsslr/sketchybar-app-font/releases/download/v2.0.62/sketchybar-app-font.ttf
+    dest: "{{ ansible_env.HOME }}/Library/Fonts/sketchybar-app-font.ttf"
+    mode: "0644"
+
+- name: install SketchyBar app icon Lua map
+  ansible.builtin.get_url:
+    url: https://github.com/kvndrsslr/sketchybar-app-font/releases/download/v2.0.62/icon_map.lua
+    dest: "{{ ansible_env.HOME }}/.config/sketchybar/helpers/icon_map.lua"
+    mode: "0644"
+
+- name: install SketchyBar app icon shell map
+  ansible.builtin.get_url:
+    url: https://github.com/kvndrsslr/sketchybar-app-font/releases/download/v2.0.62/icon_map.sh
+    dest: "{{ ansible_env.HOME }}/.config/sketchybar/helpers/icon_map.sh"
+    mode: "0755"
+
+- name: clone SbarLua for SketchyBar Lua config
+  ansible.builtin.git:
+    repo: https://github.com/FelixKratz/SbarLua.git
+    dest: "{{ ansible_env.HOME }}/.cache/SbarLua"
+    version: main
+    update: true
+  register: sbarlua_source
+
+- name: check installed SbarLua module
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/share/sketchybar_lua/sketchybar.so"
+  register: sbarlua_module
+
+- name: install SbarLua module for SketchyBar
+  ansible.builtin.command:
+    cmd: /usr/bin/make install
+    chdir: "{{ ansible_env.HOME }}/.cache/SbarLua"
+  when: sbarlua_source.changed or not sbarlua_module.stat.exists
+
 - name: install Mac App Store apps
   community.general.mas:
     id: "{{ item.id }}"
     state: present
   loop: "{{ mas_apps | default([]) }}"
-  when: (mas_apps | default([])) | length > 0
+  when:
+    - install_mas_apps | default(false) | bool
+    - (mas_apps | default([])) | length > 0

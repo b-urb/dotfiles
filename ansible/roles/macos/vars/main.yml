@@ -1,4 +1,39 @@
 ---
+macos_disabled_symbolic_hotkeys:
+  # Native macOS shortcuts that steal chords commonly used by WezTerm/skhd,
+  # AeroSpace, and yabai-style window management.
+  - id: 7 # Spotlight search (Cmd-Space)
+  - id: 32 # Mission Control
+  - id: 33 # Application windows
+  - id: 34 # Show Desktop
+  - id: 35 # Dashboard / legacy Mission Control action
+  - id: 36 # Move left a Space
+  - id: 37 # Move right a Space
+  - id: 60
+    # Previous input source (Ctrl-Space). Conflicts with WezTerm leader.
+    parameters: [32, 49, 262144]
+  - id: 61
+    # Next input source (Ctrl-Option-Space).
+    parameters: [32, 49, 786432]
+  - id: 64 # Finder Spotlight window
+  - id: 79 # Move focus to menu bar
+  - id: 80 # Move focus to Dock
+  - id: 81 # Move focus to active/all windows
+  - id: 82 # Move focus to window toolbar
+  # Switch to Desktop 1-12. These collide with external workspace managers.
+  - id: 118
+  - id: 119
+  - id: 120
+  - id: 121
+  - id: 122
+  - id: 123
+  - id: 124
+  - id: 125
+  - id: 126
+  - id: 127
+  - id: 128
+  - id: 129
+
 brew_taps:
   - anomalyco/tap
   - asmvik/formulae
@@ -11,11 +46,8 @@ brew_taps:
   - fluxcd/tap
   - graalvm/tap
   - hashicorp/tap
-  - homebrew/bundle
-  - homebrew/services
   - kardolus/chatgpt-cli
   - keith/formulae
-  - lencx/chatgpt
   - nikitabobko/tap
   - notwadegrimridge/brew
   - osx-cross/arm
@@ -25,14 +57,19 @@ brew_taps:
   - sachaos/todoist
   - shopify/shopify
   - surrealdb/tap
+  - xcodesorg/made
   - ynqa/tap
 
 brew_formulae:
   - act
+  - admesh
+  - age
   - anomalyco/tap/opencode
   - ansible
   - ant
   - aria2
+  - asmvik/formulae/skhd
+  - asmvik/formulae/yabai
   - avrdude
   - awscli
   - azure-cli
@@ -40,10 +77,12 @@ brew_formulae:
   - bitwarden-cli
   - bootloadhid
   - bpytop
+  - bun
   - cabextract
   - carapace
   - chezmoi
   - clang-format
+  - cloudflared
   - clusterctl
   - cmake
   - code-server
@@ -51,12 +90,13 @@ brew_formulae:
   - coreutils
   - ctop
   - cypher-shell
+  - ddrescue
   - delve
+  - deno
   - dfu-programmer
   - dfu-util
   - dive
   - docker-compose
-  - dog
   - dos2unix
   - dua-cli
   - duf
@@ -66,6 +106,7 @@ brew_formulae:
   - felixkratz/formulae/sketchybar
   - ffmpeg@4
   - ffmpegthumbnailer
+  - fluxcd/tap/flux
   - gemini-cli
   - gh
   - ghostscript
@@ -85,9 +126,11 @@ brew_formulae:
   - gradle
   - grep
   - groonga
+  - hashicorp/tap/packer
   - hcloud
   - helix
   - helmfile
+  - herdr
   - htop
   - hugo
   - ifstat
@@ -105,11 +148,14 @@ brew_formulae:
   - ktlint
   - kube-bench
   - kubebuilder
+  - kustomize
   - lastpass-cli
   - lazygit
+  - libpq
   - libraw
   - librealsense
   - librespot
+  - lima
   - llvm
   - lsd
   - luarocks
@@ -120,6 +166,7 @@ brew_formulae:
   - mcp-proxy
   - meson
   - minikube
+  - minio-mc
   - mkcert
   - molten-vk
   - mosquitto
@@ -130,6 +177,7 @@ brew_formulae:
   - nowplaying-cli
   - nushell
   - ollama
+  - openbao
   - openconnect
   - opencv
   - openjdk@11
@@ -143,6 +191,7 @@ brew_formulae:
   - pint
   - pipx
   - pnpm
+  - podman-compose
   - poppler
   - powershell
   - prettier
@@ -151,12 +200,15 @@ brew_formulae:
   - python@3.11
   - python@3.9
   - qpdf
-  - qt@5
   - rainfrog
+  - rclone
   - rm-improved
+  - rolesanywhere-credential-helper
+  - rsync
   - rustup
   - s3cmd
   - sevenzip
+  - shellcheck
   - snapcast
   - sops
   - sshuttle
@@ -169,6 +221,7 @@ brew_formulae:
   - telnet
   - thefuck
   - unar
+  - uv
   - vim
   - watson
   - wget
@@ -182,21 +235,18 @@ brew_formulae:
 
 brew_casks:
   - aerospace
-  - anaconda
   - bambu-studio
   - bluetility
   - brave-browser
   - chatgpt
   - claude-code@latest
-  - cmake
   - cmake-app
   - codex
   - discord
-  - displaylink
+  - element
   - elgato-stream-deck
   - figma
   - firefox
-  - firefox-developer-edition
   - firefox@developer-edition
   - font-hack-nerd-font
   - font-jetbrains-mono
@@ -204,22 +254,19 @@ brew_casks:
   - font-sf-mono
   - font-sf-pro
   - font-symbols-only-nerd-font
+  - freecad
   - ghostty
-  - graalvm-community-jdk21
   - homerow
   - jetbrains-toolbox
   - keystore-explorer
   - maccy
   - meetingbar
-  - microsoft-auto-update
-  - microsoft-teams
   - ngrok
   - obsidian
+  - openscad@snapshot
   - pingplace
   - postman
-  - powershell
   - proton-mail-bridge
-  - protonmail-bridge
   - raycast
   - rustdesk
   - sf-symbols
@@ -228,39 +275,19 @@ brew_casks:
   - slack
   - spotify
   - spurwechsel
-  - tailscale-app
-  - teamviewer
-  - todoist
   - todoist-app
   - tunnelblick
   - visual-studio-code
   - vlc
   - wezterm@nightly
   - whatsapp
-  - windows-app
+  - xcodes-app
   - yubico-authenticator
-  - zoom
-  - zulu
-  - zulu17
-  - zulu21
-  - zulu@17
-  - zulu@21
 
 mas_apps:
   - { id: 948660805, name: "AusweisApp" }
   - { id: 1352778147, name: "Bitwarden" }
-  - { id: 1193539993, name: "Brother iPrint&Scan" }
-  - { id: 682658836, name: "GarageBand" }
-  - { id: 409183694, name: "Keynote" }
-  - { id: 361285480, name: "Keynote" }
-  - { id: 1274495053, name: "Microsoft To Do" }
-  - { id: 409203825, name: "Numbers" }
   - { id: 361304891, name: "Numbers" }
-  - { id: 823766827, name: "OneDrive 2" }
-  - { id: 409201541, name: "Pages" }
-  - { id: 1310584536, name: "Planner 5D" }
-  - { id: 669289700, name: "Sweet Home 3D" }
-  - { id: 425424353, name: "The Unarchiver" }
-  - { id: 1295203466, name: "Windows App 2" }
-  - { id: 1451685025, name: "WireGuard" }
+  - { id: 1475387142, name: "Tailscale 2" }
+  - { id: 310633997, name: "WhatsApp 2" }
   - { id: 497799835, name: "Xcode" }

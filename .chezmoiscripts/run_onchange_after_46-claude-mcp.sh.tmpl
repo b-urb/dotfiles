@@ -1,0 +1,26 @@
+{{- if eq .chezmoi.os "windows" }}{{ else -}}
+#!/bin/bash
+# Register user-scope MCP servers for Claude Code.
+# `mcpServers` in settings.json is not a real config location (Claude Code only
+# reads it from `.mcp.json` or `~/.claude.json`, written via `claude mcp add`) —
+# entries placed there are silently ignored. This registers them properly.
+set -euo pipefail
+
+if ! command -v claude >/dev/null 2>&1; then
+    echo "claude CLI not found, skipping MCP server registration"
+    exit 0
+fi
+
+add_user_mcp() {
+    local name="$1"
+    shift
+    if claude mcp get "$name" >/dev/null 2>&1; then
+        echo "MCP server '$name' already registered"
+    else
+        claude mcp add --scope user "$name" "$@"
+        echo "Registered MCP server '$name'"
+    fi
+}
+
+add_user_mcp angular-cli -- npx -y @angular/cli mcp
+{{- end }}
