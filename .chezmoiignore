@@ -6,6 +6,7 @@
 # Repo-level files that should never be placed in $HOME
 README.md
 docs/
+skills/
 ansible/
 ubuntu/
 arch/

@@ -328,7 +328,7 @@ function M.build()
 		{ key = "n", mods = "LEADER", action = act.ActivateKeyTable({ name = "resize_mode", one_shot = false }) },
 		{ key = "/", mods = "CTRL", action = toggle_nvim_bottom_terminal("/") },
 		{ key = "_", mods = "CTRL", action = toggle_nvim_bottom_terminal("_") },
-		{ key = "b", mods = "CTRL", action = act.ActivateCopyMode },
+		{ key = "[", mods = "LEADER", action = act.ActivateCopyMode },
 
 		-- app/session actions
 		-- { key = "q", mods = "CTRL", action = act.QuitApplication },
