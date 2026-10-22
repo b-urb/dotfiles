@@ -1,84 +1,152 @@
 {
   "attribution": {
     "commit": "",
-    "pr": ""
+    "pr": "",
+    "sessionUrl": false
   },
   "model": "opus",
   "hooks": {
-    "SessionStart": [
+    "Stop": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "\"/opt/homebrew/bin/node\" \"/Users/bjornurban/.claude/hooks/caveman-activate.js\"",
-            "timeout": 5,
-            "statusMessage": "Loading caveman mode..."
+            "command": "afplay /System/Library/Sounds/Glass.aiff",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Ping.aiff",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/burban/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "statusMessage": "Loading ponytail mode...",
+            "command": "node \"/Users/burban/.claude/hooks/ponytail/hooks/ponytail-activate.js\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "async": false,
+            "command": "\"/Users/burban/.claude/hooks/superpowers/hooks/run-hook.cmd\" session-start"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "statusMessage": "Loading ponytail mode...",
+            "command": "node \"/Users/burban/.claude/hooks/ponytail/hooks/ponytail-subagent.js\"",
+            "timeout": 5
           }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "\"/opt/homebrew/bin/node\" \"/Users/bjornurban/.claude/hooks/caveman-mode-tracker.js\"",
-            "timeout": 5,
-            "statusMessage": "Tracking caveman mode..."
+            "statusMessage": "Tracking ponytail mode...",
+            "command": "node \"/Users/burban/.claude/hooks/ponytail/hooks/ponytail-mode-tracker.js\"",
+            "timeout": 5
           }
         ]
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "bash \"/Users/bjornurban/.claude/hooks/caveman-statusline.sh\""
-  },
   "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true,
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true,
-    "caveman@caveman": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "caveman": {
-      "source": {
-        "source": "github",
-        "repo": "JuliusBrussee/caveman"
-      }
-    }
+    "cc-plugin-you-should-know@builtin": true
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "theme": "dark",
-  "voiceEnabled": true,
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "@playwright/mcp@latest"
-      ]
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "high"
     },
-    "angular-cli": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@angular/cli",
-        "mcp"
-      ]
+    "claude-opus-5-5": {
+      "effortLevel": "high",
+      "autoCompactWindow": 400000
     },
-    "todoist": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://ai.todoist.net/mcp"
-      ]
+    "claude-sonnet-5-5": {
+      "effortLevel": "medium"
     }
   },
-  "tui": "fullscreen"
+  "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "switchModelsOnFlag": false,
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(limactl delete:*) scoped to hermes-agent VM in /Users/burban/tools/hermes",
+      "Bash(hermesctl reset:*) or destructive hermesctl subcommands in /Users/burban/tools/hermes"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: assume private (no remote configured; repo appears to be a personal host-control-plane tool, not queryable via gh)",
+      "**Internal sharing / snippet hosting**: None configured \u2014 treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: local .env-style files (config/secret-refs.env, gateway.env, local.env, client_secret_*.apps.googleusercontent.com.json) and a render-secrets script \u2014 treat these paths and any rendered secret output as sensitive",
+      "**Default / protected branches**: unknown \u2014 origin/HEAD unset, no remote configured to check",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: isolated-VM design \u2014 repo enforces no host Docker socket exposure, no SSH agent forwarding, no published container ports, no macOS filesystem mounts into the VM/container",
+      "**Source control**: The trusted repo (/Users/burban/tools/hermes) only \u2014 no remotes configured, no additional orgs",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: Lima VM (hermes-agent) and its hermes-data volume, local Hermes gateway container \u2014 local/loopback-only per repo isolation contract",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: config/secret-refs.env, gateway.env, local.env, client_secret_569225895612-*.apps.googleusercontent.com.json, scripts/render-secrets.sh, backends/lima/guest/hermes-egress-guard \u2014 root-only/VM-local secrets and OAuth client credentials; share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured \u2014 fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development (Hermes host control plane / Lima VM tooling)",
+      "**Trusted repo**: /Users/burban/tools/hermes (no remotes configured) \u2014 visibility assumed private; confidential material OK here, but secrets/credentials are never cleared into it by visibility alone",
+      "**Org-specific CLIs**: hermesctl, limactl, td (routine within this project)",
+      "routine under /Users/burban/tools/hermes/ prefix: hermesctl, limactl, td, yq invocations"
+    ]
+  },
+  "voiceEnabled": true
 }

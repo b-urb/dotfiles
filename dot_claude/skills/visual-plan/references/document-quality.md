@@ -95,7 +95,11 @@ so you never emit a block the editor cannot render or round-trip:
   two-dimensional layouts — paired before/after panels, layered diagrams,
   swimlanes, dependency maps, matrices, or grouped regions; do not default to
   left-to-right chains, and use a line only when the relationship is truly a
-  sequence. For architecture/code
+  sequence. Do not use a body `diagram` as the primary artifact for a requested
+  product canvas, light storyboard, UI flow, screen flow, or wireframe; those
+  belong in the top canvas as artboards with `Screen` wireframes first. Use
+  diagrams below that canvas only for architecture, data flow, or implementation
+  mechanics. For architecture/code
   diagrams, prefer `data.html` / `data.css` with semantic HTML and inline SVG so
   the diagram can use panels, layers, matrices, arrows, annotations, and
   responsive layout directly. Author diagram HTML with renderer-owned primitives
@@ -105,12 +109,16 @@ so you never emit a block the editor cannot render or round-trip:
   `--wf-paper`, `--wf-card`, `--wf-accent`, `--wf-accent-soft`, `--wf-warn`, and
   `--wf-ok`, and switch to Excalifont plus rough.js outlines in sketchy mode. Do not
   set `font-family` and do not hard-code hex, rgb, or hsl colors in diagram HTML
-  or CSS. Leave room for the sketch font: keep labels short, give nodes generous
-  width, and place boundary/annotation labels in unused space instead of over
-  nodes; labels must not overlap nodes, connectors, or each other. For small
-  text/SVG changes to an existing HTML diagram, use `patch-diagram-html` with a
-  unique `find`/`replace` snippet instead of resending the whole `data.html`
-  string. Use legacy `nodes` / `edges` only for small previews or truly
+  or CSS. Choose the outer `frame` intentionally: use `show` when the diagram
+  stands alone in a recap, comparison, or prose section; use `hide` when the
+  diagram sits inside docs chrome, columns, tabs, cards, a canvas surface, or
+  already has visible `.diagram-panel` / `.diagram-box` structure. Leave room
+  for the sketch font: keep labels short, give nodes generous width, and place
+  boundary/annotation labels in unused space instead of over nodes; labels must
+  not overlap nodes, connectors, or each other. For small text/SVG changes to an
+  existing HTML diagram, use `patch-diagram-html` with a unique
+  `find`/`replace` snippet instead of resending the whole `data.html` string.
+  Use legacy `nodes` / `edges` only for small previews or truly
   sequential flows. In architecture/code plans, prefer a repeated section rhythm:
   recommendation title, confidence and category badges, code-path evidence, a
   local before/after or current/target spatial diagram, then concise
@@ -161,9 +169,18 @@ blocks for normal plans. For architecture/code reviews, use `diagram`
 requested mockup, UI state, or visual comparison. If UI fidelity requires
 HTML/CSS, image capture, or real React/CSS, the product fix is canvas support
 for that artifact type, not moving the mockup into the document.
+When `custom-html` is genuinely needed, author it against the sandbox-provided
+theme tokens (`--wf-paper`, `--wf-card`, `--wf-ink`, `--wf-muted`,
+`--wf-line`, `--wf-radius`, and the matching `--plan-*` aliases). Do not hardcode
+hex/rgb/hsl light palettes such as white cards with dark ink; the same fragment
+must read in dark mode without a plan-specific patch.
 
 **Before handoff, open the plan and check it.** Fix overlap, excessive
 whitespace, clipped fragments, misleading inactive controls, poor contrast, and
-unreadable diagrams before asking for approval.
+unreadable diagrams before asking for approval. Check the top canvas in the
+current Plan theme, especially dark mode: white mockup panels, low-contrast
+muted text, or invisible controls are defects. If a frame only works in one
+theme, rewrite the HTML with `--wf-*` tokens and semantic helper classes before
+surfacing the plan.
 
 <!-- SHARED-CORE:document-quality END -->
