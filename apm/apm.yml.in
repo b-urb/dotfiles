@@ -1,0 +1,61 @@
+name: dotfiles-agents
+version: 1.0.0
+dependencies:
+  apm:
+    - git: BuilderIO/skills
+      path: skills/agent-watchdog
+      ref: 20ff8a101fe8300e44cb3b2d570cb93c7580e1b9
+    - git: BuilderIO/skills
+      path: skills/plan-arbiter
+      ref: 20ff8a101fe8300e44cb3b2d570cb93c7580e1b9
+    - git: BuilderIO/skills
+      path: skills/plow-ahead
+      ref: 20ff8a101fe8300e44cb3b2d570cb93c7580e1b9
+    - git: BuilderIO/skills
+      path: skills/quick-recap
+      ref: 20ff8a101fe8300e44cb3b2d570cb93c7580e1b9
+    - git: BuilderIO/skills
+      path: skills/read-the-damn-docs
+      ref: 20ff8a101fe8300e44cb3b2d570cb93c7580e1b9
+    - git: BuilderIO/skills
+      path: skills/stay-within-limits
+      ref: 20ff8a101fe8300e44cb3b2d570cb93c7580e1b9
+    - git: BuilderIO/skills
+      path: skills/visual-plan
+      ref: 20ff8a101fe8300e44cb3b2d570cb93c7580e1b9
+    - git: BuilderIO/skills
+      path: skills/visual-recap
+      ref: 20ff8a101fe8300e44cb3b2d570cb93c7580e1b9
+    - git: obra/superpowers
+      ref: v7.0.0
+    - git: DietrichGebert/ponytail
+      ref: e3ba2aa6f1e6f0bc4d69eb09c9f0d0a93af56156
+    - git: anthropics/claude-plugins-official
+      path: plugins/frontend-design
+      ref: ea10b213686c90bb1984b2016937310e05336cf3
+    - git: anthropics/claude-plugins-official
+      path: plugins/skill-creator
+      ref: ea10b213686c90bb1984b2016937310e05336cf3
+    - git: anthropics/claude-plugins-official
+      path: external_plugins/playwright
+      ref: ea10b213686c90bb1984b2016937310e05336cf3
+    - @AGENT_CONFIG@/skills/homelab
+    - @AGENT_CONFIG@/skills/outline
+    - @AGENT_CONFIG@/skills/vikunja
+    - @AGENT_CONFIG@/skills/blender-projects
+    - @HOMELAB@/.claude/skills/agent-secrets
+  lsp:
+    - name: clangd
+      command: clangd
+      args: ["--background-index"]
+      extensionToLanguage: {".c": c, ".h": c, ".cpp": cpp, ".cc": cpp, ".cxx": cpp, ".hpp": cpp, ".hxx": cpp, ".C": cpp, ".H": cpp}
+    - name: rust-analyzer
+      command: rust-analyzer
+      extensionToLanguage: {".rs": rust}
+    - name: gopls
+      command: gopls
+      extensionToLanguage: {".go": go}
+    - name: typescript
+      command: typescript-language-server
+      args: ["--stdio"]
+      extensionToLanguage: {".ts": typescript, ".tsx": typescriptreact, ".js": javascript, ".jsx": javascriptreact, ".mts": typescript, ".cts": typescript, ".mjs": javascript, ".cjs": javascript}

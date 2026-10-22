@@ -99,3 +99,9 @@ wezterm/wezterm-session-manager/
 .env.darwin
 .env.linux
 {{ end }}
+
+# APM sources and bookkeeping (see `just agents-sync`)
+apm/
+.claude/apm-hooks.json
+.codex/apm-hooks.json
+Library/Caches/apm/
