@@ -53,9 +53,9 @@ ubuntu/keyring.deb
 /dot_claude/skills/homelab/
 /dot_claude/skills/outline/
 /dot_claude/skills/vikunja/
-/dot_agents/skills/agent-secrets/
-/dot_agents/skills/blender-projects/
-/dot_agents/skills/homelab/
-/dot_agents/skills/outline/
-/dot_agents/skills/vikunja/
+/agents/skills/agent-secrets/
+/agents/skills/blender-projects/
+/agents/skills/homelab/
+/agents/skills/outline/
+/agents/skills/vikunja/
 /.apm/apm.lock.yaml
