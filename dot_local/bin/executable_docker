@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if ! command -v podman >/dev/null 2>&1; then
+    echo "docker compatibility shim: podman is not installed" >&2
+    exit 127
+fi
+
+exec podman "$@"

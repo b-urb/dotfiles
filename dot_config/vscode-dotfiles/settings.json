@@ -431,6 +431,8 @@
     
   },
   "vs-kubernetes": {
-    "vs-kubernetes.ignore-recommendations": true
-  }
+    "vs-kubernetes.ignore-recommendations": true,
+    "vs-kubernetes.crd-code-completion": "disabled"
+  },
+  "github.copilot.selectedCompletionModel": "gpt-5-mini"
 }

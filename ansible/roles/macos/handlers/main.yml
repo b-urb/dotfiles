@@ -1,0 +1,12 @@
+---
+- name: Restart macOS preferences cache
+  ansible.builtin.command:
+    cmd: /usr/bin/killall cfprefsd
+  failed_when: false
+  changed_when: false
+
+- name: Restart macOS SystemUIServer
+  ansible.builtin.command:
+    cmd: /usr/bin/killall SystemUIServer
+  failed_when: false
+  changed_when: false

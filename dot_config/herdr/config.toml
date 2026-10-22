@@ -1,0 +1,14 @@
+onboarding = false
+
+[ui.toast]
+delivery = "system"
+
+[ui]
+status_indicators = "symbols"
+
+[session]
+resume_agents_on_restore = true
+startup_per_agent_delay_ms = 100
+
+[experimental]
+pane_history = true

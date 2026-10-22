@@ -1,0 +1,15 @@
+{{- if eq .chezmoi.os "windows" }}{{ else -}}
+#!/bin/bash
+# Install herdr agent-state integrations. herdr owns these hook files and
+# rewrites them on update, so they are generated here instead of tracked.
+set -euo pipefail
+
+if ! command -v herdr >/dev/null 2>&1; then
+    echo "herdr not found, skipping integrations"
+    exit 0
+fi
+
+for target in claude codex opencode; do
+    herdr integration install "$target"
+done
+{{- end }}

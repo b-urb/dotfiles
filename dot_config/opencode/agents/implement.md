@@ -2,7 +2,7 @@
 name: implement
 description: Implement a story that has been ideated and refined
 mode: subagent
-model: anthropic/claude-sonnet-4-20250514
+model: anthropic/claude-sonnet-5
 temperature: 0.1
 tools:
   write: true
