@@ -43,6 +43,8 @@ dependencies:
     - @AGENT_CONFIG@/skills/outline
     - @AGENT_CONFIG@/skills/vikunja
     - @AGENT_CONFIG@/skills/blender-projects
+    - @AGENT_CONFIG@/skills/homelab-work
+    - @AGENT_CONFIG@/packages/context-guard
     - @HOMELAB@/.claude/skills/agent-secrets
     - @DESIGN_SYSTEM@/skills/homelab-ui
   lsp:

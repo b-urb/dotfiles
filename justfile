@@ -54,9 +54,10 @@ agents-sync:
     cd "$root"
     mkdir -p .apm agents
     ln -sfn dot_codex .codex
-    ln -sfn agents .agents
+    rm -rf .agents && mkdir -p .agents && cp -R agents/. .agents/
     sed -e "s#@AGENT_CONFIG@#${AGENT_CONFIG:-$HOME/code/agent-config}#" -e "s#@HOMELAB@#${HOMELAB:-$HOME/code/homelab}#" -e "s#@DESIGN_SYSTEM@#${DESIGN_SYSTEM:-$HOME/code/design-system}#" apm/apm.yml.in > .apm/apm.yml
     HOME="$root" CLAUDE_CONFIG_DIR="$root/dot_claude" apm install -g --target claude,codex
+    rsync -a --delete .agents/ agents/
     rm -rf dot_claude/skills/apm-lsp && mv .claude/skills/apm-lsp dot_claude/skills/
     mv dot_claude/skills/apm-lsp/.claude-plugin dot_claude/skills/apm-lsp/dot_claude-plugin
     find dot_claude -path '*/skills/*' -type f -name 'run_*' | while read -r f; do mv -f "$f" "$(dirname "$f")/literal_$(basename "$f")"; done

@@ -15,7 +15,7 @@ trust_level = "trusted"
 
 
 [shell_environment_policy]
-set = { HOMELAB_AGENT = "codex", KUBECONFIG = "{{ .chezmoi.homeDir }}/.kube/homelab-view.yaml" }
+set = { HOMELAB_AGENT = "codex", KUBECONFIG = "{{ .chezmoi.homeDir }}/.kube/homelab-view.yaml", GH_CONFIG_DIR = "{{ .chezmoi.homeDir }}/.config/homelab/agents/gh", BAO_CONFIG_PATH = "{{ .chezmoi.homeDir }}/code/homelab/.claude/bao.hcl", GIT_TERMINAL_PROMPT = "0", GIT_CONFIG_COUNT = "3", GIT_CONFIG_KEY_0 = "url.https://github.com/b-urb/.insteadOf", GIT_CONFIG_VALUE_0 = "git@github.com:b-urb/", GIT_CONFIG_KEY_1 = "credential.https://github.com.helper", GIT_CONFIG_VALUE_1 = "", GIT_CONFIG_KEY_2 = "credential.https://github.com.helper", GIT_CONFIG_VALUE_2 = '!f() { test "$1" = get && test -n "${GH_TOKEN:-}" && printf "username=x-access-token\npassword=%s\n" "$GH_TOKEN"; }; f' }
 
 [mcp_servers.playwright]
 command = "npx"
