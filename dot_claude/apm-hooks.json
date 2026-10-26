@@ -1,6 +1,17 @@
 {
   "SessionStart": [
     {
+      "matcher": "compact",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"/Users/burban/.claude/hooks/context-guard/hooks/context_guard.py\"",
+          "timeout": 5
+        }
+      ],
+      "_apm_source": "_local/context-guard"
+    },
+    {
       "matcher": "startup|resume|clear|compact",
       "hooks": [
         {
@@ -51,6 +62,19 @@
         }
       ],
       "_apm_source": "dietrichgebert/ponytail"
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": "*",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"/Users/burban/.claude/hooks/context-guard/hooks/context_guard.py\"",
+          "timeout": 5
+        }
+      ],
+      "_apm_source": "_local/context-guard"
     }
   ]
 }

@@ -52,12 +52,14 @@ ubuntu/keyring.deb
 /dot_claude/skills/blender-projects/
 /dot_claude/skills/homelab/
 /dot_claude/skills/homelab-ui/
+/dot_claude/skills/homelab-work/
 /dot_claude/skills/outline/
 /dot_claude/skills/vikunja/
 /agents/skills/agent-secrets/
 /agents/skills/blender-projects/
 /agents/skills/homelab/
 /agents/skills/homelab-ui/
+/agents/skills/homelab-work/
 /agents/skills/outline/
 /agents/skills/vikunja/
 /.apm/apm.lock.yaml

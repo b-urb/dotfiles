@@ -5,6 +5,28 @@
     "sessionUrl": false
   },
   "model": "opus",
+  "env": {
+    "KUBECONFIG": "/Users/burban/.kube/homelab-view.yaml",
+    "GH_CONFIG_DIR": "/Users/burban/.config/homelab/agents/gh",
+    "BAO_CONFIG_PATH": "/Users/burban/code/homelab/.claude/bao.hcl",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_CONFIG_COUNT": "3",
+    "GIT_CONFIG_KEY_0": "url.https://github.com/b-urb/.insteadOf",
+    "GIT_CONFIG_VALUE_0": "git@github.com:b-urb/",
+    "GIT_CONFIG_KEY_1": "credential.https://github.com.helper",
+    "GIT_CONFIG_VALUE_1": "",
+    "GIT_CONFIG_KEY_2": "credential.https://github.com.helper",
+    "GIT_CONFIG_VALUE_2": "!f() { test \"$1\" = get && test -n \"${GH_TOKEN:-}\" && printf 'username=x-access-token\\npassword=%s\\n' \"$GH_TOKEN\"; }; f"
+  },
+  "permissions": {
+    "deny": [
+      "Read(~/.config/homelab/break-glass.env)",
+      "Read(~/.config/homelab/dr/**)",
+      "Read(~/.kube/config)",
+      "Read(~/.ssh/homelab)",
+      "Read(~/.vault-token)"
+    ]
+  },
   "hooks": {
     "Stop": [
       {
@@ -36,6 +58,16 @@
             "type": "command",
             "command": "bash '/Users/burban/.claude/hooks/herdr-agent-state.sh' session",
             "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"/Users/burban/.claude/hooks/context-guard/hooks/context_guard.py\"",
+            "timeout": 5
           }
         ]
       },
@@ -83,6 +115,30 @@
             "type": "command",
             "statusMessage": "Tracking ponytail mode...",
             "command": "node \"/Users/burban/.claude/hooks/ponytail/hooks/ponytail-mode-tracker.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=/Users/burban/code/homelab/.claude/hooks/secret_guard.py; [ -f \"$f\" ] && exec python3 \"$f\"; exit 0",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"/Users/burban/.claude/hooks/context-guard/hooks/context_guard.py\"",
             "timeout": 5
           }
         ]
