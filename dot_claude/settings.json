@@ -155,7 +155,7 @@
       "effortLevel": "high"
     },
     "claude-opus-5-5": {
-      "effortLevel": "high",
+      "effortLevel": "medium",
       "autoCompactWindow": 400000
     },
     "claude-sonnet-5-5": {
@@ -182,27 +182,28 @@
       "**Organization**: None configured",
       "**Cloud provider(s)**: None configured",
       "**Repository visibility**: assume private (no remote configured; repo appears to be a personal host-control-plane tool, not queryable via gh)",
-      "**Internal sharing / snippet hosting**: None configured \u2014 treat public paste/gist services as outside the trust boundary",
-      "**Secrets management**: local .env-style files (config/secret-refs.env, gateway.env, local.env, client_secret_*.apps.googleusercontent.com.json) and a render-secrets script \u2014 treat these paths and any rendered secret output as sensitive",
-      "**Default / protected branches**: unknown \u2014 origin/HEAD unset, no remote configured to check",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: local .env-style files (config/secret-refs.env, gateway.env, local.env, client_secret_*.apps.googleusercontent.com.json) and a render-secrets script — treat these paths and any rendered secret output as sensitive",
+      "**Default / protected branches**: unknown — origin/HEAD unset, no remote configured to check",
       "**CI/CD deploy targets**: None configured",
-      "**Network posture**: isolated-VM design \u2014 repo enforces no host Docker socket exposure, no SSH agent forwarding, no published container ports, no macOS filesystem mounts into the VM/container",
-      "**Source control**: The trusted repo (/Users/burban/tools/hermes) only \u2014 no remotes configured, no additional orgs",
+      "**Network posture**: isolated-VM design — repo enforces no host Docker socket exposure, no SSH agent forwarding, no published container ports, no macOS filesystem mounts into the VM/container",
+      "**Source control**: The trusted repo (/Users/burban/tools/hermes) only — no remotes configured, no additional orgs",
       "**Trusted internal domains**: None configured",
       "**Trusted cloud buckets**: None configured",
-      "**Key internal services**: Lima VM (hermes-agent) and its hermes-data volume, local Hermes gateway container \u2014 local/loopback-only per repo isolation contract",
+      "**Key internal services**: Lima VM (hermes-agent) and its hermes-data volume, local Hermes gateway container — local/loopback-only per repo isolation contract",
       "**Internal package registry**: None configured",
-      "**Sensitive data locations & audiences**: config/secret-refs.env, gateway.env, local.env, client_secret_569225895612-*.apps.googleusercontent.com.json, scripts/render-secrets.sh, backends/lima/guest/hermes-egress-guard \u2014 root-only/VM-local secrets and OAuth client credentials; share only with audiences cleared at the [named+specifics] bar",
+      "**Sensitive data locations & audiences**: config/secret-refs.env, gateway.env, local.env, client_secret_569225895612-*.apps.googleusercontent.com.json, scripts/render-secrets.sh, backends/lima/guest/hermes-egress-guard — root-only/VM-local secrets and OAuth client credentials; share only with audiences cleared at the [named+specifics] bar",
       "**Data retention / declassification**: None configured",
       "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
-      "**Protected deployment namespaces / environments**: None configured \u2014 fall back to the Sensitive remote targets heuristic",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
       "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
       "### User-specific",
       "**Primary use of Claude Code**: software development (Hermes host control plane / Lima VM tooling)",
-      "**Trusted repo**: /Users/burban/tools/hermes (no remotes configured) \u2014 visibility assumed private; confidential material OK here, but secrets/credentials are never cleared into it by visibility alone",
+      "**Trusted repo**: /Users/burban/tools/hermes (no remotes configured) — visibility assumed private; confidential material OK here, but secrets/credentials are never cleared into it by visibility alone",
       "**Org-specific CLIs**: hermesctl, limactl, td (routine within this project)",
       "routine under /Users/burban/tools/hermes/ prefix: hermesctl, limactl, td, yq invocations"
     ]
   },
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "advisorModel": "fable"
 }
