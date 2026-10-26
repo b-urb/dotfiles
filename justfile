@@ -55,7 +55,7 @@ agents-sync:
     mkdir -p .apm agents
     ln -sfn dot_codex .codex
     ln -sfn agents .agents
-    sed -e "s#@AGENT_CONFIG@#${AGENT_CONFIG:-$HOME/code/agent-config}#" -e "s#@HOMELAB@#${HOMELAB:-$HOME/code/homelab}#" apm/apm.yml.in > .apm/apm.yml
+    sed -e "s#@AGENT_CONFIG@#${AGENT_CONFIG:-$HOME/code/agent-config}#" -e "s#@HOMELAB@#${HOMELAB:-$HOME/code/homelab}#" -e "s#@DESIGN_SYSTEM@#${DESIGN_SYSTEM:-$HOME/code/design-system}#" apm/apm.yml.in > .apm/apm.yml
     HOME="$root" CLAUDE_CONFIG_DIR="$root/dot_claude" apm install -g --target claude,codex
     rm -rf dot_claude/skills/apm-lsp && mv .claude/skills/apm-lsp dot_claude/skills/
     mv dot_claude/skills/apm-lsp/.claude-plugin dot_claude/skills/apm-lsp/dot_claude-plugin
