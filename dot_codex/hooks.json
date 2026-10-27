@@ -1,5 +1,16 @@
 {
   "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"/Users/burban/.codex/hooks/context-guard/hooks/context_guard.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
@@ -62,17 +73,6 @@
             "type": "command",
             "statusMessage": "Tracking ponytail mode...",
             "command": "node \"/Users/burban/.codex/hooks/ponytail/hooks/ponytail-mode-tracker.js\"",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"/Users/burban/.codex/hooks/context-guard/hooks/context_guard.py\"",
             "timeout": 5
           }
         ]

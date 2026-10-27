@@ -1,10 +1,4 @@
 {
-  "attribution": {
-    "commit": "",
-    "pr": "",
-    "sessionUrl": false
-  },
-  "model": "opus",
   "env": {
     "KUBECONFIG": "/Users/burban/.kube/homelab-view.yaml",
     "GH_CONFIG_DIR": "/Users/burban/.config/homelab/agents/gh",
@@ -18,6 +12,11 @@
     "GIT_CONFIG_KEY_2": "credential.https://github.com.helper",
     "GIT_CONFIG_VALUE_2": "!f() { test \"$1\" = get && test -n \"${GH_TOKEN:-}\" && printf 'username=x-access-token\\npassword=%s\\n' \"$GH_TOKEN\"; }; f"
   },
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "permissions": {
     "deny": [
       "Read(~/.config/homelab/break-glass.env)",
@@ -27,6 +26,7 @@
       "Read(~/.vault-token)"
     ]
   },
+  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -155,7 +155,7 @@
       "effortLevel": "high"
     },
     "claude-opus-5-5": {
-      "effortLevel": "high",
+      "effortLevel": "medium",
       "autoCompactWindow": 400000
     },
     "claude-sonnet-5-5": {

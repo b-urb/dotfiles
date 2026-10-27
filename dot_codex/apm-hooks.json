@@ -1,4 +1,16 @@
 {
+  "PostToolUse": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"/Users/burban/.codex/hooks/context-guard/hooks/context_guard.py\"",
+          "timeout": 5
+        }
+      ],
+      "_apm_source": "_local/context-guard"
+    }
+  ],
   "SessionStart": [
     {
       "matcher": "compact",
@@ -60,18 +72,6 @@
         }
       ],
       "_apm_source": "dietrichgebert/ponytail"
-    }
-  ],
-  "PostToolUse": [
-    {
-      "hooks": [
-        {
-          "type": "command",
-          "command": "python3 \"/Users/burban/.codex/hooks/context-guard/hooks/context_guard.py\"",
-          "timeout": 5
-        }
-      ],
-      "_apm_source": "_local/context-guard"
     }
   ]
 }
