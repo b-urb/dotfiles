@@ -27,6 +27,7 @@
     ]
   },
   "model": "opus",
+  "advisorModel": "fable",
   "hooks": {
     "Stop": [
       {
