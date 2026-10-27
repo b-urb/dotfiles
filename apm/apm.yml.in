@@ -42,6 +42,7 @@ dependencies:
     - @AGENT_CONFIG@/skills/blender-projects
     - @AGENT_CONFIG@/skills/homelab-work
     - @AGENT_CONFIG@/skills/homelab-triage
+    - @AGENT_CONFIG@/skills/homelab-agent-system
     - @AGENT_CONFIG@/packages/context-guard
     - @HOMELAB@/.claude/skills/agent-secrets
     - @DESIGN_SYSTEM@/skills/homelab-ui
