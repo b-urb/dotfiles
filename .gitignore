@@ -53,6 +53,7 @@ ubuntu/keyring.deb
 /dot_claude/skills/homelab/
 /dot_claude/skills/homelab-ui/
 /dot_claude/skills/homelab-work/
+/dot_claude/skills/homelab-triage/
 /dot_claude/skills/outline/
 /dot_claude/skills/vikunja/
 /agents/skills/agent-secrets/
@@ -60,6 +61,7 @@ ubuntu/keyring.deb
 /agents/skills/homelab/
 /agents/skills/homelab-ui/
 /agents/skills/homelab-work/
+/agents/skills/homelab-triage/
 /agents/skills/outline/
 /agents/skills/vikunja/
 /.apm/apm.lock.yaml
