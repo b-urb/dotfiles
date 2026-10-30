@@ -67,3 +67,5 @@ ubuntu/keyring.deb
 /.apm/apm.lock.yaml
 /dot_claude/skills/homelab-agent-system/
 /agents/skills/homelab-agent-system/
+/dot_claude/skills/homelab-docs/
+/agents/skills/homelab-docs/
