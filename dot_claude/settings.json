@@ -10,7 +10,10 @@
     "GIT_CONFIG_KEY_1": "credential.https://github.com.helper",
     "GIT_CONFIG_VALUE_1": "",
     "GIT_CONFIG_KEY_2": "credential.https://github.com.helper",
-    "GIT_CONFIG_VALUE_2": "!f() { test \"$1\" = get && test -n \"${GH_TOKEN:-}\" && printf 'username=x-access-token\\npassword=%s\\n' \"$GH_TOKEN\"; }; f"
+    "GIT_CONFIG_VALUE_2": "!f() { test \"$1\" = get && test -n \"${GH_TOKEN:-}\" && printf 'username=x-access-token\\npassword=%s\\n' \"$GH_TOKEN\"; }; f",
+    "SSL_CERT_FILE": "/Users/burban/.local/share/homelab/ca-bundle.pem",
+    "CURL_CA_BUNDLE": "/Users/burban/.local/share/homelab/ca-bundle.pem",
+    "REQUESTS_CA_BUNDLE": "/Users/burban/.local/share/homelab/ca-bundle.pem"
   },
   "attribution": {
     "commit": "",
@@ -19,12 +22,62 @@
   },
   "permissions": {
     "deny": [
-      "Read(~/.config/homelab/break-glass.env)",
-      "Read(~/.config/homelab/dr/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.config/gh/**)",
+      "Read(~/.config/homelab/**)",
       "Read(~/.kube/config)",
-      "Read(~/.ssh/homelab)",
-      "Read(~/.vault-token)"
+      "Read(~/.ssh/**)",
+      "Read(~/.vault-token)",
+      "Bash(kubectl *--kubeconfig*)",
+      "Bash(flux *--kubeconfig*)"
     ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "excludedCommands": [
+      "kubectl *",
+      "flux *"
+    ],
+    "enableWeakerNetworkIsolation": true,
+    "network": {
+      "allowedDomains": [
+        "*"
+      ],
+      "allowUnixSockets": [
+        "/private/tmp/claude-501",
+        "~/.ansible/cp"
+      ]
+    },
+    "filesystem": {
+      "denyRead": [
+        "~/.kube",
+        "~/.ssh",
+        "~/.config/homelab",
+        "~/.config/gh",
+        "~/.aws",
+        "~/.vault-token",
+        "~/Library/Containers/com.bitwarden.desktop"
+      ],
+      "allowRead": [
+        "~/.kube/homelab-*",
+        "~/.ssh/config",
+        "~/.ssh/known_hosts",
+        "~/.aws/config",
+        "~/.config/homelab/operator-inputs.env",
+        "~/.config/homelab/agents/claude*"
+      ],
+      "allowWrite": [
+        "~/code",
+        "~/.cache",
+        "~/.ansible",
+        "~/.kube/cache",
+        "~/.kube/homelab-*",
+        "~/.config/homelab/agents/claude*",
+        "/private/var/folders/71/25wyb3n13bl9nv4hwgkg3y3w0000gn/T"
+      ]
+    }
   },
   "model": "opus",
   "advisorModel": "fable",

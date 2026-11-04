@@ -1,6 +1,5 @@
 experimental_use_rmcp_client = true
-sandbox_mode = "workspace-write"
-network_access = "enabled"
+default_permissions = "homelab"
 approval_policy = "on-failure"
 allow_shell = true
 model_reasoning_effort = "high"
@@ -14,7 +13,36 @@ web_search_request = true
 trust_level = "trusted"
 
 
+[permissions.homelab]
+extends = ":workspace"
+
+[permissions.homelab.filesystem]
+"~/code" = "write"
+"~/.cache" = "write"
+"~/.ansible" = "write"
+"~/.kube" = "deny"
+"~/.kube/homelab-view.yaml" = "write"
+"~/.kube/homelab-edit.yaml" = "write"
+"~/.kube/cache" = "write"
+"~/.ssh" = "deny"
+"~/.ssh/config" = "read"
+"~/.ssh/known_hosts" = "read"
+"~/.config/homelab" = "deny"
+"~/.config/homelab/operator-inputs.env" = "read"
+"~/.config/homelab/agents" = "write"
+"~/.config/homelab/agents/claude*" = "deny"
+"~/.config/gh" = "deny"
+"~/.aws" = "deny"
+"~/.aws/config" = "read"
+"~/.vault-token" = "deny"
+"~/Library/Containers/com.bitwarden.desktop" = "deny"
+
+[permissions.homelab.network]
+enabled = true
+mode = "full"
+
 [shell_environment_policy]
+exclude = ["SSH_AUTH_SOCK"]
 set = { HOMELAB_AGENT = "codex", KUBECONFIG = "{{ .chezmoi.homeDir }}/.kube/homelab-view.yaml", GH_CONFIG_DIR = "{{ .chezmoi.homeDir }}/.config/homelab/agents/gh", BAO_CONFIG_PATH = "{{ .chezmoi.homeDir }}/code/homelab/.claude/bao.hcl", GIT_TERMINAL_PROMPT = "0", GIT_CONFIG_COUNT = "3", GIT_CONFIG_KEY_0 = "url.https://github.com/b-urb/.insteadOf", GIT_CONFIG_VALUE_0 = "git@github.com:b-urb/", GIT_CONFIG_KEY_1 = "credential.https://github.com.helper", GIT_CONFIG_VALUE_1 = "", GIT_CONFIG_KEY_2 = "credential.https://github.com.helper", GIT_CONFIG_VALUE_2 = '!f() { test "$1" = get && test -n "${GH_TOKEN:-}" && printf "username=x-access-token\npassword=%s\n" "$GH_TOKEN"; }; f' }
 
 [mcp_servers.playwright]
