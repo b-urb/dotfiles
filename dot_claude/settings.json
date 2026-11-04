@@ -29,7 +29,14 @@
       "Read(~/.ssh/**)",
       "Read(~/.vault-token)",
       "Bash(kubectl *--kubeconfig*)",
-      "Bash(flux *--kubeconfig*)"
+      "Bash(flux *--kubeconfig*)",
+      "Bash(kubectl * -f*)",
+      "Bash(kubectl *--filename*)",
+      "Bash(kubectl *--from-file*)",
+      "Bash(kubectl *--from-env-file*)",
+      "Bash(kubectl * -k *)",
+      "Bash(kubectl *--kustomize*)",
+      "Bash(flux *--path*)"
     ]
   },
   "sandbox": {
@@ -37,8 +44,16 @@
     "failIfUnavailable": true,
     "allowUnsandboxedCommands": false,
     "excludedCommands": [
-      "kubectl *",
-      "flux *"
+      "kubectl get *",
+      "kubectl describe *",
+      "kubectl logs *",
+      "kubectl top *",
+      "kubectl events *",
+      "kubectl api-resources*",
+      "kubectl version*",
+      "flux get *",
+      "flux logs *",
+      "flux events *"
     ],
     "enableWeakerNetworkIsolation": true,
     "network": {
@@ -66,7 +81,8 @@
         "~/.ssh/known_hosts",
         "~/.aws/config",
         "~/.config/homelab/operator-inputs.env",
-        "~/.config/homelab/agents/claude*"
+        "~/.config/homelab/agents/claude*",
+        "~/.config/homelab/agents/gh"
       ],
       "allowWrite": [
         "~/code",
@@ -75,6 +91,7 @@
         "~/.kube/cache",
         "~/.kube/homelab-*",
         "~/.config/homelab/agents/claude*",
+        "~/.config/homelab/agents/gh",
         "/private/var/folders/71/25wyb3n13bl9nv4hwgkg3y3w0000gn/T"
       ]
     }

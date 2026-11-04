@@ -3,6 +3,7 @@
 set -euo pipefail
 out="$HOME/.local/share/homelab/ca-bundle.pem"
 mkdir -p "$(dirname "$out")"
-{ cat /etc/ssl/cert.pem; security find-certificate -c homelab.internal -p /Library/Keychains/System.keychain; } > "$out.tmp"
+cp /etc/ssl/cert.pem "$out.tmp"
+security find-certificate -c homelab.internal -p /Library/Keychains/System.keychain >> "$out.tmp" 2>/dev/null || echo "homelab root CA not in System keychain; bundle has system roots only"
 mv "$out.tmp" "$out"
 {{ end -}}
