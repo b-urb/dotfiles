@@ -220,6 +220,7 @@ brew_formulae:
   - teensy_loader_cli
   - telnet
   - thefuck
+  - trivy
   - unar
   - uv
   - vim
@@ -235,6 +236,7 @@ brew_formulae:
 
 brew_casks:
   - aerospace
+  - audacity
   - bambu-studio
   - bluetility
   - brave-browser
@@ -287,7 +289,8 @@ brew_casks:
 mas_apps:
   - { id: 948660805, name: "AusweisApp" }
   - { id: 1352778147, name: "Bitwarden" }
+  - { id: 682658836, name: "GarageBand" }
   - { id: 361304891, name: "Numbers" }
   - { id: 1475387142, name: "Tailscale 2" }
-  - { id: 310633997, name: "WhatsApp 2" }
+  - { id: 310633997, name: "WhatsApp" }
   - { id: 497799835, name: "Xcode" }

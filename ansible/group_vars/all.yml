@@ -6,6 +6,7 @@
 cargo_crates:
   - atuin
   - bat --locked
+  - cargo-update
 
 # VS Code extensions (full list from Brewfile).
 # Installed via `code --install-extension` when VS Code is present.
