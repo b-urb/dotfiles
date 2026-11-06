@@ -48,6 +48,7 @@
       "flux events *",
       "flux get *",
       "flux logs *",
+      "just *",
       "kubectl *",
       "kubectl api-resources*",
       "kubectl describe *",
