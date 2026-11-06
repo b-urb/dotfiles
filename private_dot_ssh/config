@@ -1,3 +1,7 @@
+Match exec "test -n \"$HTTPS_PROXY\""
+    ProxyCommand ~/.local/bin/ssh-http-proxy %h %p
+    UserKnownHostsFile ~/.ssh/known_hosts ~/.cache/ssh-known_hosts
+
 # GitHub (personal)
 Host github.com
     HostName github.com
