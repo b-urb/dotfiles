@@ -57,6 +57,7 @@
       "kubectl logs *",
       "kubectl top *",
       "kubectl version*",
+      "npx playwright *",
       "packer *",
       "ssh *",
       "tofu *"
