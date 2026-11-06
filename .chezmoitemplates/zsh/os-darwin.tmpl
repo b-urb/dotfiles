@@ -64,3 +64,9 @@ fi
 if [ -d "$HOME/.antigravity-ide/antigravity-ide/bin" ]; then
     export PATH="$HOME/.antigravity-ide/antigravity-ide/bin:$PATH"
 fi
+
+# Claude Code sandbox puts 192.168.0.0/16 in NO_PROXY; the kube API is an IP, so route it through the sandbox proxy
+if [[ -n "${CLAUDECODE:-}" ]]; then
+  kubectl() { NO_PROXY=localhost,127.0.0.1 no_proxy=localhost,127.0.0.1 command kubectl "$@"; }
+  flux() { NO_PROXY=localhost,127.0.0.1 no_proxy=localhost,127.0.0.1 command flux "$@"; }
+fi
