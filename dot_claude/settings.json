@@ -13,9 +13,7 @@
     "GIT_CONFIG_VALUE_2": "!f() { test \"$1\" = get && test -n \"${GH_TOKEN:-}\" && printf 'username=x-access-token\\npassword=%s\\n' \"$GH_TOKEN\"; }; f",
     "SSL_CERT_FILE": "/Users/burban/.local/share/homelab/ca-bundle.pem",
     "CURL_CA_BUNDLE": "/Users/burban/.local/share/homelab/ca-bundle.pem",
-    "REQUESTS_CA_BUNDLE": "/Users/burban/.local/share/homelab/ca-bundle.pem",
-    "NO_PROXY": "localhost,127.0.0.1",
-    "no_proxy": "localhost,127.0.0.1"
+    "REQUESTS_CA_BUNDLE": "/Users/burban/.local/share/homelab/ca-bundle.pem"
   },
   "attribution": {
     "commit": "",
