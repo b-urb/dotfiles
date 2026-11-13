@@ -64,7 +64,6 @@ brew_formulae:
   - act
   - admesh
   - age
-  - anomalyco/tap/opencode
   - ansible
   - ant
   - aria2
@@ -168,7 +167,6 @@ brew_formulae:
   - minikube
   - minio-mc
   - mkcert
-  - molten-vk
   - mosquitto
   - navi
   - ncdu
@@ -237,6 +235,7 @@ brew_formulae:
 brew_casks:
   - aerospace
   - audacity
+  - azure-cli
   - bambu-studio
   - bluetility
   - brave-browser
