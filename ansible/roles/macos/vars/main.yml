@@ -176,6 +176,7 @@ brew_formulae:
   - nushell
   - ollama
   - openbao
+  - opencode
   - openconnect
   - opencv
   - openjdk@11
