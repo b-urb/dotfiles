@@ -58,6 +58,7 @@ agents-sync:
     sed -e "s#@AGENT_CONFIG@#${AGENT_CONFIG:-$HOME/code/agent-config}#" -e "s#@HOMELAB@#${HOMELAB:-$HOME/code/homelab}#" -e "s#@DESIGN_SYSTEM@#${DESIGN_SYSTEM:-$HOME/code/design-system}#" apm/apm.yml.in > .apm/apm.yml
     apm --version 2>/dev/null | grep -q " 0.35.0$" || uv tool install --force apm-cli==0.35.0
     fixup() {
+        set +e
         find dot_claude -path '*/skills/*' -type f -name 'run_*' | while read -r f; do mv -f "$f" "$(dirname "$f")/literal_$(basename "$f")"; done
         for d in claude codex; do
             perl -pi -e "s#\Q$root\E/(?:\.|dot_)$d/#$HOME/.$d/#g" dot_$d/*.json
