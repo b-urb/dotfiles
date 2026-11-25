@@ -51,13 +51,13 @@ fi
 # Source macOS-specific .env (managed by chezmoi at ~/.env.darwin)
 [ -f "$HOME/.env.darwin" ] && source "$HOME/.env.darwin"
 
-# In WezTerm on macOS, always prefer Bitwarden SSH agent socket.
-if [ -z "$DOTFILES_DISABLE_BITWARDEN_SSH_AGENT" ] && [ -n "$WEZTERM_PANE" ]; then
-    __dotfiles_wezterm_bw_sock="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
-    if [ -S "$__dotfiles_wezterm_bw_sock" ]; then
-        export SSH_AUTH_SOCK="$__dotfiles_wezterm_bw_sock"
+# In every local terminal on macOS, prefer the Bitwarden SSH agent over launchd's agent.
+if [ -z "$DOTFILES_DISABLE_BITWARDEN_SSH_AGENT" ] && [ -z "$SSH_CONNECTION" ]; then
+    __dotfiles_bw_sock="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+    if [ -S "$__dotfiles_bw_sock" ]; then
+        export SSH_AUTH_SOCK="$__dotfiles_bw_sock"
     fi
-    unset __dotfiles_wezterm_bw_sock
+    unset __dotfiles_bw_sock
 fi
 
 # Antigravity IDE
