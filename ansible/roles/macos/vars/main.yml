@@ -147,6 +147,7 @@ brew_formulae:
   - ktlint
   - kube-bench
   - kubebuilder
+  - kubectl-cnpg
   - kustomize
   - lastpass-cli
   - lazygit
