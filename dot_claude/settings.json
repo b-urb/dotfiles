@@ -39,7 +39,7 @@
       "Bash(flux *--path*)"
     ]
   },
-  "model": "fable",
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
